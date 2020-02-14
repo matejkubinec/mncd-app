@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="MNCD" Version="0.0.1-pre-2020-02-10-19-44" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MNCD.Data\MNCD.Data.csproj" />
+    <ProjectReference Include="..\MNCD.Domain\MNCD.Domain.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+</Project>
