@@ -10,3 +10,11 @@ export interface DataSetAddViewModel {
   name: string;
   file: File;
 }
+
+export interface SessionRowViewModel {
+  id: number;
+  guid: string;
+  name: string;
+  analysesCount: number;
+  createDate: Date;
+}

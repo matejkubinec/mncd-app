@@ -6,10 +6,12 @@ import {
   configureStore
 } from "@reduxjs/toolkit";
 import dataSetReducer from "./slices/DataSetSlice";
+import sessionReducer from "./slices/SessionSlice";
 
 export const history = createBrowserHistory();
 
 const reducer = combineReducers({
+  session: sessionReducer,
   dataset: dataSetReducer,
   router: connectRouter(history)
 });

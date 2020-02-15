@@ -24,8 +24,7 @@ namespace MNCD.Web
         public void ConfigureServices(IServiceCollection services)
         {
             RegisterServices(services);
-
-            services.AddDbContext<MNCDContext>(opt => opt.UseSqlite(GetConnectionString()));
+            RegisterDbContext(services);
 
             services.AddControllersWithViews();
 
@@ -74,17 +73,19 @@ namespace MNCD.Web
             });
         }
 
+        private void RegisterDbContext(IServiceCollection services)
+        {
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<MNCDContext>(opt => opt.UseSqlite(connectionString));
+        }
+
         private void RegisterServices(IServiceCollection services)
         {
             services.AddSingleton<IReaderService, ReaderService>();
             services.AddSingleton<IHashService, HashService>();
 
             services.AddTransient<INetworkDataSetService, NetworkDataSetService>();
-        }
-
-        private string GetConnectionString()
-        {
-            return Configuration.GetConnectionString("DefaultConnection");
+            services.AddTransient<IAnalysisSessionService, AnalysisSessionService>();
         }
     }
 }

@@ -15,6 +15,7 @@ namespace MNCD.Data
 
         public MNCDContext(DbContextOptions<MNCDContext> options) : base(options)
         {
+            Database.EnsureCreated();
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

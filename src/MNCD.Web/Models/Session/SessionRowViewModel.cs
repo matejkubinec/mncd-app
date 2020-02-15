@@ -1,14 +1,13 @@
 using System;
-using System.Collections.Generic;
 
-namespace MNCD.Domain.Entities
+namespace MNCD.Web.Models.Session
 {
-    public class AnalysisSession
+    public class SessionRowViewModel
     {
         public int Id { get; set; }
         public string Guid { get; set; }
         public string Name { get; set; }
-        public List<Analysis> Analyses { get; set; }
+        public int AnalysesCount { get; set; }
         public DateTime CreateDate { get; set; }
     }
 }

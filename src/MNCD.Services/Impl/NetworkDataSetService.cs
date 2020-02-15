@@ -23,11 +23,11 @@ namespace MNCD.Services.Impl
 
         public void AddDataSet(string name, string content, FileType fileType)
         {
-            // TODO: change to content
-            var hash = _hashService.GetHashFor(name);
+            var hash = _hashService.GetHashFor(content);
 
             if (ExistsNetworkDataSet(hash))
             {
+                // TODO: Throw exception or something
                 return;
             }
 

@@ -1,4 +1,8 @@
-import { Fabric, initializeIcons } from "office-ui-fabric-react";
+import {
+  Fabric,
+  initializeIcons,
+  Customizations
+} from "office-ui-fabric-react";
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
@@ -6,8 +10,11 @@ import App from "./app";
 import { ConnectedRouter } from "connected-react-router";
 import { Provider } from "react-redux";
 import store, { history } from "./store";
+import theme from "./theme";
 
 initializeIcons();
+
+Customizations.applySettings({ theme });
 
 const baseUrl = document
   .getElementsByTagName("base")[0]

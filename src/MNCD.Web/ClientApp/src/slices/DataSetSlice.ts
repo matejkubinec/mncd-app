@@ -97,6 +97,7 @@ export const saveDataSet = (file: File) => (
 
       if (response.status == 200) {
         dispatch(saveDataSetSuccess(data));
+        dispatch(fetchDataSetsList() as any);
       } else {
         dispatch(saveDataSetSuccess(data));
       }
