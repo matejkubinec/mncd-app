@@ -1,6 +1,7 @@
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using MNCD.Data.Converters;
 using MNCD.Domain.Entities;
+using Newtonsoft.Json;
 
 namespace MNCD.Data
 {
@@ -10,22 +11,29 @@ namespace MNCD.Data
         public DbSet<AnalysisRequest> AnalysisRequests { get; set; }
         public DbSet<Analysis> Analyses { get; set; }
         public DbSet<NetworkDataSet> DataSets { get; set; }
+        public DbSet<NetworkInfo> NetworkInfos { get; set; }
 
         public MNCDContext(DbContextOptions<MNCDContext> options) : base(options)
         {
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            modelBuilder
+            builder
                 .Entity<AnalysisRequest>()
                 .Property(e => e.AnalysisAlgorithmParameters)
-                .HasConversion<DictionaryConverter>();
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<Dictionary<string, string>>(v)
+                );
 
-            modelBuilder
+            builder
                 .Entity<AnalysisRequest>()
                 .Property(e => e.FlattenningAlgorithmParameters)
-                .HasConversion<DictionaryConverter>();
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<Dictionary<string, string>>(v)
+                );
         }
     }
 }

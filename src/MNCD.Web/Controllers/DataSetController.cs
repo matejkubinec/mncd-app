@@ -3,6 +3,10 @@ using MNCD.Domain.Services;
 using MNCD.Web.Models.DataSet;
 using System.Linq;
 using System;
+using System.IO;
+using Microsoft.AspNetCore.Http;
+using MNCD.Domain.Entities;
+using System.Collections.Generic;
 
 namespace MNCD.Web.Controllers
 {
@@ -48,9 +52,30 @@ namespace MNCD.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Insert()
+        public IActionResult Insert(DataSetAddViewModel model)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrWhiteSpace(model.Name))
+            {
+                return new BadRequestObjectResult("Name is required.");
+            }
+
+            if (model.File == null)
+            {
+                return new BadRequestObjectResult("File is required.");
+            }
+
+            if (!HasSupportedFileType(model.File))
+            {
+                return new BadRequestObjectResult("File type is not supported.");
+            }
+
+            var name = model.Name;
+            var content = ReadFileContent(model.File);
+            var fileType = GetFileType(model.File);
+
+            _dataSetService.AddDataSet(name, content, fileType);
+
+            return new OkObjectResult("Dataset was saved.");
         }
 
         [HttpPatch]
@@ -65,5 +90,45 @@ namespace MNCD.Web.Controllers
         {
             throw new NotImplementedException();
         }
+
+        private string ReadFileContent(IFormFile file)
+        {
+            var content = "";
+            using (var reader = new StreamReader(file.OpenReadStream()))
+            {
+                // TODO: change to async
+                content = reader.ReadToEnd();
+            }
+            return content;
+        }
+
+        private bool HasSupportedFileType(IFormFile file)
+        {
+            var extension = GetExtension(file);
+            return SupportedFileTypes.Any(sft => sft == extension);
+        }
+
+        private FileType GetFileType(IFormFile file)
+        {
+            var extension = GetExtension(file);
+            switch (extension)
+            {
+                case "mpx":
+                    return FileType.MPX;
+                default:
+                    throw new ArgumentException("Unsupported file type");
+            }
+        }
+
+        private string GetExtension(IFormFile file)
+        {
+            return file.FileName.Split(".").Last().ToLower();
+        }
+
+        private static List<string> SupportedFileTypes = new List<string>
+        {
+            "mpx"
+        };
+
     }
 }

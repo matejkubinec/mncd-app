@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using MNCD.Data;
 using MNCD.Domain.Entities;
 using MNCD.Domain.Services;
@@ -20,8 +21,9 @@ namespace MNCD.Services.Impl
             _readerService = readerService;
         }
 
-        public void AddDataSet(int id, string name, string content, FileType fileType)
+        public void AddDataSet(string name, string content, FileType fileType)
         {
+            // TODO: change to content
             var hash = _hashService.GetHashFor(name);
 
             if (ExistsNetworkDataSet(hash))
@@ -32,6 +34,7 @@ namespace MNCD.Services.Impl
             var info = GetNetworkInfo(content, fileType);
             var dataSet = new NetworkDataSet
             {
+                Name = name,
                 Content = content,
                 FileType = fileType,
                 Hash = hash,
@@ -56,13 +59,19 @@ namespace MNCD.Services.Impl
 
         public IList<NetworkDataSet> GetDataSets()
         {
-            return _ctx.DataSets.ToList();
+            return _ctx
+                .DataSets
+                .Include(d => d.Info)
+                .ToList();
         }
 
         public void UpdateDataSet(int id, string name)
         {
             // TODO: switch to async
-            var dataSet = _ctx.DataSets.Find(id);
+            var dataSet = _ctx
+                .DataSets
+                .Include(d => d.Info)
+                .FirstOrDefault(d => d.Id == id);
 
             if (dataSet == null)
             {

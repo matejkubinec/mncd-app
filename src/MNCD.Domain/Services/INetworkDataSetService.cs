@@ -9,7 +9,7 @@ namespace MNCD.Domain.Services
 
         NetworkDataSet GetDataSet(int id);
 
-        void AddDataSet(int id, string name, string content, FileType fileType);
+        void AddDataSet(string name, string content, FileType fileType);
 
         void UpdateDataSet(int id, string name);
 

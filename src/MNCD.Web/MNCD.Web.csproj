@@ -11,6 +11,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.1">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -21,7 +25,33 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\App.test.ts" />
+    <None Remove="ClientApp\src\App.ts" />
+    <None Remove="ClientApp\src\components\Counter.ts" />
+    <None Remove="ClientApp\src\components\FetchData.ts" />
+    <None Remove="ClientApp\src\components\Home.ts" />
+    <None Remove="ClientApp\src\components\Layout.ts" />
+    <None Remove="ClientApp\src\components\NavMenu.ts" />
+    <None Remove="ClientApp\src\index.ts" />
+    <None Remove="ClientApp\src\registerServiceWorker.ts" />
+    <None Remove="ClientApp\src\types\DataSetRowViewModel.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MNCD.Services\MNCD.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\App.test.ts" />
+    <TypeScriptCompile Include="ClientApp\src\App.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\Counter.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\FetchData.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\Home.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\Layout.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\NavMenu.ts" />
+    <TypeScriptCompile Include="ClientApp\src\index.ts" />
+    <TypeScriptCompile Include="ClientApp\src\registerServiceWorker.ts" />
+    <TypeScriptCompile Include="ClientApp\src\types\DataSetRowViewModel.ts" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
