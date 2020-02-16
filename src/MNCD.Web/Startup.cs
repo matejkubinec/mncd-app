@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using MNCD.Data;
 using MNCD.Domain.Services;
 using MNCD.Services.Impl;
+using MNCD.Web.Mappings;
 
 namespace MNCD.Web
 {
@@ -23,6 +25,7 @@ namespace MNCD.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            RegisterMapper(services);
             RegisterServices(services);
             RegisterDbContext(services);
 
@@ -73,6 +76,19 @@ namespace MNCD.Web
             });
         }
 
+        private void RegisterMapper(IServiceCollection services)
+        {
+            var mappingConfig = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile<DataSetRowViewModelProfile>();
+                cfg.AddProfile<SessionRowViewModelProfile>();
+                cfg.AddProfile<AnalysisRequestViewModelProfile>();
+            });
+            var mapper = mappingConfig.CreateMapper();
+
+            services.AddSingleton<IMapper>(mapper);
+        }
+
         private void RegisterDbContext(IServiceCollection services)
         {
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
@@ -86,6 +102,7 @@ namespace MNCD.Web
 
             services.AddTransient<INetworkDataSetService, NetworkDataSetService>();
             services.AddTransient<IAnalysisSessionService, AnalysisSessionService>();
+            services.AddTransient<IAnalysisService, AnalysisService>();
         }
     }
 }

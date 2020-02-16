@@ -7,16 +7,21 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using MNCD.Domain.Entities;
 using System.Collections.Generic;
+using AutoMapper;
 
 namespace MNCD.Web.Controllers
 {
-    [Route("api/[Controller]/[Action]")]
+    [Route("api/dataset")]
     public class DataSetController : ControllerBase
     {
+        private readonly IMapper _mapper;
         private readonly INetworkDataSetService _dataSetService;
 
-        public DataSetController(INetworkDataSetService dataSetService)
+        public DataSetController(
+            IMapper mapper,
+            INetworkDataSetService dataSetService)
         {
+            _mapper = mapper;
             _dataSetService = dataSetService;
         }
 
@@ -24,14 +29,7 @@ namespace MNCD.Web.Controllers
         public IActionResult Index()
         {
             var datasets = _dataSetService.GetDataSets();
-            var result = datasets.Select(d => new DataSetRowViewModel
-            {
-                Id = d.Id,
-                Name = d.Name,
-                EdgeCount = d.Info.EdgeCount,
-                NodeCount = d.Info.NodeCount,
-                LayerCount = d.Info.LayerCount
-            });
+            var result = _mapper.Map<List<DataSetRowViewModel>>(datasets);
             return new JsonResult(result);
         }
 
@@ -40,14 +38,7 @@ namespace MNCD.Web.Controllers
         public IActionResult Details(int id)
         {
             var dataSet = _dataSetService.GetDataSet(id);
-            var result = new DataSetRowViewModel
-            {
-                Id = dataSet.Id,
-                Name = dataSet.Name,
-                EdgeCount = dataSet.Info.EdgeCount,
-                NodeCount = dataSet.Info.NodeCount,
-                LayerCount = dataSet.Info.LayerCount
-            };
+            var result = _mapper.Map<List<DataSetRowViewModel>>(dataSet);
             return new JsonResult(result);
         }
 
@@ -84,7 +75,7 @@ namespace MNCD.Web.Controllers
             throw new NotImplementedException();
         }
 
-        [HttpPatch]
+        [HttpDelete]
         [Route("{id}")]
         public IActionResult Delete(int id)
         {
@@ -129,6 +120,5 @@ namespace MNCD.Web.Controllers
         {
             "mpx"
         };
-
     }
 }

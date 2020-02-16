@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../axios";
 import { DataSetRowViewModel, DataSetAddViewModel } from "../types";
 import { createSlice, Dispatch } from "@reduxjs/toolkit";
 import { RootState } from "../store";
@@ -54,18 +54,11 @@ export const {
   saveDataSetSuccess
 } = slice.actions;
 
-export const fetchDataSetsList = () => (
-  dispatch: Dispatch,
-  getState: () => RootState
-) => {
-  const state = getState();
-  const baseUrl = state.router.location.pathname;
-  const url = baseUrl + "api/dataset/index";
-
+export const fetchDataSetsList = () => (dispatch: Dispatch) => {
   dispatch(fetchDataSetsListStart());
 
   axios
-    .get<DataSetRowViewModel[]>(url)
+    .get<DataSetRowViewModel[]>("/api/dataset")
     .then(response => {
       dispatch(fetchDataSetsListSuccess(response.data));
     })
@@ -80,9 +73,6 @@ export const saveDataSet = (file: File) => (
   getState: () => RootState
 ) => {
   const state = getState();
-  const baseUrl = state.router.location.pathname;
-  const url = baseUrl + "api/dataset/insert";
-
   const { name } = state.dataset.detail.item;
   const formData = new FormData();
   formData.append("file", file);
@@ -91,7 +81,7 @@ export const saveDataSet = (file: File) => (
   dispatch(saveDataSetStart());
 
   axios
-    .post<string>(url, formData)
+    .post<string>("/api/dataset", formData)
     .then(response => {
       const data = response.data;
 

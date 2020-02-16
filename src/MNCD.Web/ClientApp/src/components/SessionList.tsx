@@ -10,7 +10,6 @@ import {
   Stack,
   Separator,
   ProgressIndicator,
-  List,
   StackItem,
   PrimaryButton,
   DefaultButton,

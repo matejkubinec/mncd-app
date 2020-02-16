@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MNCD.Services", "MNCD.Servi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MNCD.Web", "MNCD.Web\MNCD.Web.csproj", "{E55CDD4A-B049-4547-AC1B-01A630B20F39}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MNCD.Tests", "..\test\MNCD.Tests\MNCD.Tests.csproj", "{342EC207-88D7-4900-91A4-298CED08FFF8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,5 +74,17 @@ Global
 		{E55CDD4A-B049-4547-AC1B-01A630B20F39}.Release|x64.Build.0 = Release|Any CPU
 		{E55CDD4A-B049-4547-AC1B-01A630B20F39}.Release|x86.ActiveCfg = Release|Any CPU
 		{E55CDD4A-B049-4547-AC1B-01A630B20F39}.Release|x86.Build.0 = Release|Any CPU
+		{342EC207-88D7-4900-91A4-298CED08FFF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{342EC207-88D7-4900-91A4-298CED08FFF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{342EC207-88D7-4900-91A4-298CED08FFF8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{342EC207-88D7-4900-91A4-298CED08FFF8}.Debug|x64.Build.0 = Debug|Any CPU
+		{342EC207-88D7-4900-91A4-298CED08FFF8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{342EC207-88D7-4900-91A4-298CED08FFF8}.Debug|x86.Build.0 = Debug|Any CPU
+		{342EC207-88D7-4900-91A4-298CED08FFF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{342EC207-88D7-4900-91A4-298CED08FFF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{342EC207-88D7-4900-91A4-298CED08FFF8}.Release|x64.ActiveCfg = Release|Any CPU
+		{342EC207-88D7-4900-91A4-298CED08FFF8}.Release|x64.Build.0 = Release|Any CPU
+		{342EC207-88D7-4900-91A4-298CED08FFF8}.Release|x86.ActiveCfg = Release|Any CPU
+		{342EC207-88D7-4900-91A4-298CED08FFF8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

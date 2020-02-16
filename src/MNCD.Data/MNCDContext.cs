@@ -9,9 +9,14 @@ namespace MNCD.Data
     {
         public DbSet<AnalysisSession> AnalysisSessions { get; set; }
         public DbSet<AnalysisRequest> AnalysisRequests { get; set; }
+        public DbSet<AnalysisResult> AnalysisResult { get; set; }
         public DbSet<Analysis> Analyses { get; set; }
         public DbSet<NetworkDataSet> DataSets { get; set; }
         public DbSet<NetworkInfo> NetworkInfos { get; set; }
+
+        public MNCDContext()
+        {
+        }
 
         public MNCDContext(DbContextOptions<MNCDContext> options) : base(options)
         {
@@ -34,6 +39,14 @@ namespace MNCD.Data
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
                     v => JsonConvert.DeserializeObject<Dictionary<string, string>>(v)
+                );
+
+            builder
+                .Entity<AnalysisResult>()
+                .Property(e => e.ActorToCommunity)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<int>>(v)
                 );
         }
     }

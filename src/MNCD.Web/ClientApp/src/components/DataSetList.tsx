@@ -14,6 +14,7 @@ import {
   PrimaryButton,
   StackItem
 } from "office-ui-fabric-react";
+import DataSetAdd from "./DataSetAdd";
 
 interface IProps {
   isLoading: boolean;
@@ -73,19 +74,23 @@ class DataSetList extends React.Component<IProps> {
 
     return (
       <Stack>
-        <h2>Choose dataset</h2>
+        <h2>Datasets</h2>
         <Separator></Separator>
         <Stack>
-          {isLoading ? (
-            <ProgressIndicator />
-          ) : (
-            <DetailsList
-              items={items}
-              columns={this.columns}
-              selectionMode={SelectionMode.none}
-              isHeaderVisible={true}
-            />
-          )}
+          <Stack>
+            <StackItem align="stretch">
+              {isLoading ? (
+                <ProgressIndicator />
+              ) : (
+                <DetailsList
+                  items={items}
+                  columns={this.columns}
+                  selectionMode={SelectionMode.none}
+                  isHeaderVisible={true}
+                />
+              )}
+            </StackItem>
+          </Stack>
           <Separator />
           <Stack horizontalAlign="end">
             <StackItem>

@@ -5,5 +5,6 @@ namespace MNCD.Domain.Entities
         public int Id { get; set; }
         public int Order { get; set; }
         public AnalysisRequest Request { get; set; }
+        public AnalysisResult Result { get; set; }
     }
 }

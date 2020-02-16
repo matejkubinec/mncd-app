@@ -1,13 +1,12 @@
-using System;
 using System.Collections.Generic;
+using MNCD.Domain.Entities;
 
-namespace MNCD.Domain.Entities
+namespace MNCD.Web.Models.Analysis
 {
-    public class AnalysisRequest
+    public class AnalysisRequestViewModel
     {
         public int Id { get; set; }
-        public DateTime CreateDate { get; set; }
-        public NetworkDataSet Dataset { get; set; }
+        public int DatasetId { get; set; }
         public int SelectedLayer { get; set; }
 
         public AnalysisApproach Approach { get; set; }

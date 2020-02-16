@@ -72,18 +72,11 @@ export const {
   saveSessionSuccess
 } = slice.actions;
 
-export const fetchSessionsList = () => (
-  dispatch: Dispatch,
-  getState: () => RootState
-) => {
-  const state = getState();
-  const baseUrl = state.router.location.pathname;
-  const url = baseUrl + "api/session/index";
-
+export const fetchSessionsList = () => (dispatch: Dispatch) => {
   dispatch(fetchSessionsListStart());
 
   axios
-    .get(url)
+    .get("api/session")
     .then(response => {
       const data = response.data;
       dispatch(fetchSessionsListSuccess(data));
@@ -99,15 +92,13 @@ export const saveSession = () => (
   getState: () => RootState
 ) => {
   const state = getState();
-  const baseUrl = state.router.location.pathname;
-  const url = baseUrl + "api/session/insert";
   const { name } = state.session.addModal;
   const data = { name };
 
   dispatch(saveSessionStart());
 
   axios
-    .post(url, data)
+    .post("api/session", data)
     .then(response => {
       const data = response.data;
       dispatch(saveSessionSuccess(data));
