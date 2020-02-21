@@ -1,3 +1,4 @@
+
 # ASP.NET Core
 # Build and test ASP.NET Core projects targeting .NET Core.
 # Add steps that run tests, create a NuGet package, deploy, and more:
@@ -19,10 +20,9 @@ stages:
   jobs:
     - job: build_job
       steps:
-        - task: NuGetCommand@2
+        - task: DotNetCoreCLI@2
           inputs:
             command: 'restore'
-            restoreSolution: '**/*.sln'
             feedsToUse: 'select'
             vstsFeed: '2461b18b-e6be-44f9-998f-f2da4ca72a8a'
 
@@ -34,10 +34,9 @@ stages:
   jobs:
     - job: deploy_job
       steps:
-        - task: NuGetCommand@2
+        - task: DotNetCoreCLI@2
           inputs:
             command: 'restore'
-            restoreSolution: '**/*.sln'
             feedsToUse: 'select'
             vstsFeed: '2461b18b-e6be-44f9-998f-f2da4ca72a8a'
 
