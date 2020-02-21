@@ -19,10 +19,9 @@ stages:
   jobs:
     - job: build_job
       steps:
-        - script: cd src
-          displayName: 'Move to src directory'
         - script: dotnet build --configuration $(buildConfiguration)
           displayName: 'dotnet build $(buildConfiguration)'
+          workingDirectory: src
 
 - stage: deploy
   jobs:
@@ -32,6 +31,7 @@ stages:
           inputs:
             command: publish
             publishWebProjects: True
+            workingDirectory: src
             arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
             zipAfterPublish: True
 
