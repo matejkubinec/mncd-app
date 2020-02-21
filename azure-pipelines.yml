@@ -11,6 +11,8 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  azureSubscription: '6bd06657-2155-4af5-9d6a-8fc06361ed75'
+  appName: 'mncd'
 
 stages:
 - stage: build
@@ -21,3 +23,26 @@ stages:
           displayName: 'Move to src directory'
         - script: dotnet build --configuration $(buildConfiguration)
           displayName: 'dotnet build $(buildConfiguration)'
+
+- stage: deploy
+  jobs:
+    - job: deploy_job
+      steps:
+        - task: DotNetCoreCLI@2
+          inputs:
+            command: publish
+            publishWebProjects: True
+            arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+            zipAfterPublish: True
+
+        - task: PublishBuildArtifacts@1
+          inputs:
+            pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+            artifactName: 'myWebsiteName'
+
+        - task: AzureWebApp@1
+          inputs:
+            azureSubscription: $(azureSubscription)
+            appType: webAppLinux
+            appName: $(appName)
+            package: $(System.ArtifactsDirectory)/**/*.zip
