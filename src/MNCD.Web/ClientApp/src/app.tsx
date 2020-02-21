@@ -17,13 +17,5 @@ export default class App extends Component {
         <DataSetAdd />
       </div>
     );
-
-    // return (
-    //   <Switch>
-    //     <Route exact path="/" component={Home} />
-    //     <Route path="/counter" component={Counter} />
-    //     <Route path="/fetch-data" component={FetchData} />
-    //   </Switch>
-    // );
   }
 }

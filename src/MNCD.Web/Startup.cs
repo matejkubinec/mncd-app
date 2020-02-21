@@ -100,6 +100,10 @@ namespace MNCD.Web
             services.AddSingleton<IReaderService, ReaderService>();
             services.AddSingleton<IHashService, HashService>();
 
+            var vizUrl = Configuration.GetValue<string>("VisualizationApiUrl");
+            services.AddTransient<IVisualizationService, VisualisationService>(x =>
+                new VisualisationService(x.GetService<MNCDContext>(), vizUrl));
+
             services.AddTransient<INetworkDataSetService, NetworkDataSetService>();
             services.AddTransient<IAnalysisSessionService, AnalysisSessionService>();
             services.AddTransient<IAnalysisService, AnalysisService>();

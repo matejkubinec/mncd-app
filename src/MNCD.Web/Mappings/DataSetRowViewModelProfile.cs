@@ -20,6 +20,10 @@ namespace MNCD.Web.Mappings
                 .ForMember(
                     dest => dest.LayerCount,
                     opt => opt.MapFrom(src => src.Info.LayerCount)
+                )
+                .ForMember(
+                    dest => dest.VisualizationUrl,
+                    opt => opt.MapFrom(src => "api/dataset/visualization/" + src.Visualization.Id)
                 );
         }
     }

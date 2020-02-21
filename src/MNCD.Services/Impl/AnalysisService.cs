@@ -6,12 +6,23 @@ using MNCD.Core;
 using MNCD.Data;
 using MNCD.Domain.Entities;
 using MNCD.Domain.Services;
+using MNCD.Services.AnalysisAlgorithms;
 using MNCD.Services.Helpers;
 
 namespace MNCD.Services.Impl
 {
     public class AnalysisService : IAnalysisService
     {
+        private static List<AnalysisAlgorithm> SingleLayerAlgorithms = new List<AnalysisAlgorithm>
+        {
+            AnalysisAlgorithm.FluidC,
+            AnalysisAlgorithm.Louvain
+        };
+
+        private static List<AnalysisAlgorithm> MultiLayerAlgorithms = new List<AnalysisAlgorithm>
+        {
+        };
+
         private readonly MNCDContext _ctx;
 
         public AnalysisService(MNCDContext ctx)
@@ -48,40 +59,46 @@ namespace MNCD.Services.Impl
             return analysis;
         }
 
-        public void Analyze(AnalysisRequest request)
+        public Analysis Analyze(int sessionId, AnalysisRequest request)
         {
-            var dataSet = _ctx.DataSets.FirstOrDefault(d => d.Id == request.Id);
+            var session = _ctx.AnalysisSessions.FirstOrDefault(a => a.Id == sessionId);
+            var dataSet = request.Dataset;
+
+            if (session == null)
+            {
+                throw new ArgumentException($"Session with id {sessionId} was not found.");
+            }
 
             if (dataSet == null)
             {
-                throw new ApplicationException("Dataset was not found.");
+                throw new ApplicationException("Dataset is required.");
             }
 
             var network = NetworkReaderHelper.ReadDataSet(dataSet);
-            var networkToAnalyze = network;
+            var result = AnalyzeNetwork(request, network);
 
-            if (request.Approach == AnalysisApproach.SingleLayerOnly)
+            var analysis = new Analysis
             {
-                if (request.SelectedLayer > network.Layers.Count || request.SelectedLayer < 0)
-                {
-                    throw new ApplicationException("Selected layer must be greater than zero and not greater than number of layers in data set.");
-                }
+                Request = request,
+                Result = result
+            };
 
-                var selectedLayer = network.Layers[request.SelectedLayer];
-                networkToAnalyze = new Network
+            if (session.Analyses == null)
+            {
+                session.Analyses = new List<Analysis>
                 {
-                    Actors = network.Actors,
-                    Layers = new List<Layer>
-                    {
-                        selectedLayer
-                    }
+                    analysis
                 };
             }
-
-            if (request.AnalysisAlgorithm == AnalysisAlgorithm.Louvain)
+            else
             {
-                // TODO: compute and validate arguments
+                session.Analyses.Add(analysis);
             }
+
+            // TODO: switch to async
+            _ctx.SaveChanges();
+
+            return analysis;
         }
 
         public void RemoveFromSession(int sessionId, int analysisId)
@@ -104,6 +121,51 @@ namespace MNCD.Services.Impl
 
             // TODO: switch to async
             _ctx.SaveChanges();
+        }
+
+        private AnalysisResult AnalyzeNetwork(AnalysisRequest request, Network network)
+        {
+            if (request.Approach == AnalysisApproach.SingleLayerOnly)
+            {
+                return SingleLayerAnalysis(request, network);
+            }
+
+            throw new ArgumentException("Unsupported approach.");
+        }
+
+        private AnalysisResult SingleLayerAnalysis(AnalysisRequest request, Network network)
+        {
+            ValidateSingleLayerAnalysis(request, network);
+
+            var selectedLayer = network.Layers[request.SelectedLayer];
+            var networkToAnalyze = new Network
+            {
+                Actors = network.Actors,
+                Layers = new List<Layer>
+                    {
+                        selectedLayer
+                    }
+            };
+
+            if (request.AnalysisAlgorithm == AnalysisAlgorithm.Louvain)
+            {
+                return Louvain.Analyze(request, network);
+            }
+
+            throw new ArgumentException("Unsupported algorithm.");
+        }
+
+        private void ValidateSingleLayerAnalysis(AnalysisRequest request, Network network)
+        {
+            if (request.SelectedLayer > network.Layers.Count || request.SelectedLayer < 0)
+            {
+                throw new ArgumentOutOfRangeException("Selected layer must be greater than zero and not greater than number of layers in data set.");
+            }
+
+            if (!SingleLayerAlgorithms.Any(alg => alg == request.AnalysisAlgorithm))
+            {
+                throw new ArgumentException("A algorithm for single layer networks must be used.");
+            }
         }
     }
 }

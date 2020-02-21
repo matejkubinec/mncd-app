@@ -23,6 +23,12 @@ namespace MNCD.Domain.Entities
 
     public enum FileType
     {
-        MPX = 0
+        MPX = 0,
+        EdgeList = 1
+    }
+
+    public enum VisualizationType
+    {
+        Diagonal = 0
     }
 }

@@ -45,7 +45,7 @@ namespace MNCD.Web.Controllers
         [HttpPost]
         public IActionResult Insert(DataSetAddViewModel model)
         {
-            if (String.IsNullOrWhiteSpace(model.Name))
+            if (string.IsNullOrWhiteSpace(model.Name))
             {
                 return new BadRequestObjectResult("Name is required.");
             }
@@ -80,6 +80,34 @@ namespace MNCD.Web.Controllers
         public IActionResult Delete(int id)
         {
             throw new NotImplementedException();
+        }
+
+        [HttpGet]
+        [Route("visualization/{id}")]
+        public IActionResult GetVisualization(int id)
+        {
+            var dataSet = _dataSetService.GetDataSet(id);
+
+            if (dataSet == null)
+            {
+                return new NotFoundObjectResult("DataSet could not be found.");
+            }
+
+            var visualisation = dataSet.Visualization;
+
+            if (visualisation != null)
+            {
+                return new ContentResult()
+                {
+                    Content = visualisation.SvgImage,
+                    ContentType = "image/svg+xml",
+                    StatusCode = 200
+                };
+            }
+            else
+            {
+                return new NotFoundObjectResult("Visualization could not be found.");
+            }
         }
 
         private string ReadFileContent(IFormFile file)

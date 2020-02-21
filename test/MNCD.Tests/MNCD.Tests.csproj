@@ -20,4 +20,13 @@
     <ProjectReference Include="..\..\src\MNCD.Services\MNCD.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Networks\florentine.mpx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Networks\louvain.mpx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

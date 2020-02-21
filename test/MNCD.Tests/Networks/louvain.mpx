@@ -1,0 +1,23 @@
+﻿#TYPE
+multiplex
+
+#LAYERS
+l1,UNDIRECTED
+
+#ACTOR ATTRIBUTES
+w1, NUMERIC
+
+#ACTORS
+a0,1
+a1,1
+a2,1
+a3,1
+a4,1
+a5,1
+
+#EDGES
+a0,a2,l1
+a1,a2,l1
+a2,a3,l1
+a3,a4,l1
+a3,a5,l1

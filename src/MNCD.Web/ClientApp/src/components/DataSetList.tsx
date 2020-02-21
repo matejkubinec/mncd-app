@@ -12,7 +12,8 @@ import {
   SelectionMode,
   ProgressIndicator,
   PrimaryButton,
-  StackItem
+  StackItem,
+  Image
 } from "office-ui-fabric-react";
 import DataSetAdd from "./DataSetAdd";
 
@@ -33,6 +34,17 @@ class DataSetList extends React.Component<IProps> {
       isSorted: true,
       isSortedDescending: false,
       minWidth: 100
+    },
+    {
+      key: "image",
+      data: "string",
+      fieldName: "visualizationUrl",
+      name: "Image",
+      isRowHeader: true,
+      minWidth: 800,
+      onRender: (item: any) => {
+        return <Image src={item.visualizationUrl} height={200} />;
+      }
     },
     {
       key: "nodeCount",

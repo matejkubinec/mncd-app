@@ -6,8 +6,6 @@ using MNCD.Tests.Helpers;
 using System;
 using System.Collections.Generic;
 using Xunit;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace MNCD.Tests.Services
 {
@@ -42,8 +40,38 @@ namespace MNCD.Tests.Services
             }
         }
 
+        [Fact]
+        public void ApplyLouvain()
+        {
+            using (var ctx = SetupDB("GetAnalysisNotFound"))
+            {
+                var service = new AnalysisService(ctx);
+                var request = new AnalysisRequest()
+                {
+                    CreateDate = new DateTime(2020, 12, 01),
+                    Dataset = DataSetHelper.LouvainTest,
+                    SelectedLayer = 0,
+                    Approach = AnalysisApproach.SingleLayerOnly,
+                    AnalysisAlgorithm = AnalysisAlgorithm.Louvain,
+                    AnalysisAlgorithmParameters = new Dictionary<string, string>()
+                    {
+                        { "CommunityCount", "2" }
+                    },
+                    FlattenningAlgorithm = FlattenningAlgorithm.BasicFlattening,
+                    FlattenningAlgorithmParameters = new Dictionary<string, string>(),
+                };
+                var result = service.Analyze(1, request);
+            }
+        }
+
         private MNCDContext SetupDB(string databaseName)
         {
+            var datasets = new List<NetworkDataSet>
+            {
+                DataSetHelper.Florentine,
+                DataSetHelper.LouvainTest,
+            };
+
             var requests = new List<AnalysisRequest>
             {
                 new AnalysisRequest
@@ -63,9 +91,13 @@ namespace MNCD.Tests.Services
             {
                 new Analysis
                 {
-                    Order = 1,
                     Request = requests[0]
                 }
+            };
+
+            var session = new AnalysisSession
+            {
+                Name = "LouvainSession"
             };
 
             var options = new DbContextOptionsBuilder<MNCDContext>()
@@ -75,6 +107,7 @@ namespace MNCD.Tests.Services
             var ctx = new MNCDContext(options);
             ctx.AnalysisRequests.AddRange(requests);
             ctx.Analyses.AddRange(analyses);
+            ctx.AnalysisSessions.Add(session);
             ctx.SaveChanges();
 
             return ctx;
