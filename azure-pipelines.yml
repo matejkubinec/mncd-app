@@ -19,6 +19,13 @@ stages:
   jobs:
     - job: build_job
       steps:
+        - task: NuGetCommand@2
+          inputs:
+            command: 'restore'
+            restoreSolution: '**/*.sln'
+            feedsToUse: 'select'
+            vstsFeed: '2461b18b-e6be-44f9-998f-f2da4ca72a8a'
+
         - script: dotnet build --configuration $(buildConfiguration)
           displayName: 'dotnet build $(buildConfiguration)'
           workingDirectory: src
@@ -27,6 +34,12 @@ stages:
   jobs:
     - job: deploy_job
       steps:
+        - task: NuGetCommand@2
+          inputs:
+            command: 'restore'
+            restoreSolution: '**/*.sln'
+            feedsToUse: 'select'
+            vstsFeed: '2461b18b-e6be-44f9-998f-f2da4ca72a8a'
 
         - task: DotNetCoreCLI@2
           inputs:
