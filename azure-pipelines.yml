@@ -40,7 +40,7 @@ stages:
             command: 'restore'
             feedsToUse: 'select'
             vstsFeed: '2461b18b-e6be-44f9-998f-f2da4ca72a8a'
-            workingDirectory: 'src'
+            projects: 'src/**/*.csproj'
 
         - task: DotNetCoreCLI@2
           inputs:
