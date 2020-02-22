@@ -7,12 +7,14 @@ import {
 } from "@reduxjs/toolkit";
 import dataSetReducer from "./slices/DataSetSlice";
 import sessionReducer from "./slices/SessionSlice";
+import analysisReducer from "./slices/AnalysisSlice";
 
 export const history = createBrowserHistory();
 
 const reducer = combineReducers({
   session: sessionReducer,
   dataset: dataSetReducer,
+  analysis: analysisReducer,
   router: connectRouter(history)
 });
 

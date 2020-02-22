@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^1.2.3",
+    "@uifabric/fluent-theme": "^7.1.24",
     "@uifabric/icons": "^7.3.5",
     "axios": "^0.19.2",
     "babel-eslint": "10.0.1",
