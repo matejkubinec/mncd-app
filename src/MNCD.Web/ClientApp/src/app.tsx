@@ -13,10 +13,15 @@ export default class App extends Component {
   render() {
     return (
       <div>
-        <AnalysisPage />
-        <SessionList />
-        <DataSetList />
-        <DataSetAdd />
+        <Switch>
+          <Route path="api/*" />
+          <Route path="/">
+            <AnalysisPage />
+            <SessionList />
+            <DataSetList />
+            <DataSetAdd />
+          </Route>
+        </Switch>
       </div>
     );
   }
