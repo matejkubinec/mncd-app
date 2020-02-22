@@ -2,25 +2,25 @@ export interface Dictionary<T> {
   [Key: string]: T;
 }
 
-export const enum AnalysisApproach {
+export enum AnalysisApproach {
   MultiLayer = 0,
   SingleLayerOnly = 1,
   SingleLayerFlattening = 2
 }
 
-export const enum AnalysisAlgorithm {
+export enum AnalysisAlgorithm {
   FluidC = 0,
   Louvain = 1
 }
 
-export const enum FlattenningAlgorithm {
+export enum FlattenningAlgorithm {
   BasicFlattening = 0,
   LocalSimplification = 1,
   MergeFlattening = 2,
   WeightedFlattening = 3
 }
 
-export const enum FileType {
+export enum FileType {
   MPX = 0
 }
 

@@ -5,6 +5,7 @@ import "./custom.css";
 import DataSetList from "./components/DataSetList";
 import DataSetAdd from "./components/DataSetAdd";
 import SessionList from "./components/SessionList";
+import AnalysisPage from "./components/AnalysisPage";
 
 export default class App extends Component {
   static displayName = App.name;
@@ -12,6 +13,7 @@ export default class App extends Component {
   render() {
     return (
       <div>
+        <AnalysisPage />
         <SessionList />
         <DataSetList />
         <DataSetAdd />
