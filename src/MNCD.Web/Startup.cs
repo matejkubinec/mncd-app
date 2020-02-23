@@ -29,6 +29,8 @@ namespace MNCD.Web
             RegisterServices(services);
             RegisterDbContext(services);
 
+            services.AddApplicationInsightsTelemetry();
+
             services.AddControllersWithViews();
 
             // In production, the React files will be served from this directory
