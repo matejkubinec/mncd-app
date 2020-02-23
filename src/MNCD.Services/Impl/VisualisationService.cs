@@ -28,7 +28,7 @@ namespace MNCD.Services.Impl
             var content = new StringContent(edgeList);
 
             // TODO: switch to async
-            var response = client.PostAsync(_baseUrl + "/multilayer/diagonal", content).Result;
+            var response = client.PostAsync(_baseUrl + "diagonal", content).Result;
 
             if (response.IsSuccessStatusCode)
             {

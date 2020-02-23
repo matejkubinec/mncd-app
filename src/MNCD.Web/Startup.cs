@@ -1,3 +1,4 @@
+using System;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +11,8 @@ using MNCD.Data;
 using MNCD.Domain.Services;
 using MNCD.Services.Impl;
 using MNCD.Web.Mappings;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Pomelo.EntityFrameworkCore.MySql.Storage;
 
 namespace MNCD.Web
 {
@@ -29,7 +32,7 @@ namespace MNCD.Web
             RegisterServices(services);
             RegisterDbContext(services);
 
-            services.AddApplicationInsightsTelemetry(); 
+            services.AddApplicationInsightsTelemetry();
 
             services.AddControllersWithViews();
 
@@ -43,6 +46,12 @@ namespace MNCD.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var ctx = scope.ServiceProvider.GetService<MNCDContext>();
+                ctx.Database.EnsureCreated();
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -91,8 +100,21 @@ namespace MNCD.Web
 
         private void RegisterDbContext(IServiceCollection services)
         {
-            var connectionString = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<MNCDContext>(opt => opt.UseSqlite(connectionString));
+            var connectionString = GetConnectionString();
+            var serverVersion = new ServerVersion(new Version(8, 0, 18), ServerType.MySql);
+            services.AddDbContext<MNCDContext>(opt => opt.UseMySql(connectionString, opt => opt.ServerVersion(serverVersion)));
+        }
+
+        private string GetConnectionString()
+        {
+            var connectionString = Environment.GetEnvironmentVariable("MYSQLCONNSTR_localdb");
+
+            if (connectionString != null)
+            {
+                return connectionString;
+            }
+
+            return Configuration.GetConnectionString("DefaultConnection");
         }
 
         private void RegisterServices(IServiceCollection services)

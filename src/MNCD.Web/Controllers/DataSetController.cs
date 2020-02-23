@@ -12,7 +12,6 @@ using AutoMapper;
 namespace MNCD.Web.Controllers
 {
     [Route("api/dataset")]
-    [ApiController]
     public class DataSetController : ControllerBase
     {
         private readonly IMapper _mapper;
