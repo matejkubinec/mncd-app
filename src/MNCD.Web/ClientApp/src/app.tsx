@@ -16,11 +16,12 @@ export default class App extends Component {
 
   render() {
     return (
-      <Switch>
-        <Route exact path="/">
-          <Home />
-        </Route>
-      </Switch>
+      <Home />
+
+      // <Switch>
+      //   <Route exact path="/">
+      //   </Route>
+      // </Switch>
     );
   }
 }
