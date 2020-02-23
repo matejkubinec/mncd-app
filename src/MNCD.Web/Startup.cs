@@ -101,8 +101,8 @@ namespace MNCD.Web
         private void RegisterDbContext(IServiceCollection services)
         {
             var connectionString = GetConnectionString();
-            var serverVersion = new ServerVersion(new Version(8, 0, 18), ServerType.MySql);
-            services.AddDbContext<MNCDContext>(opt => opt.UseMySql(connectionString, opt => opt.ServerVersion(serverVersion)));
+            var serverVersion = new ServerVersion(new Version(5, 7, 9), ServerType.MySql);
+            services.AddDbContext<MNCDContext>(opt => opt.UseMySql(connectionString, opt => opt.ServerVersion(serverVersion).EnableRetryOnFailure()));
         }
 
         private string GetConnectionString()
@@ -111,6 +111,7 @@ namespace MNCD.Web
 
             if (connectionString != null)
             {
+                System.Console.WriteLine(connectionString);
                 return connectionString;
             }
 
