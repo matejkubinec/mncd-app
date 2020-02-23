@@ -29,7 +29,7 @@ namespace MNCD.Web
             RegisterServices(services);
             RegisterDbContext(services);
 
-            services.AddApplicationInsightsTelemetry();
+            services.AddApplicationInsightsTelemetry(); 
 
             services.AddControllersWithViews();
 
