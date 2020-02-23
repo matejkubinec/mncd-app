@@ -6,6 +6,7 @@ using MNCD.Web.Models.Analysis;
 namespace MNCD.Web.Controllers
 {
     [Route("api/analysis")]
+    [ApiController]
     public class AnalysisController : ControllerBase
     {
         private readonly IMapper _mapper;

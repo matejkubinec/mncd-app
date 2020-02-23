@@ -8,6 +8,7 @@ using MNCD.Web.Models.Session;
 namespace MNCD.Web.Controllers
 {
     [Route("api/session")]
+    [ApiController]
     public class SessionController : ControllerBase
     {
         private readonly IMapper _mapper;
