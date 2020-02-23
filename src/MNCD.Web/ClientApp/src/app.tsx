@@ -7,6 +7,13 @@ import Home from "./components/Home";
 export default class App extends Component {
   static displayName = App.name;
 
+  componentDidMount() {
+    console.log("APP");
+    fetch("/api/dataset")
+      .then(response => response.json())
+      .then(value => console.log(value));
+  }
+
   render() {
     return (
       <Switch>
