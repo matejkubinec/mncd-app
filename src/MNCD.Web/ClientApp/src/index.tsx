@@ -11,6 +11,9 @@ import { ConnectedRouter } from "connected-react-router";
 import { Provider } from "react-redux";
 import store, { history } from "./store";
 import theme from "./theme";
+import { NeutralColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
+
+import "./index.css";
 
 initializeIcons();
 
@@ -26,7 +29,9 @@ ReactDOM.render(
     <ConnectedRouter history={history}>
       <Fabric>
         <BrowserRouter basename={baseUrl}>
-          <App />
+          <div style={{ backgroundColor: NeutralColors.gray20 }}>
+            <App />
+          </div>
         </BrowserRouter>
       </Fabric>
     </ConnectedRouter>

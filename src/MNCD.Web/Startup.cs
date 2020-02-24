@@ -1,4 +1,3 @@
-using System;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,10 +9,7 @@ using Microsoft.Extensions.Hosting;
 using MNCD.Data;
 using MNCD.Domain.Services;
 using MNCD.Services.Impl;
-using MNCD.Web.Helpers;
 using MNCD.Web.Mappings;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
-using Pomelo.EntityFrameworkCore.MySql.Storage;
 
 namespace MNCD.Web
 {

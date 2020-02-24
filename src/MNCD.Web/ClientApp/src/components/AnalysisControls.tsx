@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import React from "react";
+import React, { Fragment } from "react";
 import { RootState } from "../store";
 import {
   Stack,
@@ -19,9 +19,19 @@ import {
   FlattenningAlgorithm,
   AnalysisAlgorithm
 } from "../types";
-import { AnalysisState } from "../slices/AnalysisSlice";
+import {
+  AnalysisState,
+  updateAnalysisRequest,
+  openDataSetModal
+} from "../slices/AnalysisSlice";
+import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
+import AnalysisDataSetModal from "./AnalysisDataSetModal";
+import { NeutralColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
 
-interface IProps extends AnalysisState {}
+interface IProps extends AnalysisState {
+  updateAnalysisRequest: typeof updateAnalysisRequest;
+  openDataSetModal: typeof openDataSetModal;
+}
 
 class AnalysisControls extends React.Component<IProps> {
   private singleLayerAlgorithms = [
@@ -29,14 +39,43 @@ class AnalysisControls extends React.Component<IProps> {
     AnalysisApproach.SingleLayerOnly
   ];
 
+  constructor(props: IProps) {
+    super(props);
+
+    this.updateRequest.bind(this);
+  }
+
+  updateRequest(change: object) {
+    this.props.updateAnalysisRequest(change);
+  }
+
   renderAnalysisAlgorithmParameters() {
     const { approach, analysisAlgorithm } = this.props.request;
+    const parameters = this.props.request.analysisAlgorithmParameters;
+
+    if (approach === AnalysisApproach.MultiLayer) return;
 
     switch (analysisAlgorithm) {
       case AnalysisAlgorithm.FluidC:
+        const value = parameters["fluids"] || "2";
+        const onChange = (_: any, value: string | undefined) => {
+          if (value === undefined) return;
+          const analysisAlgorithmParameters = {
+            ...parameters,
+            fluids: Number(value)
+          };
+          this.updateRequest({ analysisAlgorithmParameters });
+        };
+
         return (
           <Stack>
-            <TextField label="Fluids (number of communities)" type="number" />
+            <TextField
+              label="Fluids"
+              type="number"
+              description="Number of communities"
+              value={value}
+              onChange={onChange}
+            />
           </Stack>
         );
     }
@@ -46,19 +85,32 @@ class AnalysisControls extends React.Component<IProps> {
     const { approach, analysisAlgorithm } = this.props.request;
 
     if (this.singleLayerAlgorithms.includes(approach)) {
+      const { FluidC, Louvain } = AnalysisAlgorithm;
       const options: IChoiceGroupOption[] = [
         {
-          key: "FluidC",
+          key: FluidC.toString(),
           text: "FluidC",
-          checked: analysisAlgorithm === AnalysisAlgorithm.FluidC
+          checked: analysisAlgorithm === FluidC
         },
         {
-          key: "Louvain",
+          key: Louvain.toString(),
           text: "Louvain",
-          checked: analysisAlgorithm === AnalysisAlgorithm.Louvain
+          checked: analysisAlgorithm === Louvain
         }
       ];
-      return <ChoiceGroup label="Analysis Algorithm" options={options} />;
+      const onChange = (_: any, option: IChoiceGroupOption | undefined) => {
+        if (option === undefined) return;
+
+        this.updateRequest({ analysisAlgorithm: Number(option.key) });
+      };
+
+      return (
+        <ChoiceGroup
+          label="Analysis Algorithm"
+          options={options}
+          onChange={onChange}
+        />
+      );
     } else {
       return null;
       // const options: IChoiceGroupOption[] = [];
@@ -68,22 +120,51 @@ class AnalysisControls extends React.Component<IProps> {
 
   renderFlatteningParameters() {
     const { approach, flatteningAlgorithm } = this.props.request;
+    const parameters = this.props.request.flatteningAlgorithmParameters;
+
     if (approach !== AnalysisApproach.SingleLayerFlattening) return null;
 
     if (flatteningAlgorithm === FlattenningAlgorithm.BasicFlattening) {
+      const value = Boolean(parameters["weightEdges"]);
+      const onChange = (_: any, checked: boolean | undefined) => {
+        if (checked === undefined) return;
+
+        const flatteningAlgorithmParameters = {
+          ...parameters,
+          weightEdges: checked
+        };
+        this.updateRequest({ flatteningAlgorithmParameters });
+      };
+
       return (
         <Stack>
           <Label>Basic Flattening</Label>
-          <Toggle label="Weight Edges" />
+          <Toggle label="Weight Edges" checked={value} onChange={onChange} />
         </Stack>
       );
     }
 
     if (flatteningAlgorithm === FlattenningAlgorithm.LocalSimplification) {
+      const value = parameters["threshold"] || "0";
+      const onChange = (_: any, value: string | undefined) => {
+        if (value === undefined) return;
+
+        const flatteningAlgorithmParameters = {
+          ...parameters,
+          threshold: Number(value)
+        };
+        this.updateRequest({ flatteningAlgorithmParameters });
+      };
+
       return (
         <Stack>
           <Label>Local Simplification</Label>
-          <TextField label="Treshold" type="number" />
+          <TextField
+            label="Threshold"
+            type="number"
+            value={value}
+            onChange={onChange}
+          />
           TODO: local simplification layer relevances
         </Stack>
       );
@@ -103,84 +184,130 @@ class AnalysisControls extends React.Component<IProps> {
 
   renderFlattening() {
     const { approach, flatteningAlgorithm } = this.props.request;
+
     if (approach !== AnalysisApproach.SingleLayerFlattening) return null;
+
+    const {
+      BasicFlattening,
+      LocalSimplification,
+      MergeFlattening,
+      WeightedFlattening
+    } = FlattenningAlgorithm;
 
     const options: IChoiceGroupOption[] = [
       {
-        key: "BasicFlattening",
+        key: BasicFlattening.toString(),
         text: "Basic Flattening",
-        checked: flatteningAlgorithm === FlattenningAlgorithm.BasicFlattening
+        checked: flatteningAlgorithm === BasicFlattening
       },
       {
-        key: "LocalSimplification",
+        key: LocalSimplification.toString(),
         text: "Local Simplification",
-        checked:
-          flatteningAlgorithm === FlattenningAlgorithm.LocalSimplification
+        checked: flatteningAlgorithm === LocalSimplification
       },
       {
-        key: "MergeFlattning",
+        key: MergeFlattening.toString(),
         text: "Merge Flattening",
-        checked: flatteningAlgorithm === FlattenningAlgorithm.MergeFlattening
+        checked: flatteningAlgorithm === MergeFlattening
       },
       {
-        key: "WeightedFlattening",
+        key: WeightedFlattening.toString(),
         text: "Weighted Flattening",
-        checked: flatteningAlgorithm === FlattenningAlgorithm.WeightedFlattening
+        checked: flatteningAlgorithm === WeightedFlattening
       }
     ];
-    return <ChoiceGroup label="Flattening Approach" options={options} />;
+
+    const onChange = (_: any, option: IChoiceGroupOption | undefined) => {
+      if (option === undefined) return;
+
+      this.updateRequest({ flatteningAlgorithm: Number(option.key) });
+    };
+
+    return (
+      <ChoiceGroup
+        label="Flattening Approach"
+        options={options}
+        onChange={onChange}
+      />
+    );
   }
 
   renderApproach() {
     const { approach } = this.props.request;
     const options: IChoiceGroupOption[] = [
       {
-        key: "MultiLayer",
+        key: AnalysisApproach.MultiLayer.toString(),
         text: "Multilayer",
         checked: approach === AnalysisApproach.MultiLayer
       },
       {
-        key: "SingleLayerFlattening",
+        key: AnalysisApproach.SingleLayerFlattening.toString(),
         text: "Single Layer - Flattening",
         checked: approach === AnalysisApproach.SingleLayerFlattening
       },
       {
-        key: "SingleLayerOnly",
+        key: AnalysisApproach.SingleLayerOnly.toString(),
         text: "Single Layer",
         checked: approach === AnalysisApproach.SingleLayerOnly
       }
     ];
-    return <ChoiceGroup label="Approach" options={options} />;
+
+    const onChange = (_: any, option: IChoiceGroupOption | undefined) => {
+      if (option === undefined) return;
+
+      this.updateRequest({ approach: Number(option.key) });
+    };
+
+    return (
+      <ChoiceGroup label="Approach" options={options} onChange={onChange} />
+    );
   }
 
   render() {
+    const { dataSetName } = this.props;
+
     return (
-      <Stack
-        horizontal
-        tokens={{ childrenGap: 15, padding: 5 }}
-        horizontalAlign="space-evenly"
-      >
-        <StackItem align="center">
-          <DefaultButton>Choose Data</DefaultButton>
-          <p>
-            Chosen: <Text>Algorithm</Text>
-          </p>
-        </StackItem>
-        <StackItem>{this.renderApproach()}</StackItem>
-        <StackItem>{this.renderFlattening()}</StackItem>
-        <StackItem>{this.renderFlatteningParameters()}</StackItem>
-        <StackItem>{this.renderAnalysisAlgorithm()}</StackItem>
-        <StackItem>{this.renderAnalysisAlgorithmParameters()}</StackItem>
-        <StackItem align="center">
-          <PrimaryButton>Analyze</PrimaryButton>
-        </StackItem>
-      </Stack>
+      <Fragment>
+        <AnalysisDataSetModal />
+        <Stack
+          horizontal
+          tokens={{ childrenGap: 15, padding: 5 }}
+          style={{
+            boxShadow: Depths.depth4,
+            backgroundColor: NeutralColors.white
+          }}
+          horizontalAlign="space-between"
+        >
+          <StackItem align="center">
+            <DefaultButton onClick={() => this.onOpenDataSetModal()}>
+              Choose Data
+            </DefaultButton>
+            {dataSetName !== "" ? (
+              <p>
+                Chosen: <Text>{dataSetName}</Text>
+              </p>
+            ) : null}
+          </StackItem>
+          <StackItem>{this.renderApproach()}</StackItem>
+          <StackItem>{this.renderFlattening()}</StackItem>
+          <StackItem>{this.renderFlatteningParameters()}</StackItem>
+          <StackItem>{this.renderAnalysisAlgorithm()}</StackItem>
+          <StackItem>{this.renderAnalysisAlgorithmParameters()}</StackItem>
+          <StackItem align="center">
+            <PrimaryButton>Analyze</PrimaryButton>
+          </StackItem>
+        </Stack>
+      </Fragment>
     );
+  }
+
+  onOpenDataSetModal() {
+    this.props.openDataSetModal();
   }
 }
 
 const mapState = (state: RootState) => state.analysis;
 
-const mapDisptach = {};
+const mapDisptach = { updateAnalysisRequest, openDataSetModal };
 
 export default connect(mapState, mapDisptach)(AnalysisControls);

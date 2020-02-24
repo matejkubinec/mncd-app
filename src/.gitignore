@@ -354,3 +354,5 @@ MigrationBackup/
 
 # SQLite DB
 mncd.db
+mncd.db-shm
+mncd.db-wal

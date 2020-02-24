@@ -22,6 +22,9 @@ class AnalysisPage extends React.Component {
         <StackItem>
           <AnalysisControls />
         </StackItem>
+        <Stack.Item>
+          <div></div>
+        </Stack.Item>
       </Stack>
     );
   }

@@ -15,12 +15,13 @@ import {
   StackItem,
   Image
 } from "office-ui-fabric-react";
-import DataSetAdd from "./DataSetAdd";
 
 interface IProps {
   isLoading: boolean;
   items: DataSetRowViewModel[];
   fetchDataSetsList: Function;
+  onAddNetwork: Function;
+  onChooseDataSet: (item: DataSetRowViewModel) => void;
 }
 
 class DataSetList extends React.Component<IProps> {
@@ -34,17 +35,6 @@ class DataSetList extends React.Component<IProps> {
       isSorted: true,
       isSortedDescending: false,
       minWidth: 100
-    },
-    {
-      key: "image",
-      data: "string",
-      fieldName: "visualizationUrl",
-      name: "Image",
-      isRowHeader: true,
-      minWidth: 800,
-      onRender: (item: any) => {
-        return <Image src={item.visualizationUrl} height={200} />;
-      }
     },
     {
       key: "nodeCount",
@@ -71,8 +61,12 @@ class DataSetList extends React.Component<IProps> {
       key: "chooseNetwork",
       name: "",
       minWidth: 90,
-      onRender: (item: any) => {
-        return <DefaultButton>Choose</DefaultButton>;
+      onRender: (item: DataSetRowViewModel) => {
+        return (
+          <DefaultButton onClick={() => this.props.onChooseDataSet(item)}>
+            Choose
+          </DefaultButton>
+        );
       }
     }
   ];
@@ -106,7 +100,12 @@ class DataSetList extends React.Component<IProps> {
           <Separator />
           <Stack horizontalAlign="end">
             <StackItem>
-              <PrimaryButton color="primary">Add network</PrimaryButton>
+              <PrimaryButton
+                color="primary"
+                onClick={() => this.props.onAddNetwork()}
+              >
+                Add network
+              </PrimaryButton>
             </StackItem>
           </Stack>
         </Stack>

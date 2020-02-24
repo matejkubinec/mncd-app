@@ -9,9 +9,9 @@ export default class Home extends React.Component {
     return (
       <React.Fragment>
         <AnalysisPage />
-        <SessionList />
+        {/* <SessionList />
         <DataSetList />
-        <DataSetAdd />
+        <DataSetAdd /> */}
       </React.Fragment>
     );
   }

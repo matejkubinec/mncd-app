@@ -13,14 +13,17 @@ import {
   Spinner,
   SpinnerSize,
   MessageBar,
-  MessageBarType
+  MessageBarType,
+  IconButton
 } from "office-ui-fabric-react";
 import { RootState } from "../store";
 import { DataSetAddViewModel } from "../types";
 
 interface IProps extends DataSetsDetailState {
+  showBackLink: boolean;
   updateDataSetsDetailItem: ({}) => void;
   saveDataSet: (file: File) => void;
+  onBackLinkClick: Function;
 }
 
 interface IState {
@@ -112,40 +115,48 @@ class DataSetAdd extends React.Component<IProps, IState> {
     return (
       <div>
         <form onSubmit={() => {}}>
-          <Stack gap="10">
-            <h2>Network</h2>
-            <p>Supported formats: MPX</p>
-            {this.renderMessageBar(successMessage, errorMessage)}
-            <TextField
-              label="Name"
-              required
-              value={name}
-              onChange={e => this.onNameChange(e)}
-            ></TextField>
-            <DefaultButton
-              label="Network File"
-              iconProps={{ iconName: "Upload" }}
-              onClick={() => this.onFileChangeButtonClick()}
-            >
-              Choose file
-              <input
-                ref={this.fileInput}
-                onChange={() => this.onFileChange()}
-                type="file"
-                accept=".mpx"
-                style={{ display: "none" }}
+          <Stack>
+            <Stack horizontal>
+              <IconButton
+                iconProps={{ iconName: "Back" }}
+                onClick={() => this.props.onBackLinkClick()}
               />
-            </DefaultButton>
-            <PrimaryButton onClick={() => this.onSave()}>
-              {isSaving ? (
-                <Stack padding={5}>
-                  <Spinner size={SpinnerSize.xSmall} />
-                </Stack>
-              ) : (
-                <Fragment></Fragment>
-              )}
-              Save
-            </PrimaryButton>
+              <h2>Network</h2>
+            </Stack>
+            <Stack gap="10" padding="0 20px">
+              <p>Supported formats: MPX</p>
+              {this.renderMessageBar(successMessage, errorMessage)}
+              <TextField
+                label="Name"
+                required
+                value={name}
+                onChange={e => this.onNameChange(e)}
+              ></TextField>
+              <DefaultButton
+                label="Network File"
+                iconProps={{ iconName: "Upload" }}
+                onClick={() => this.onFileChangeButtonClick()}
+              >
+                Choose file
+                <input
+                  ref={this.fileInput}
+                  onChange={() => this.onFileChange()}
+                  type="file"
+                  accept=".mpx"
+                  style={{ display: "none" }}
+                />
+              </DefaultButton>
+              <PrimaryButton onClick={() => this.onSave()}>
+                {isSaving ? (
+                  <Stack padding={5}>
+                    <Spinner size={SpinnerSize.xSmall} />
+                  </Stack>
+                ) : (
+                  <Fragment></Fragment>
+                )}
+                Save
+              </PrimaryButton>
+            </Stack>
           </Stack>
         </form>
       </div>
