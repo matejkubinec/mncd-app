@@ -102,19 +102,11 @@ namespace MNCD.Web
         private void RegisterDbContext(IServiceCollection services)
         {
             var connectionString = GetConnectionString();
-            var serverVersion = new ServerVersion(new Version(5, 7, 9), ServerType.MySql);
-            services.AddDbContext<MNCDContext>(opt => opt.UseMySql(connectionString, opt => opt.ServerVersion(serverVersion).EnableRetryOnFailure()));
+            services.AddDbContext<MNCDContext>(opt => opt.UseSqlite(connectionString));
         }
 
         private string GetConnectionString()
         {
-            var connectionString = Environment.GetEnvironmentVariable("MYSQLCONNSTR_localdb");
-
-            if (connectionString != null)
-            {
-                return ConnectionStringParser.ParseToMySql(connectionString);
-            }
-
             return Configuration.GetConnectionString("DefaultConnection");
         }
 
