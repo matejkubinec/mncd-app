@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MNCD.Core;
 using MNCD.Domain.Entities;
+using MNCD.Evaluation;
 
 namespace MNCD.Services.AnalysisAlgorithms
 {
@@ -10,7 +11,7 @@ namespace MNCD.Services.AnalysisAlgorithms
     {
         private const string CommunityCountKey = "CommunityCount";
 
-        public static AnalysisResult Analyze(AnalysisRequest request, Network network)
+        public static AnalysisResult Analyze(AnalysisRequest request, Network network, Network multiLayer)
         {
             Validate(request, network);
 
@@ -18,22 +19,48 @@ namespace MNCD.Services.AnalysisAlgorithms
             var instance = new MNCD.CommunityDetection.Louvain();
             var hierarchy = instance.Compute(network);
 
-            var communities = hierarchy.FirstOrDefault(h => h.Count == communityCount).ToList();
+            var communities = hierarchy
+                .FirstOrDefault(h => h.Count == communityCount)
+                .Select(c => new MNCD.Core.Community(c.Value))
+                .ToList();
             var actorToIndex = GetActorToIndex(network);
             var actorToCommunity = InitActorToCommunity(network.Actors.Count);
             for (var i = 0; i < communities.Count; i++)
             {
                 var community = communities[i];
-                foreach (var actor in community.Value)
+                foreach (var actor in community.Actors)
                 {
                     var idx = actorToIndex[actor];
                     actorToCommunity[idx] = i;
                 }
             }
 
+            var varieties = communities.Select(c => Variety.Compute(c, multiLayer)).ToList();
+            var exclusivities = communities.Select(c =>
+            {
+                if (c.Actors.Count == 1)
+                {
+                    return 0.0;
+                }
+
+                return Exclusivity.Compute(c, multiLayer);
+            }).ToList();
+            var homogenities = communities.Select(c =>
+            {
+                if (c.Actors.Count == 1)
+                {
+                    return 0.0;
+                }
+
+                return Homogenity.Compute(c, multiLayer);
+            }).ToList();
+
             return new AnalysisResult
             {
-                ActorToCommunity = actorToCommunity
+                ActorToCommunity = actorToCommunity,
+                Varieties = varieties,
+                Exclusivities = exclusivities,
+                Homogenities = homogenities
             };
         }
 

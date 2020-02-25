@@ -47,6 +47,30 @@ namespace MNCD.Data
                     v => JsonConvert.SerializeObject(v),
                     v => JsonConvert.DeserializeObject<List<int>>(v)
                 );
+
+            builder
+                .Entity<AnalysisResult>()
+                .Property(e => e.Varieties)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<double>>(v)
+                );
+            
+            builder
+                .Entity<AnalysisResult>()
+                .Property(e => e.Exclusivities)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<double>>(v)
+                );
+
+            builder
+                .Entity<AnalysisResult>()
+                .Property(e => e.Homogenities)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<double>>(v)
+                );
         }
     }
 }

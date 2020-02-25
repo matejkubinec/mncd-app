@@ -1,8 +1,10 @@
 ﻿using MNCD.Data;
 using MNCD.Domain.Entities;
 using MNCD.Domain.Services;
+using Newtonsoft.Json;
 using System;
 using System.Net.Http;
+using System.Text;
 
 namespace MNCD.Services.Impl
 {
@@ -24,10 +26,16 @@ namespace MNCD.Services.Impl
                 throw new ArgumentException("EdgeList must not be empty or null.");
             }
 
-            var client = new HttpClient();
-            var content = new StringContent(edgeList);
-            var uri = _baseUrl + "multilayer/diagonal";
+            var body = new VisualisationRequest
+            {
+                EdgeList = edgeList
+            };
 
+            var client = new HttpClient();
+            var content = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+            var uri = _baseUrl + "multilayer/diagonal";
+            
+            return null;
             // TODO: switch to async
             var response = client.PostAsync(uri, content).Result;
 
@@ -51,6 +59,12 @@ namespace MNCD.Services.Impl
         public Visualization VisualiseSingleLayer(string edgeList, VisualizationType type)
         {
             throw new NotImplementedException();
+        }
+
+        private class VisualisationRequest
+        {
+            public string EdgeList { get; set; }
+            public string ActorCommunityList { get; set; }
         }
     }
 }

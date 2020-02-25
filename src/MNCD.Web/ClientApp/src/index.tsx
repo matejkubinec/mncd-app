@@ -17,7 +17,7 @@ import "./index.css";
 
 initializeIcons();
 
-Customizations.applySettings({ theme });
+// Customizations.applySettings({ theme });
 
 const baseUrl = document
   .getElementsByTagName("base")[0]

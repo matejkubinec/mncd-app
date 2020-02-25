@@ -149,7 +149,7 @@ namespace MNCD.Services.Impl
 
             if (request.AnalysisAlgorithm == AnalysisAlgorithm.Louvain)
             {
-                return Louvain.Analyze(request, network);
+                return Louvain.Analyze(request, networkToAnalyze, network);
             }
 
             throw new ArgumentException("Unsupported algorithm.");

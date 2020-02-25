@@ -46,7 +46,10 @@ namespace MNCD.Web
             using (var scope = app.ApplicationServices.CreateScope())
             {
                 var ctx = scope.ServiceProvider.GetService<MNCDContext>();
-                ctx.Database.EnsureCreated();
+                if (!ctx.Database.EnsureCreated())
+                {
+                    ctx.Database.Migrate();
+                }
             }
 
             if (env.IsDevelopment())
@@ -89,6 +92,8 @@ namespace MNCD.Web
                 cfg.AddProfile<DataSetRowViewModelProfile>();
                 cfg.AddProfile<SessionRowViewModelProfile>();
                 cfg.AddProfile<AnalysisRequestViewModelProfile>();
+                cfg.AddProfile<AnalysisResultViewModelProfile>();
+                cfg.AddProfile<AnalysisViewModelProfile>();
             });
             var mapper = mappingConfig.CreateMapper();
 

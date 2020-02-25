@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 
-namespace MNCD.Domain.Entities
+namespace MNCD.Web.Models.Analysis
 {
-    public class AnalysisResult
+    public class AnalysisResultViewModel
     {
         public int Id { get; set; }
-        public List<int> ActorToCommunity { get; set; }
+        public double AverageVariety { get; set; }
         public List<double> Varieties { get; set; }
+        public double AverageExclusivity { get; set; }
         public List<double> Exclusivities { get; set; }
+        public double AverageHomogenity { get; set; }
         public List<double> Homogenities { get; set; }
     }
 }
