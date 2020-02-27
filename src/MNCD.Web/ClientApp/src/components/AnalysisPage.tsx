@@ -19,11 +19,12 @@ class AnalysisPage extends React.Component {
   render() {
     return (
       <Stack>
-        <StackItem>
+        <StackItem >
           <AnalysisControls />
         </StackItem>
-        <Stack.Item>
-          <div></div>
+        <Stack.Item tokens={{ padding: 10 }}>
+          <div>
+          </div>
         </Stack.Item>
       </Stack>
     );

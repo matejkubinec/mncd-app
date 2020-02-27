@@ -27,13 +27,11 @@ const rootElement = document.getElementById("root");
 ReactDOM.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
-      <Fabric>
-        <BrowserRouter basename={baseUrl}>
-          <div style={{ backgroundColor: NeutralColors.gray20 }}>
-            <App />
-          </div>
-        </BrowserRouter>
-      </Fabric>
+      <BrowserRouter>
+        <Fabric className="mncd-content" style={{ backgroundColor: NeutralColors.gray20 }}>
+          <App />
+        </Fabric>
+      </BrowserRouter>
     </ConnectedRouter>
   </Provider>,
   rootElement

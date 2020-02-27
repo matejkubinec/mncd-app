@@ -8,10 +8,10 @@ export default class Home extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <AnalysisPage />
-        {/* <SessionList />
-        <DataSetList />
-        <DataSetAdd /> */}
+        {/* <AnalysisPage /> */}
+        <SessionList />
+        {/* <DataSetList /> */}
+        {/* <DataSetAdd /> */} */}
       </React.Fragment>
     );
   }

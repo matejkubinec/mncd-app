@@ -4,6 +4,7 @@ import {
   openAddModal,
   SessionListState
 } from "../slices/SessionSlice";
+import { push } from 'connected-react-router'
 import { RootState } from "../store";
 import { connect } from "react-redux";
 import {
@@ -15,14 +16,18 @@ import {
   DefaultButton,
   IColumn,
   SelectionMode,
-  DetailsList
+  DetailsList,
+  Text
 } from "office-ui-fabric-react";
 import SessionListAddModal from "./SessionListAddModal";
 import { SessionRowViewModel } from "../types";
+import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
+import { NeutralColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
 
 interface IProps extends SessionListState {
   fetchSessionsList: Function;
   openAddModal: Function;
+  push: typeof push;
 }
 
 class SessionList extends React.Component<IProps> {
@@ -33,8 +38,6 @@ class SessionList extends React.Component<IProps> {
       fieldName: "name",
       name: "Name",
       isRowHeader: true,
-      isSorted: true,
-      isSortedDescending: false,
       minWidth: 100
     },
     {
@@ -55,11 +58,15 @@ class SessionList extends React.Component<IProps> {
       minWidth: 150
     },
     {
-      key: "chooseNetwork",
+      key: "openSession",
       name: "",
       minWidth: 90,
-      onRender: (item: any) => {
-        return <DefaultButton>Choose</DefaultButton>;
+      isRowHeader: false,
+      onRender: (item: SessionRowViewModel) => {
+        const onClick = () => this.props.push(`/session/${item.guid}`);
+        return <DefaultButton onClick={onClick}>
+          Open
+        </DefaultButton>;
       }
     }
   ];
@@ -78,32 +85,42 @@ class SessionList extends React.Component<IProps> {
     this.props.openAddModal();
   }
 
-  render() {
-    const { items, isLoading } = this.props;
+  renderTable() {
+    if (this.props.isLoading) {
+      return <ProgressIndicator />;
+    }
 
+    if (this.props.items.length <= 0) {
+      return <Text>No sessions to display.</Text>;
+    }
+
+    return <DetailsList
+
+      items={this.props.items}
+      columns={this.columns}
+      selectionMode={SelectionMode.none}
+      isHeaderVisible={true}
+    />
+  }
+
+  render() {
     return (
-      <Stack>
-        <SessionListAddModal />
-        <h2>Sessions</h2>
-        <Separator></Separator>
-        <Stack>
-          {isLoading ? (
-            <ProgressIndicator />
-          ) : (
-            <DetailsList
-              items={items}
-              columns={this.columns}
-              selectionMode={SelectionMode.none}
-              isHeaderVisible={true}
-            />
-          )}
-          <Separator />
-          <Stack horizontalAlign="end">
-            <StackItem>
-              <PrimaryButton color="primary" onClick={this.onAddSession}>
-                Add session
+      <Stack tokens={{ padding: 50 }}>
+        <Stack
+          style={{ boxShadow: Depths.depth16, background: NeutralColors.white }}
+          tokens={{ padding: 25 }}>
+          <SessionListAddModal />
+          <h2>Sessions</h2>
+          <Separator></Separator>
+          <Stack>
+            {this.renderTable()}
+            <Stack horizontalAlign="end" tokens={{ padding: "25px 0 0 0" }}>
+              <StackItem>
+                <PrimaryButton color="primary" onClick={this.onAddSession}>
+                  Add session
               </PrimaryButton>
-            </StackItem>
+              </StackItem>
+            </Stack>
           </Stack>
         </Stack>
       </Stack>
@@ -113,6 +130,6 @@ class SessionList extends React.Component<IProps> {
 
 const mapState = (state: RootState) => state.session.list;
 
-const mapDispatch = { fetchSessionsList, openAddModal };
+const mapDispatch = { fetchSessionsList, openAddModal, push };
 
 export default connect(mapState, mapDispatch)(SessionList);

@@ -1,6 +1,7 @@
 import { connect } from "react-redux";
 import React, { Fragment } from "react";
 import { RootState } from "../store";
+import { push } from 'connected-react-router'
 import {
   Stack,
   StackItem,
@@ -12,7 +13,8 @@ import {
   Label,
   TextField,
   PrimaryButton,
-  Text
+  Text,
+  IconButton
 } from "office-ui-fabric-react";
 import {
   AnalysisApproach,
@@ -26,11 +28,14 @@ import {
 } from "../slices/AnalysisSlice";
 import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
 import AnalysisDataSetModal from "./AnalysisDataSetModal";
-import { NeutralColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
+import { NeutralColors, SharedColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
+import AnalysisControlsFlattening from "./AnalysisControlsFlattening";
+import AnalysisControlsAlgorithm from "./AnalysisControlsAlgorithm";
 
 interface IProps extends AnalysisState {
   updateAnalysisRequest: typeof updateAnalysisRequest;
   openDataSetModal: typeof openDataSetModal;
+  push: typeof push;
 }
 
 class AnalysisControls extends React.Component<IProps> {
@@ -42,7 +47,7 @@ class AnalysisControls extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
 
-    this.updateRequest.bind(this);
+    this.updateRequest = this.updateRequest.bind(this);
   }
 
   updateRequest(change: object) {
@@ -271,7 +276,7 @@ class AnalysisControls extends React.Component<IProps> {
         <AnalysisDataSetModal />
         <Stack
           horizontal
-          tokens={{ childrenGap: 15, padding: 5 }}
+          tokens={{ childrenGap: 15, padding: 15 }}
           style={{
             boxShadow: Depths.depth4,
             backgroundColor: NeutralColors.white
@@ -283,16 +288,18 @@ class AnalysisControls extends React.Component<IProps> {
               Choose Data
             </DefaultButton>
             {dataSetName !== "" ? (
-              <p>
-                Chosen: <Text>{dataSetName}</Text>
-              </p>
+              <div style={{ textAlign: "center" }}>
+                <strong>{dataSetName}</strong>
+              </div>
             ) : null}
           </StackItem>
           <StackItem>{this.renderApproach()}</StackItem>
-          <StackItem>{this.renderFlattening()}</StackItem>
-          <StackItem>{this.renderFlatteningParameters()}</StackItem>
-          <StackItem>{this.renderAnalysisAlgorithm()}</StackItem>
-          <StackItem>{this.renderAnalysisAlgorithmParameters()}</StackItem>
+          <StackItem>
+            <AnalysisControlsFlattening request={this.props.request} updateRequest={this.updateRequest} />
+          </StackItem>
+          <StackItem>
+            <AnalysisControlsAlgorithm request={this.props.request} updateRequest={this.updateRequest} />
+          </StackItem>
           <StackItem align="center">
             <PrimaryButton>Analyze</PrimaryButton>
           </StackItem>
@@ -308,6 +315,6 @@ class AnalysisControls extends React.Component<IProps> {
 
 const mapState = (state: RootState) => state.analysis;
 
-const mapDisptach = { updateAnalysisRequest, openDataSetModal };
+const mapDisptach = { updateAnalysisRequest, openDataSetModal, push };
 
 export default connect(mapState, mapDisptach)(AnalysisControls);

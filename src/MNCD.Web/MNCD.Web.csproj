@@ -34,6 +34,7 @@
     <None Remove="ClientApp\src\components\Home.ts" />
     <None Remove="ClientApp\src\components\Layout.ts" />
     <None Remove="ClientApp\src\components\NavMenu.ts" />
+    <None Remove="ClientApp\src\components\SessionPage.tsx" />
     <None Remove="ClientApp\src\index.ts" />
     <None Remove="ClientApp\src\registerServiceWorker.ts" />
     <None Remove="ClientApp\src\types\DataSetRowViewModel.ts" />
@@ -48,6 +49,7 @@
     <TypeScriptCompile Include="ClientApp\src\App.ts" />
     <TypeScriptCompile Include="ClientApp\src\components\Counter.ts" />
     <TypeScriptCompile Include="ClientApp\src\components\FetchData.ts" />
+    <TypeScriptCompile Include="ClientApp\src\components\SessionPage.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\Home.ts" />
     <TypeScriptCompile Include="ClientApp\src\components\Layout.ts" />
     <TypeScriptCompile Include="ClientApp\src\components\NavMenu.ts" />
