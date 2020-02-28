@@ -57,7 +57,11 @@ class AnalysisPage extends React.Component<IProps, IState>  {
             style={{ backgroundColor: NeutralColors.white, boxShadow: Depths.depth16 }}
             horizontalAlign="center"
           >
-            <IconButton iconProps={{ iconName }} style={{ width: "100%" }} onClick={this.onToggleControls} />
+            <IconButton
+              iconProps={{ iconName }}
+              style={{ width: "100%" }}
+              onClick={this.onToggleControls}
+            />
           </Stack>
         </Stack.Item>
         {showControls ?
