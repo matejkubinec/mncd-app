@@ -1,7 +1,7 @@
 import React from "react";
 import { Dictionary, AnalysisRequestViewModel, AnalysisApproach, FlattenningAlgorithm } from "../types"
 import {
-  Stack, StackItem, IDropdownOption, Dropdown, Toggle, TextField, Label
+  Stack, StackItem, IDropdownOption, Dropdown, Toggle, TextField, Label, IDropdownStyles, IStyleSet, IDetailsGroupRenderProps
 } from "office-ui-fabric-react";
 
 interface IProps {
@@ -44,6 +44,7 @@ export default class AnalysisControlsFlattening extends React.Component<IProps> 
     return (
       <Stack>
         <TextField
+          styles={{ fieldGroup: { width: 250 } }}
           label="Threshold"
           type="number"
           value={value}
@@ -97,7 +98,7 @@ export default class AnalysisControlsFlattening extends React.Component<IProps> 
         <Label>Flattening</Label>
       </StackItem>
       <StackItem>
-        <Dropdown options={this.options} selectedKey={flatteningAlgorithm} onChange={this.onChange} />
+        <Dropdown styles={{ dropdown: { width: 250 } }} options={this.options} selectedKey={flatteningAlgorithm} onChange={this.onChange} />
       </StackItem>
       <StackItem>
         {this.renderParameters()}

@@ -83,6 +83,7 @@ export default class AnalysisControlsAlgorithm extends React.Component<IProps> {
       </StackItem>
       <StackItem>
         <Dropdown
+          styles={{ dropdown: { minWidth: 315 } }}
           options={this.singleLayer}
           selectedKey={algorithm}
           onChange={this.onChange} />
