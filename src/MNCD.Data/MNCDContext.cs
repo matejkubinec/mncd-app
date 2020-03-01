@@ -13,6 +13,7 @@ namespace MNCD.Data
         public DbSet<Analysis> Analyses { get; set; }
         public DbSet<NetworkDataSet> DataSets { get; set; }
         public DbSet<NetworkInfo> NetworkInfos { get; set; }
+        public DbSet<Visualization> Visualizations { get; set; }
 
         public MNCDContext()
         {
@@ -55,7 +56,7 @@ namespace MNCD.Data
                     v => JsonConvert.SerializeObject(v),
                     v => JsonConvert.DeserializeObject<List<double>>(v)
                 );
-            
+
             builder
                 .Entity<AnalysisResult>()
                 .Property(e => e.Exclusivities)

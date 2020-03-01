@@ -35,14 +35,17 @@ export default class AnalysisControlsAlgorithm extends React.Component<IProps> {
     this.props.updateRequest({ analysisAlgorithm: option.key });
   }
 
+  onParametersChange(parameters: Dictionary<string>) {
+    this.props.updateRequest({ analysisAlgorithmParameters: parameters })
+  }
+
   renderLouvain(parameters: Dictionary<string>) {
     return null;
   }
 
   renderFluidC(parameters: Dictionary<string>) {
-    const maxIterations = parameters["maxIterations"] || "100";
     const k = parameters["k"] || "2";
-    const update = this.props.updateRequest;
+    const maxIterations = parameters["maxIterations"] || "100";
     return (
       <Stack horizontal tokens={{ childrenGap: 5 }}>
         <TextField
@@ -50,14 +53,14 @@ export default class AnalysisControlsAlgorithm extends React.Component<IProps> {
           type="number"
           description="Number of communities"
           value={k}
-          onChange={(_, k) => update({ ...parameters, k })}
+          onChange={(_, k) => this.onParametersChange({ ...parameters, k: k || "2" })}
         />
         <TextField
           label="Max Iterations"
           type="number"
           description="Number of iterations"
           value={maxIterations}
-          onChange={(_, maxIterations) => update({ ...parameters, maxIterations })}
+          onChange={(_, maxIterations) => this.onParametersChange({ ...parameters, maxIterations: maxIterations || "100" })}
         />
       </Stack>
     );

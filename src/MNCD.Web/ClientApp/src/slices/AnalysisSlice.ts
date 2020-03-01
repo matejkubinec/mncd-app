@@ -2,6 +2,7 @@ import axios from "../axios";
 import {
   AnalysisRequestViewModel,
   AnalysisApproach,
+  SessionRowViewModel,
   AnalysisAlgorithm,
   FlattenningAlgorithm,
   DataSetRowViewModel
@@ -10,19 +11,24 @@ import { createSlice, PayloadAction, Dispatch } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
 export type AnalysisState = {
+  isSessionLoading: boolean;
   request: AnalysisRequestViewModel;
+  session: SessionRowViewModel | null;
   dataSetName: string;
   isDataSetModalOpen: boolean;
   isAnalyzing: boolean;
 };
 
 const initialState: AnalysisState = {
+  isSessionLoading: false,
+  session: null,
   request: {
     id: 0,
+    sessionId: 0,
     datasetId: 0,
     selectedLayer: 0,
     approach: AnalysisApproach.SingleLayerFlattening,
-    analysisAlgorithm: AnalysisAlgorithm.Louvain,
+    analysisAlgorithm: AnalysisAlgorithm.FluidC,
     analysisAlgorithmParameters: {},
     flatteningAlgorithm: FlattenningAlgorithm.BasicFlattening,
     flatteningAlgorithmParameters: {}
@@ -36,6 +42,14 @@ const slice = createSlice({
   name: "analysis-state",
   initialState: initialState,
   reducers: {
+    fetchAnalysisSessionStart: state => {
+      state.isSessionLoading = true;
+    },
+    fetchAnalysisSessionSuccess: (state, action) => {
+      state.isSessionLoading = false;
+      state.request.sessionId = action.payload.id;
+      state.session = action.payload;
+    },
     updateAnalysisRequest: (state, action) => {
       if (state.request === action.payload["approach"]) {
         return;
@@ -72,12 +86,29 @@ const slice = createSlice({
 });
 
 export const {
+  fetchAnalysisSessionStart,
+  fetchAnalysisSessionSuccess,
   updateAnalysisRequest,
   updateAnalysisDataSet,
   openDataSetModal,
   analysisStart,
   analysisSuccess
 } = slice.actions;
+
+export const fetchAnalysisSession = (guid: string) => (
+  dispatch: Dispatch,
+  getState: () => RootState
+) => {
+  const state = getState();
+  const sessions = state.session.list.items;
+  const session = sessions.find(s => s.guid === guid);
+
+  if (session) {
+    dispatch(fetchAnalysisSessionSuccess(session));
+  }
+
+  console.log(session);
+}
 
 export const analyzeDataSet = () => (
   dispatch: Dispatch,
@@ -89,7 +120,7 @@ export const analyzeDataSet = () => (
   dispatch(analysisStart());
 
   axios
-    .post("/api/dataset", request)
+    .post("/api/analysis", request)
     .then(response => {
       const data = response.data;
       console.log(data);

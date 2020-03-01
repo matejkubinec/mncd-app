@@ -8,10 +8,10 @@ namespace MNCD.Tests.Services
 {
     public class VisualizationServiceTests
     {
-        private readonly VisualizationService _service = new VisualizationService("http://127.0.0.1:5000");
+        private readonly VisualizationService _service = new VisualizationService(null, "http://127.0.0.1:5000");
 
 
-        [Fact]
+        [Fact(Skip = "Local testing only")]
         public async Task VisualizeMultilayer()
         {
             var edgeList = "0 l1 1 l1 1\n1 l1 2 l2 1\n2 l1 0 l2 1";
@@ -28,7 +28,7 @@ namespace MNCD.Tests.Services
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Local testing only")]
         public async Task VisualizeMultilayerCommunities()
         {
             var edgeList = "0 l1 1 l1 1\n1 l1 2 l2 1\n2 l1 0 l2 1";
@@ -46,7 +46,7 @@ namespace MNCD.Tests.Services
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Local testing only")]
         public async Task VisualizeSingleLayerNetwork()
         {
             var edgeList = "0 1\n1 2\n2 0";
@@ -65,7 +65,7 @@ namespace MNCD.Tests.Services
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Local testing only")]
         public async Task VisualizeSingleLayerNetworkCommunities()
         {
             var edgeList = "0 1\n1 2\n2 0";
@@ -85,7 +85,7 @@ namespace MNCD.Tests.Services
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Local testing only")]
         public async Task VisualizeBarplot()
         {
             var x = new[] { 1, 2, 3, 4, 5 };
@@ -99,7 +99,7 @@ namespace MNCD.Tests.Services
             Assert.NotNull(visualization);
         }
 
-        [Fact]
+        [Fact(Skip = "Local testing only")]
         public async Task VisualizeTreemap()
         {
             var sizes = new[] { 1, 2, 3, 4, 5 };

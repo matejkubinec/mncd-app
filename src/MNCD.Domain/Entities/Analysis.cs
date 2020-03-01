@@ -16,5 +16,13 @@ namespace MNCD.Domain.Entities
 
         public Visualization CommunitiesBarplot { get; set; }
         public Visualization CommunitiesTreemap { get; set; }
+
+        public Analysis()
+        {
+            MultiLayer = new List<Visualization>();
+            MultiLayerCommunities = new List<Visualization>();
+            SingleLayer = new List<Visualization>();
+            SingleLayerCommunities = new List<Visualization>();
+        }
     }
 }

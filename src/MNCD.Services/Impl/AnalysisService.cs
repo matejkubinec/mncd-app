@@ -132,7 +132,7 @@ namespace MNCD.Services.Impl
 
                 foreach (var layout in singleLayerLayouts)
                 {
-                    analysis.SingleLayer.Add(await _visualization.VisualizeSingleLayerCommunity(edgeListAnalyzed, communityList, layout));
+                    analysis.SingleLayerCommunities.Add(await _visualization.VisualizeSingleLayerCommunity(edgeListAnalyzed, communityList, layout));
                 }
             }
 
@@ -143,7 +143,7 @@ namespace MNCD.Services.Impl
             var ylabel = "Number of nodes";
             analysis.CommunitiesBarplot = await _visualization.VisualizeBarplot(x, y, labels, xlabel, ylabel);
 
-            var sizes = communities;
+            var sizes = communitiesCount;
             var label = labels.Select((l, i) => l + '\n' + sizes.ElementAt(i));
             analysis.CommunitiesTreemap = await _visualization.VisualizeTreemap(sizes, label);
 

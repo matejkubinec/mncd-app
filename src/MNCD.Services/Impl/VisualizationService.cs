@@ -1,4 +1,5 @@
-﻿using MNCD.Domain.Entities;
+﻿using MNCD.Data;
+using MNCD.Domain.Entities;
 using MNCD.Domain.Services;
 using Newtonsoft.Json;
 using System;
@@ -12,11 +13,26 @@ namespace MNCD.Services.Impl
 {
     public class VisualizationService : IVisualizationService
     {
+        private readonly MNCDContext _ctx;
         private readonly string _baseUrl;
 
-        public VisualizationService(string baseUrl)
+        public VisualizationService(MNCDContext ctx, string baseUrl)
         {
+            _ctx = ctx;
             _baseUrl = baseUrl;
+        }
+
+        public async Task<Visualization> GetVisualization(int id)
+        {
+            var visualization = await _ctx.Visualizations.FindAsync(id);
+
+            if (visualization is null)
+            {
+                // TODO: custom exception
+                throw new ArgumentException($"Visualization with id '{id}' was not found.");
+            }
+
+            return visualization;
         }
 
         public async Task<Visualization> VisualizeMultilayer(string edgeList, MultiLayerLayout layout)

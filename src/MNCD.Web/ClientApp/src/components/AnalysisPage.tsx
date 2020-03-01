@@ -14,11 +14,19 @@ import {
 } from "office-ui-fabric-react";
 import { RootState } from "../store";
 import { DataSetAddViewModel, AnalysisRequestViewModel } from "../types";
+import { fetchAnalysisSession } from "../slices/AnalysisSlice";
 import AnalysisControls from "./AnalysisControls";
 import { NeutralColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
 import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
+import { RouteComponentProps } from "react-router";
 
-interface IProps { }
+interface MatchParams {
+  guid: string;
+}
+
+interface IProps extends RouteComponentProps<MatchParams> {
+  fetchAnalysisSession: Function;
+}
 
 interface IState {
   showControlsIconName: string;
@@ -36,6 +44,11 @@ class AnalysisPage extends React.Component<IProps, IState>  {
     }
 
     this.onToggleControls = this.onToggleControls.bind(this);
+  }
+
+  componentDidMount() {
+    const guid = this.props.match.params.guid;
+    this.props.fetchAnalysisSession(guid);
   }
 
   onToggleControls() {
@@ -78,6 +91,6 @@ class AnalysisPage extends React.Component<IProps, IState>  {
 
 const mapState = (state: RootState) => state.dataset.detail;
 
-const mapDisptach = {};
+const mapDisptach = { fetchAnalysisSession };
 
 export default connect(mapState, mapDisptach)(AnalysisPage);

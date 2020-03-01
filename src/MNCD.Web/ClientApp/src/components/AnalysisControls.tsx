@@ -15,9 +15,10 @@ import {
   AnalysisApproach,
 } from "../types";
 import {
-  AnalysisState,
+  analyzeDataSet,
   updateAnalysisRequest,
-  openDataSetModal
+  openDataSetModal,
+  AnalysisState
 } from "../slices/AnalysisSlice";
 import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
 import AnalysisDataSetModal from "./AnalysisDataSetModal";
@@ -28,19 +29,17 @@ import AnalysisControlsAlgorithm from "./AnalysisControlsAlgorithm";
 interface IProps extends AnalysisState {
   updateAnalysisRequest: typeof updateAnalysisRequest;
   openDataSetModal: typeof openDataSetModal;
+  analyzeDataSet: Function;
   push: typeof push;
 }
 
 class AnalysisControls extends React.Component<IProps> {
-  private singleLayerAlgorithms = [
-    AnalysisApproach.SingleLayerFlattening,
-    AnalysisApproach.SingleLayerOnly
-  ];
 
   constructor(props: IProps) {
     super(props);
 
     this.updateRequest = this.updateRequest.bind(this);
+    this.onAnalyzeDataSet = this.onAnalyzeDataSet.bind(this);
   }
 
   updateRequest(change: object) {
@@ -76,6 +75,14 @@ class AnalysisControls extends React.Component<IProps> {
     return (
       <ChoiceGroup label="Approach" options={options} onChange={onChange} />
     );
+  }
+
+  onOpenDataSetModal() {
+    this.props.openDataSetModal();
+  }
+
+  onAnalyzeDataSet() {
+    this.props.analyzeDataSet();
   }
 
   render() {
@@ -115,7 +122,7 @@ class AnalysisControls extends React.Component<IProps> {
           </StackItem>
           <Stack horizontalAlign="end">
             <StackItem>
-              <PrimaryButton>Analyze</PrimaryButton>
+              <PrimaryButton onClick={this.onAnalyzeDataSet}>Analyze</PrimaryButton>
             </StackItem>
           </Stack>
         </Stack>
@@ -123,13 +130,11 @@ class AnalysisControls extends React.Component<IProps> {
     );
   }
 
-  onOpenDataSetModal() {
-    this.props.openDataSetModal();
-  }
+
 }
 
 const mapState = (state: RootState) => state.analysis;
 
-const mapDisptach = { updateAnalysisRequest, openDataSetModal, push };
+const mapDisptach = { updateAnalysisRequest, openDataSetModal, push, analyzeDataSet };
 
 export default connect(mapState, mapDisptach)(AnalysisControls);

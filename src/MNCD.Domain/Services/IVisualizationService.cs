@@ -6,6 +6,8 @@ namespace MNCD.Domain.Services
 {
     public interface IVisualizationService
     {
+        Task<Visualization> GetVisualization(int id);
+
         Task<Visualization> VisualizeMultilayer(string edgeList, MultiLayerLayout layout);
         Task<Visualization> VisualizeMultilayerCommunities(string edgeList, string communityList, MultiLayerCommunitiesLayout layout);
 

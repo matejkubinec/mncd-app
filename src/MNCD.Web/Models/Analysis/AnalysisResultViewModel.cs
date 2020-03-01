@@ -5,6 +5,7 @@ namespace MNCD.Web.Models.Analysis
     public class AnalysisResultViewModel
     {
         public int Id { get; set; }
+        // TODO: change to nullabel
         public double AverageVariety { get; set; }
         public List<double> Varieties { get; set; }
         public double AverageExclusivity { get; set; }

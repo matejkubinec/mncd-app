@@ -47,6 +47,7 @@ export interface SessionRowViewModel {
 
 export interface AnalysisRequestViewModel {
   id: number;
+  sessionId: number;
   datasetId: number;
   selectedLayer: number;
   approach: AnalysisApproach;
@@ -56,4 +57,42 @@ export interface AnalysisRequestViewModel {
 
   flatteningAlgorithm: FlattenningAlgorithm;
   flatteningAlgorithmParameters: Dictionary<string>;
+}
+
+export interface AnalysisResultViewModel {
+  id: number;
+
+  averageVariety: number | null;
+  varieties: number[];
+
+  averageExclusivity: number | null;
+  exclusivities: number[];
+
+  averageHomogenity: number | null;
+  homogenities: number[];
+
+  coverage: number | null;
+  performance: number | null;
+}
+
+export interface AnalysisVisualizationItemViewModel {
+  title: string;
+  url: string;
+}
+
+export interface AnalysisVisualizationViewModel {
+  multiLayer: AnalysisVisualizationItemViewModel[];
+  multiLayerCommunities: AnalysisVisualizationItemViewModel[];
+
+  singleLayer: AnalysisVisualizationItemViewModel[];
+  singleLayerCommunities: AnalysisVisualizationItemViewModel[];
+
+  communitiesBarplot: AnalysisVisualizationItemViewModel;
+  communitiesTreemap: AnalysisVisualizationItemViewModel;
+}
+
+export interface AnalysisViewModel {
+  request: AnalysisRequestViewModel;
+  result: AnalysisResultViewModel;
+  visualization: AnalysisVisualizationViewModel;
 }
