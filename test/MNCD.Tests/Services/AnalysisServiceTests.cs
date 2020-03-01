@@ -21,7 +21,7 @@ namespace MNCD.Tests.Services
         {
             using (var ctx = SetupDB("GetAnalysisFound"))
             {
-                var service = new AnalysisService(ctx);
+                var service = new AnalysisService(ctx, null);
 
                 var analysis = service.GetAnalysis(1);
 
@@ -34,33 +34,34 @@ namespace MNCD.Tests.Services
         {
             using (var ctx = SetupDB("GetAnalysisNotFound"))
             {
-                var service = new AnalysisService(ctx);
+                var service = new AnalysisService(ctx, null);
 
                 Assert.Throws<ApplicationException>(() => service.GetAnalysis(2));
             }
         }
 
         [Fact]
-        public void ApplyLouvain()
+        public void ApplyFluidC()
         {
             using (var ctx = SetupDB("GetAnalysisNotFound"))
             {
-                var service = new AnalysisService(ctx);
+                var service = new AnalysisService(ctx, null);
                 var request = new AnalysisRequest()
                 {
                     CreateDate = new DateTime(2020, 12, 01),
                     Dataset = DataSetHelper.LouvainTest,
                     SelectedLayer = 0,
                     Approach = AnalysisApproach.SingleLayerOnly,
-                    AnalysisAlgorithm = AnalysisAlgorithm.Louvain,
+                    AnalysisAlgorithm = AnalysisAlgorithm.FluidC,
                     AnalysisAlgorithmParameters = new Dictionary<string, string>()
                     {
-                        { "CommunityCount", "2" }
+                        { "k", "2" },
+                        { "maxIterations", "100" },
                     },
                     FlattenningAlgorithm = FlattenningAlgorithm.BasicFlattening,
                     FlattenningAlgorithmParameters = new Dictionary<string, string>(),
                 };
-                var result = service.Analyze(1, request);
+                var result = service.Analyze(1, request, false);
             }
         }
 

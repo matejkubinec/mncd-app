@@ -11,5 +11,8 @@ namespace MNCD.Web.Models.Analysis
         public List<double> Exclusivities { get; set; }
         public double AverageHomogenity { get; set; }
         public List<double> Homogenities { get; set; }
+
+        public double? Coverage { get; set; }
+        public double? Performance { get; set; }
     }
 }

@@ -31,7 +31,7 @@ namespace MNCD.Web.Controllers
         {
             var request = _mapper.Map<AnalysisRequest>(model);
             request.Dataset = _dataSetService.GetDataSet(model.DatasetId);
-            var analysis = _analysisService.Analyze(model.SessionId, request);
+            var analysis = _analysisService.Analyze(model.SessionId, request, true);
             var response = _mapper.Map<AnalysisViewModel>(analysis);
             return new JsonResult(response);
         }

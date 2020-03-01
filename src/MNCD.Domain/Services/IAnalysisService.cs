@@ -9,7 +9,7 @@ namespace MNCD.Domain.Services
 
         Analysis GetAnalysis(int id);
 
-        Analysis Analyze(int sessionId, AnalysisRequest request);
+        Analysis Analyze(int sessionId, AnalysisRequest request, bool visualize);
 
         void RemoveFromSession(int sessionId, int analysisId);
     }

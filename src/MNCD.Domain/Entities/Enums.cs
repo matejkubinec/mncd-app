@@ -10,7 +10,8 @@ namespace MNCD.Domain.Entities
     public enum AnalysisAlgorithm
     {
         FluidC = 0,
-        Louvain = 1
+        Louvain = 1,
+        KClique = 2
     }
 
     public enum FlattenningAlgorithm
@@ -27,8 +28,32 @@ namespace MNCD.Domain.Entities
         EdgeList = 1
     }
 
+    // TODO: remove
+
     public enum VisualizationType
     {
-        Diagonal = 0
+    }
+
+    public enum MultiLayerLayout
+    {
+        Diagonal
+    }
+
+    public enum MultiLayerCommunitiesLayout
+    {
+        Hairball
+    }
+
+    public enum SingleLayerLayout
+    {
+        Spring,
+        Circular,
+        Spiral
+    }
+
+    public enum VisualizationCommonChart
+    {
+        Barplot,
+        Treemap
     }
 }

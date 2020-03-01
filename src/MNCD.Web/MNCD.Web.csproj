@@ -21,8 +21,12 @@
 
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Compile Remove="ClientApp\src\types\**" />
     <Content Remove="$(SpaRoot)**" />
+    <Content Remove="ClientApp\src\types\**" />
+    <EmbeddedResource Remove="ClientApp\src\types\**" />
     <None Remove="$(SpaRoot)**" />
+    <None Remove="ClientApp\src\types\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
@@ -37,25 +41,10 @@
     <None Remove="ClientApp\src\components\SessionPage.tsx" />
     <None Remove="ClientApp\src\index.ts" />
     <None Remove="ClientApp\src\registerServiceWorker.ts" />
-    <None Remove="ClientApp\src\types\DataSetRowViewModel.ts" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MNCD.Services\MNCD.Services.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <TypeScriptCompile Include="ClientApp\src\App.test.ts" />
-    <TypeScriptCompile Include="ClientApp\src\App.ts" />
-    <TypeScriptCompile Include="ClientApp\src\components\Counter.ts" />
-    <TypeScriptCompile Include="ClientApp\src\components\FetchData.ts" />
-    <TypeScriptCompile Include="ClientApp\src\components\SessionPage.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\components\Home.ts" />
-    <TypeScriptCompile Include="ClientApp\src\components\Layout.ts" />
-    <TypeScriptCompile Include="ClientApp\src\components\NavMenu.ts" />
-    <TypeScriptCompile Include="ClientApp\src\index.ts" />
-    <TypeScriptCompile Include="ClientApp\src\registerServiceWorker.ts" />
-    <TypeScriptCompile Include="ClientApp\src\types\DataSetRowViewModel.ts" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

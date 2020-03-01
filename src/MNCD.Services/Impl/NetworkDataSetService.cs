@@ -43,7 +43,7 @@ namespace MNCD.Services.Impl
             var info = GetNetworkInfo(content, fileType);
             var network = GetNetwork(content, fileType);
             var edgeList = GetEdgeList(network);
-            var visualization = GetVisualisation(edgeList, VisualizationType.Diagonal);
+            var visualization = GetVisualisation(edgeList);
 
             var dataSet = new NetworkDataSet
             {
@@ -141,9 +141,10 @@ namespace MNCD.Services.Impl
             return writer.ToString(network);
         }
 
-        private Visualization GetVisualisation(string edgeList, VisualizationType type)
+        private Visualization GetVisualisation(string edgeList)
         {
-            return _visualizationService.VisualiseMultilayer(edgeList, type);
+            return null;
+            // return _visualizationService.VisualiseMultilayer(edgeList, type);
         }
     }
 }
