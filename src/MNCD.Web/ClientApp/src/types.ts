@@ -96,3 +96,11 @@ export interface AnalysisViewModel {
   result: AnalysisResultViewModel;
   visualization: AnalysisVisualizationViewModel;
 }
+
+export interface AnalysisSessionViewModel {
+  id: number;
+  name: string;
+  guid: string;
+  createDate: Date;
+  analyses: AnalysisViewModel[];
+}

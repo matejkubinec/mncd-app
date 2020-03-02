@@ -1,22 +1,19 @@
-import React from "react";
-import { Stack, Image, IconButton } from "office-ui-fabric-react";
+import React, { Component } from "react";
+import { Stack } from "office-ui-fabric-react";
+import { AnalysisVisualizationViewModel } from "../../types";
 import { NeutralColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
 import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
 import ImageGallery from "../common/ImageGallery";
 
 interface IProps {
-  header: string;
-  titles: string[];
-  urls: string[];
+  visualization: AnalysisVisualizationViewModel;
 }
 
-interface IState {}
-
-export default class AnalysisNetworkVisualization extends React.Component<
-  IProps,
-  IState
-> {
+export default class CommunityCount extends Component<IProps> {
   render() {
+    const viz = this.props.visualization;
+    const urls = [viz.communitiesBarplot.url, viz.communitiesTreemap.url];
+
     return (
       <Stack
         tokens={{ padding: 10 }}
@@ -26,10 +23,10 @@ export default class AnalysisNetworkVisualization extends React.Component<
         }}
       >
         <Stack.Item>
-          <h2>{this.props.header}</h2>
+          <h2>Community Count Visualization</h2>
         </Stack.Item>
         <Stack.Item>
-          <ImageGallery titles={this.props.titles} urls={this.props.urls} />
+          <ImageGallery titles={["Barplot", "Treemap"]} urls={urls} />
         </Stack.Item>
       </Stack>
     );

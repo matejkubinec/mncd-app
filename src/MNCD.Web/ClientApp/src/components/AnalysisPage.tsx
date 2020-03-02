@@ -14,17 +14,18 @@ import {
 } from "office-ui-fabric-react";
 import { RootState } from "../store";
 import { DataSetAddViewModel, AnalysisRequestViewModel } from "../types";
-import { fetchAnalysisSession } from "../slices/AnalysisSlice";
+import { fetchAnalysisSession, AnalysisState } from "../slices/AnalysisSlice";
 import AnalysisControls from "./AnalysisControls";
 import { NeutralColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
 import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
 import { RouteComponentProps } from "react-router";
+import Analysis from "./Analysis";
 
 interface MatchParams {
   guid: string;
 }
 
-interface IProps extends RouteComponentProps<MatchParams> {
+interface IProps extends RouteComponentProps<MatchParams>, AnalysisState {
   fetchAnalysisSession: Function;
 }
 
@@ -33,15 +34,14 @@ interface IState {
   showControls: boolean;
 }
 
-class AnalysisPage extends React.Component<IProps, IState>  {
-
+class AnalysisPage extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
 
     this.state = {
       showControlsIconName: "ChevronUp",
       showControls: true
-    }
+    };
 
     this.onToggleControls = this.onToggleControls.bind(this);
   }
@@ -53,21 +53,32 @@ class AnalysisPage extends React.Component<IProps, IState>  {
 
   onToggleControls() {
     if (this.state.showControls) {
-      this.setState({ showControls: false, showControlsIconName: "ChevronDown" })
+      this.setState({
+        showControls: false,
+        showControlsIconName: "ChevronDown"
+      });
     } else {
-      this.setState({ showControls: true, showControlsIconName: "ChevronUp" })
+      this.setState({ showControls: true, showControlsIconName: "ChevronUp" });
     }
   }
 
   render() {
     const { showControlsIconName: iconName, showControls } = this.state;
+    const analysisSesion = this.props.session;
+    let analyses = new Array<any>();
+    if (analysisSesion) {
+      analyses = analysisSesion.analyses.map(a => <Analysis analysis={a} />);
+    }
 
     return (
       <Stack>
         <Stack.Item>
           <Stack
             horizontal
-            style={{ backgroundColor: NeutralColors.white, boxShadow: Depths.depth16 }}
+            style={{
+              backgroundColor: NeutralColors.white,
+              boxShadow: Depths.depth16
+            }}
             horizontalAlign="center"
           >
             <IconButton
@@ -77,19 +88,20 @@ class AnalysisPage extends React.Component<IProps, IState>  {
             />
           </Stack>
         </Stack.Item>
-        {showControls ?
+        {showControls ? (
           <StackItem>
             <AnalysisControls />
-          </StackItem> : null
-        }
+          </StackItem>
+        ) : null}
         <Stack.Item tokens={{ padding: 10 }}>
+          <Stack horizontal>{analyses}</Stack>
         </Stack.Item>
       </Stack>
     );
   }
 }
 
-const mapState = (state: RootState) => state.dataset.detail;
+const mapState = (state: RootState) => state.analysis;
 
 const mapDisptach = { fetchAnalysisSession };
 

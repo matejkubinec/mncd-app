@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using MNCD.Domain.Entities;
@@ -24,6 +25,16 @@ namespace MNCD.Web.Controllers
             _mapper = mapper;
             _analysisService = analysisService;
             _dataSetService = dataSetService;
+            _analysisSessionService = analysisSessionService;
+        }
+
+        [HttpGet]
+        [Route("{guid}")]
+        public async Task<IActionResult> GetAnalysisSesion(string guid)
+        {
+            var session = await _analysisSessionService.GetAnalysisSession(guid);
+            var viewModel = _mapper.Map<AnalysisSessionViewModel>(session);
+            return new JsonResult(viewModel);
         }
 
         [HttpPost]

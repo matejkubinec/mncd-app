@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using MNCD.Data;
 using MNCD.Domain.Entities;
 using MNCD.Domain.Services;
@@ -35,12 +37,28 @@ namespace MNCD.Services.Impl
             return session;
         }
 
-        public AnalysisSession GetAnalysisSession(string guid)
+        public async Task<AnalysisSession> GetAnalysisSession(string guid)
         {
-            // TODO: switch to async
-            var session = _ctx.AnalysisSessions.FirstOrDefault(a => a.Guid == guid);
+            var session = await _ctx.AnalysisSessions
+                .Include(a => a.Analyses)
+                .ThenInclude(a => a.Request)
+                .Include(a => a.Analyses)
+                .ThenInclude(a => a.Result)
+                .Include(a => a.Analyses)
+                .ThenInclude(a => a.MultiLayer)
+                .Include(a => a.Analyses)
+                .ThenInclude(a => a.MultiLayerCommunities)
+                .Include(a => a.Analyses)
+                .ThenInclude(a => a.SingleLayer)
+                .Include(a => a.Analyses)
+                .ThenInclude(a => a.SingleLayerCommunities)
+                .Include(a => a.Analyses)
+                .ThenInclude(a => a.CommunitiesBarplot)
+                .Include(a => a.Analyses)
+                .ThenInclude(a => a.CommunitiesTreemap)
+                .FirstOrDefaultAsync(a => a.Guid == guid);
 
-            if (session == null)
+            if (session is null)
             {
                 // TODO: custom exception
                 throw new ApplicationException("Session was not found.");

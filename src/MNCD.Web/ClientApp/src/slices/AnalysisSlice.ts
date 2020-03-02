@@ -5,7 +5,8 @@ import {
   SessionRowViewModel,
   AnalysisAlgorithm,
   FlattenningAlgorithm,
-  DataSetRowViewModel
+  DataSetRowViewModel,
+  AnalysisSessionViewModel
 } from "../types";
 import { createSlice, PayloadAction, Dispatch } from "@reduxjs/toolkit";
 import { RootState } from "../store";
@@ -13,7 +14,7 @@ import { RootState } from "../store";
 export type AnalysisState = {
   isSessionLoading: boolean;
   request: AnalysisRequestViewModel;
-  session: SessionRowViewModel | null;
+  session: AnalysisSessionViewModel | null;
   dataSetName: string;
   isDataSetModalOpen: boolean;
   isAnalyzing: boolean;
@@ -95,20 +96,15 @@ export const {
   analysisSuccess
 } = slice.actions;
 
-export const fetchAnalysisSession = (guid: string) => (
-  dispatch: Dispatch,
-  getState: () => RootState
-) => {
-  const state = getState();
-  const sessions = state.session.list.items;
-  const session = sessions.find(s => s.guid === guid);
+export const fetchAnalysisSession = (guid: string) => (dispatch: Dispatch) => {
+  dispatch(fetchAnalysisSessionStart());
 
-  if (session) {
-    dispatch(fetchAnalysisSessionSuccess(session));
-  }
-
-  console.log(session);
-}
+  axios.get("/api/analysis/" + guid).then(response => {
+    if (response.status === 200) {
+      dispatch(fetchAnalysisSessionSuccess(response.data));
+    }
+  });
+};
 
 export const analyzeDataSet = () => (
   dispatch: Dispatch,

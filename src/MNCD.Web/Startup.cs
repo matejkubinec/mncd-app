@@ -94,6 +94,7 @@ namespace MNCD.Web
                 cfg.AddProfile<AnalysisRequestViewModelProfile>();
                 cfg.AddProfile<AnalysisResultViewModelProfile>();
                 cfg.AddProfile<AnalysisViewModelProfile>();
+                cfg.AddProfile<AnalysisSessionViewModelProfile>();
             });
             var mapper = mappingConfig.CreateMapper();
 

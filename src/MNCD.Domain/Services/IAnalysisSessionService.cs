@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MNCD.Domain.Entities;
 
 namespace MNCD.Domain.Services
@@ -9,7 +10,7 @@ namespace MNCD.Domain.Services
 
         AnalysisSession GetAnalysisSession(int id);
 
-        AnalysisSession GetAnalysisSession(string guid);
+        Task<AnalysisSession> GetAnalysisSession(string guid);
 
         void AddAnalysisSession(string name);
 
