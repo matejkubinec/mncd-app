@@ -1,8 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using MNCD.Data;
 using MNCD.Domain.Entities;
 using MNCD.Domain.Services;
@@ -18,15 +18,16 @@ namespace MNCD.Services.Impl
             _ctx = ctx;
         }
 
-        public List<AnalysisSession> GetAnalysisSessions()
+        public async Task<List<AnalysisSession>> GetAnalysisSessions()
         {
-            return _ctx.AnalysisSessions.OrderBy(a => a.CreateDate).ToList();
+            return await _ctx.AnalysisSessions
+                .Include(a => a.Analyses)
+                .OrderBy(a => a.CreateDate).ToListAsync();
         }
 
-        public AnalysisSession GetAnalysisSession(int id)
+        public async Task<AnalysisSession> GetAnalysisSession(int id)
         {
-            // TODO: switch to async
-            var session = _ctx.AnalysisSessions.FirstOrDefault(a => a.Id == id);
+            var session = await _ctx.AnalysisSessions.FindAsync(id);
 
             if (session == null)
             {
@@ -67,7 +68,7 @@ namespace MNCD.Services.Impl
             return session;
         }
 
-        public void AddAnalysisSession(string name)
+        public async Task AddAnalysisSession(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -81,19 +82,18 @@ namespace MNCD.Services.Impl
                 CreateDate = DateTime.Now
             };
 
-            // TODO: change to async
-            _ctx.AnalysisSessions.Add(session);
-            _ctx.SaveChanges();
+            await _ctx.AnalysisSessions.AddAsync(session);
+            await _ctx.SaveChangesAsync();
         }
 
-        public void UpdateAnalysisSession(int id, string name)
+        public async Task UpdateAnalysisSession(int id, string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentException("Name cannot be empty.");
             }
 
-            var session = _ctx.AnalysisSessions.FirstOrDefault(a => a.Id == id);
+            var session = await _ctx.AnalysisSessions.FindAsync(id);
 
             if (session == null)
             {
@@ -103,13 +103,12 @@ namespace MNCD.Services.Impl
 
             session.Name = name;
 
-            // TODO: change to async
-            _ctx.SaveChanges();
+            await _ctx.SaveChangesAsync();
         }
 
-        public void RemoveAnalysisSession(int id)
+        public async Task RemoveAnalysisSession(int id)
         {
-            var session = _ctx.AnalysisSessions.FirstOrDefault(a => a.Id == id);
+            var session = await _ctx.AnalysisSessions.FindAsync(id);
 
             if (session == null)
             {
@@ -117,9 +116,8 @@ namespace MNCD.Services.Impl
                 throw new ApplicationException("Analysis session was not found.");
             }
 
-            // TODO: change to async
             _ctx.AnalysisSessions.Remove(session);
-            _ctx.SaveChanges();
+            await _ctx.SaveChangesAsync();
         }
     }
 }

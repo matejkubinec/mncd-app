@@ -67,7 +67,9 @@ class AnalysisPage extends React.Component<IProps, IState> {
     const analysisSesion = this.props.session;
     let analyses = new Array<any>();
     if (analysisSesion) {
-      analyses = analysisSesion.analyses.map(a => <Analysis analysis={a} />);
+      analyses = analysisSesion.analyses.map((a, i) => (
+        <Analysis key={i} analysis={a} />
+      ));
     }
 
     return (
@@ -93,8 +95,10 @@ class AnalysisPage extends React.Component<IProps, IState> {
             <AnalysisControls />
           </StackItem>
         ) : null}
-        <Stack.Item tokens={{ padding: 10 }}>
-          <Stack horizontal>{analyses}</Stack>
+        <Stack.Item tokens={{ padding: 20 }}>
+          <Stack horizontal tokens={{ padding: 20, childrenGap: 20 }}>
+            {analyses}
+          </Stack>
         </Stack.Item>
       </Stack>
     );

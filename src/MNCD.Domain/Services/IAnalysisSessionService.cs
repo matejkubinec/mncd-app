@@ -6,16 +6,16 @@ namespace MNCD.Domain.Services
 {
     public interface IAnalysisSessionService
     {
-        List<AnalysisSession> GetAnalysisSessions();
+        Task<List<AnalysisSession>> GetAnalysisSessions();
 
-        AnalysisSession GetAnalysisSession(int id);
+        Task<AnalysisSession> GetAnalysisSession(int id);
 
         Task<AnalysisSession> GetAnalysisSession(string guid);
 
-        void AddAnalysisSession(string name);
+        Task AddAnalysisSession(string name);
 
-        void UpdateAnalysisSession(int id, string name);
+        Task UpdateAnalysisSession(int id, string name);
 
-        void RemoveAnalysisSession(int id);
+        Task RemoveAnalysisSession(int id);
     }
 }

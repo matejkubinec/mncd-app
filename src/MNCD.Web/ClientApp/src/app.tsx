@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Route, Switch } from "react-router";
 import Home from "./components/Home";
-import SessionList from "./components/SessionList";
+import { SessionList } from "./components/session-list";
 import AnalysisPage from "./components/AnalysisPage";
 import Analysis from "./components/Analysis";
 

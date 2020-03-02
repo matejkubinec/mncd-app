@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using MNCD.Domain.Services;
-using MNCD.Web.Models.Analysis;
 using MNCD.Web.Models.Session;
 
 namespace MNCD.Web.Controllers
@@ -27,32 +27,42 @@ namespace MNCD.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllSessions()
+        public async Task<IActionResult> GetAllSessions()
         {
-            var sessions = _analysisSessionService.GetAnalysisSessions();
+            var sessions = await _analysisSessionService.GetAnalysisSessions();
             var response = _mapper.Map<List<SessionRowViewModel>>(sessions);
             return new JsonResult(response);
         }
 
         [HttpPost]
-        public IActionResult AddSession([FromBody]SessionAddViewModel model)
+        public async Task<IActionResult> AddSession(SessionAddEditViewModel model)
         {
             if (string.IsNullOrWhiteSpace(model.Name))
             {
-                return new BadRequestObjectResult("Name must note be empty.");
+                return new BadRequestObjectResult("Name must not be empty.");
             }
 
-            _analysisSessionService.AddAnalysisSession(model.Name);
+            await _analysisSessionService.AddAnalysisSession(model.Name);
 
             return new OkObjectResult("Analysis session created.");
         }
 
-        [Route("{id}/analyses")]
-        public IActionResult GetAnalyses(int id)
+        [HttpPatch]
+        public async Task<IActionResult> UpdateSession(SessionAddEditViewModel model)
         {
-            var analyses = _analysisService.GetAnalysesForSession(id);
-            var response = _mapper.Map<List<AnalysisRequestViewModel>>(analyses);
-            return new JsonResult(response);
+            if (string.IsNullOrWhiteSpace(model.Name))
+            {
+                return new BadRequestObjectResult("Name must not be empty.");
+            }
+
+            if (model.Id <= 0)
+            {
+                return new BadRequestObjectResult("Invalid session id.");
+            }
+
+            await _analysisSessionService.UpdateAnalysisSession(model.Id, model.Name);
+
+            return new OkObjectResult("Analysis session updated.");
         }
     }
 }

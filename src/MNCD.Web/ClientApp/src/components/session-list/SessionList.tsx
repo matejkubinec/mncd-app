@@ -1,11 +1,12 @@
 import React from "react";
+import SessionListAddEditDialog from "./SessionListAddEditDialog";
 import {
   fetchSessionsList,
-  openAddModal,
+  openAddEditDialog,
   SessionListState
-} from "../slices/SessionSlice";
-import { push } from 'connected-react-router'
-import { RootState } from "../store";
+} from "../../slices/SessionSlice";
+import { push } from "connected-react-router";
+import { RootState } from "../../store";
 import { connect } from "react-redux";
 import {
   Stack,
@@ -17,16 +18,16 @@ import {
   IColumn,
   SelectionMode,
   DetailsList,
-  Text
+  Text,
+  Icon
 } from "office-ui-fabric-react";
-import SessionListAddModal from "./SessionListAddModal";
-import { SessionRowViewModel } from "../types";
+import { SessionRowViewModel } from "../../types";
 import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
 import { NeutralColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
 
 interface IProps extends SessionListState {
   fetchSessionsList: Function;
-  openAddModal: Function;
+  openAddEditDialog: Function;
   push: typeof push;
 }
 
@@ -45,7 +46,7 @@ class SessionList extends React.Component<IProps> {
       data: "date",
       fieldName: "createDate",
       name: "Create Date",
-      minWidth: 150,
+      minWidth: 120,
       onRender(item: SessionRowViewModel) {
         return new Date(item.createDate).toLocaleString();
       }
@@ -55,18 +56,35 @@ class SessionList extends React.Component<IProps> {
       data: "number",
       fieldName: "analysesCount",
       name: "Analyses",
-      minWidth: 150
+      styles: { root: { textAlign: "right" } },
+      minWidth: 70
+    },
+    {
+      key: "editSession",
+      name: "",
+      minWidth: 80,
+      isRowHeader: false,
+      onRender: (item: SessionRowViewModel) => {
+        const onClick = () => this.props.openAddEditDialog(item);
+        return (
+          <DefaultButton iconProps={{ iconName: "Edit" }} onClick={onClick}>
+            Edit
+          </DefaultButton>
+        );
+      }
     },
     {
       key: "openSession",
       name: "",
-      minWidth: 90,
+      minWidth: 80,
       isRowHeader: false,
       onRender: (item: SessionRowViewModel) => {
         const onClick = () => this.props.push(`/session/${item.guid}`);
-        return <DefaultButton onClick={onClick}>
-          Open
-        </DefaultButton>;
+        return (
+          <DefaultButton iconProps={{ iconName: "Open" }} onClick={onClick}>
+            Open
+          </DefaultButton>
+        );
       }
     }
   ];
@@ -82,7 +100,7 @@ class SessionList extends React.Component<IProps> {
   }
 
   onAddSession() {
-    this.props.openAddModal();
+    this.props.openAddEditDialog();
   }
 
   renderTable() {
@@ -94,13 +112,14 @@ class SessionList extends React.Component<IProps> {
       return <Text>No sessions to display.</Text>;
     }
 
-    return <DetailsList
-
-      items={this.props.items}
-      columns={this.columns}
-      selectionMode={SelectionMode.none}
-      isHeaderVisible={true}
-    />
+    return (
+      <DetailsList
+        items={this.props.items}
+        columns={this.columns}
+        selectionMode={SelectionMode.none}
+        isHeaderVisible={true}
+      />
+    );
   }
 
   render() {
@@ -108,17 +127,22 @@ class SessionList extends React.Component<IProps> {
       <Stack tokens={{ padding: 50 }}>
         <Stack
           style={{ boxShadow: Depths.depth16, background: NeutralColors.white }}
-          tokens={{ padding: 25 }}>
-          <SessionListAddModal />
+          tokens={{ padding: 25 }}
+        >
+          <SessionListAddEditDialog />
           <h2>Sessions</h2>
           <Separator></Separator>
           <Stack>
             {this.renderTable()}
             <Stack horizontalAlign="end" tokens={{ padding: "25px 0 0 0" }}>
               <StackItem>
-                <PrimaryButton color="primary" onClick={this.onAddSession}>
+                <PrimaryButton
+                  iconProps={{ iconName: "Add" }}
+                  color="primary"
+                  onClick={this.onAddSession}
+                >
                   Add session
-              </PrimaryButton>
+                </PrimaryButton>
               </StackItem>
             </Stack>
           </Stack>
@@ -130,6 +154,6 @@ class SessionList extends React.Component<IProps> {
 
 const mapState = (state: RootState) => state.session.list;
 
-const mapDispatch = { fetchSessionsList, openAddModal, push };
+const mapDispatch = { fetchSessionsList, openAddEditDialog, push };
 
 export default connect(mapState, mapDispatch)(SessionList);
