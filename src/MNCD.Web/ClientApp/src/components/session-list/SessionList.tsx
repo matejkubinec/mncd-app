@@ -81,7 +81,7 @@ class SessionList extends React.Component<IProps> {
       onRender: (item: SessionRowViewModel) => {
         const onClick = () => this.props.push(`/session/${item.guid}`);
         return (
-          <DefaultButton iconProps={{ iconName: "Open" }} onClick={onClick}>
+          <DefaultButton iconProps={{ iconName: "Go" }} onClick={onClick}>
             Open
           </DefaultButton>
         );
