@@ -8,6 +8,12 @@ export type SessionListState = {
   items: SessionRowViewModel[];
 };
 
+export type SessionRemoveDialogState = {
+  isOpen: boolean;
+  isRemoving: boolean;
+  session: SessionRowViewModel;
+};
+
 export type SessionAddEditDialog = {
   isOpen: boolean;
   isSaving: boolean;
@@ -19,6 +25,7 @@ export type SessionAddEditDialog = {
 export type SessionState = {
   list: SessionListState;
   addEditDialog: SessionAddEditDialog;
+  removeDialog: SessionRemoveDialogState;
 };
 
 const initialState = {
@@ -32,7 +39,12 @@ const initialState = {
     isEditing: false,
     name: "",
     id: 0
-  }
+  },
+  removeDialog: {
+    isOpen: false,
+    isRemoving: false,
+    session: {}
+  } as SessionRemoveDialogState
 } as SessionState;
 
 const slice = createSlice({
@@ -45,6 +57,22 @@ const slice = createSlice({
     fetchSessionsListSuccess: (state, action) => {
       state.list.isLoading = false;
       state.list.items = action.payload;
+    },
+    openRemoveDialog: (state, action: PayloadAction<SessionRowViewModel>) => {
+      state.removeDialog.isOpen = true;
+      state.removeDialog.isRemoving = false;
+      state.removeDialog.session = action.payload;
+    },
+    removeSessionStart: state => {
+      state.removeDialog.isRemoving = true;
+    },
+    removeSessionSuccess: state => {
+      state.removeDialog.isRemoving = false;
+      state.removeDialog.isOpen = false;
+    },
+    closeRemoveDialog: state => {
+      state.removeDialog.isOpen = false;
+      state.removeDialog.isRemoving = false;
     },
     openAddEditDialog: (
       state,
@@ -78,8 +106,17 @@ const slice = createSlice({
 });
 
 export const {
+  // Remove Dialog
+  openRemoveDialog,
+  closeRemoveDialog,
+  removeSessionStart,
+  removeSessionSuccess,
+
+  // Sessions List
   fetchSessionsListStart,
   fetchSessionsListSuccess,
+
+  // Add/Edit Dialog
   openAddEditDialog,
   updateAddEditDialogName,
   closeAddEditDialog,
@@ -141,6 +178,29 @@ export const editSession = () => (
       const data = response.data;
       dispatch(saveSessionSuccess(data));
       dispatch(fetchSessionsList() as any);
+    })
+    .catch(reason => {
+      // TODO: handle error
+      console.log(reason);
+    });
+};
+
+export const removeSession = () => (
+  dispatch: Dispatch,
+  getState: () => RootState
+) => {
+  const state = getState();
+  const { id } = state.session.removeDialog.session;
+
+  dispatch(removeSessionStart());
+
+  axios
+    .delete("api/session/" + id)
+    .then(response => {
+      if (response.status === 200) {
+        dispatch(removeSessionSuccess());
+        dispatch(fetchSessionsList() as any);
+      }
     })
     .catch(reason => {
       // TODO: handle error

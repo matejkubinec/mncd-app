@@ -64,5 +64,19 @@ namespace MNCD.Web.Controllers
 
             return new OkObjectResult("Analysis session updated.");
         }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> DeleteSession(int id)
+        {
+            if (id <= 0)
+            {
+                return new BadRequestObjectResult("Invalid session id.");
+            }
+
+            await _analysisSessionService.RemoveAnalysisSession(id);
+
+            return new OkObjectResult("Analysis session removed.");
+        }
     }
 }

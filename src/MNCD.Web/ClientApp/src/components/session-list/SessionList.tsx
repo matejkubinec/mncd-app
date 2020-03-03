@@ -1,8 +1,8 @@
 import React from "react";
-import SessionListAddEditDialog from "./SessionListAddEditDialog";
 import {
   fetchSessionsList,
   openAddEditDialog,
+  openRemoveDialog,
   SessionListState
 } from "../../slices/SessionSlice";
 import { push } from "connected-react-router";
@@ -19,15 +19,18 @@ import {
   SelectionMode,
   DetailsList,
   Text,
-  Icon
+  IconButton,
+  Link
 } from "office-ui-fabric-react";
 import { SessionRowViewModel } from "../../types";
 import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
 import { NeutralColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
+import { SessionListRemoveDialog, SessionListAddEditDialog } from ".";
 
 interface IProps extends SessionListState {
   fetchSessionsList: Function;
   openAddEditDialog: Function;
+  openRemoveDialog: typeof openRemoveDialog;
   push: typeof push;
 }
 
@@ -62,28 +65,30 @@ class SessionList extends React.Component<IProps> {
     {
       key: "editSession",
       name: "",
-      minWidth: 80,
+      minWidth: 270,
       isRowHeader: false,
       onRender: (item: SessionRowViewModel) => {
-        const onClick = () => this.props.openAddEditDialog(item);
+        const onRemove = () => this.props.openRemoveDialog(item);
+        const onEdit = () => this.props.openAddEditDialog(item);
+        const onOpen = () => this.props.push(`/session/${item.guid}`);
         return (
-          <DefaultButton iconProps={{ iconName: "Edit" }} onClick={onClick}>
-            Edit
-          </DefaultButton>
-        );
-      }
-    },
-    {
-      key: "openSession",
-      name: "",
-      minWidth: 80,
-      isRowHeader: false,
-      onRender: (item: SessionRowViewModel) => {
-        const onClick = () => this.props.push(`/session/${item.guid}`);
-        return (
-          <DefaultButton iconProps={{ iconName: "Go" }} onClick={onClick}>
-            Open
-          </DefaultButton>
+          <Stack horizontal tokens={{ childrenGap: 5 }}>
+            <DefaultButton
+              iconProps={{ iconName: "Cancel" }}
+              onClick={onRemove}
+              text="Remove"
+            />
+            <DefaultButton
+              iconProps={{ iconName: "Edit" }}
+              onClick={onEdit}
+              text="Edit"
+            />
+            <DefaultButton
+              iconProps={{ iconName: "Go" }}
+              onClick={onOpen}
+              text="Open"
+            />
+          </Stack>
         );
       }
     }
@@ -130,6 +135,7 @@ class SessionList extends React.Component<IProps> {
           tokens={{ padding: 25 }}
         >
           <SessionListAddEditDialog />
+          <SessionListRemoveDialog />
           <h2>Sessions</h2>
           <Separator></Separator>
           <Stack>
@@ -154,6 +160,11 @@ class SessionList extends React.Component<IProps> {
 
 const mapState = (state: RootState) => state.session.list;
 
-const mapDispatch = { fetchSessionsList, openAddEditDialog, push };
+const mapDispatch = {
+  fetchSessionsList,
+  openAddEditDialog,
+  openRemoveDialog,
+  push
+};
 
 export default connect(mapState, mapDispatch)(SessionList);

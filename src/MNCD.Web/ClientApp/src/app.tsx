@@ -4,6 +4,7 @@ import Home from "./components/Home";
 import { SessionList } from "./components/session-list";
 import AnalysisPage from "./components/AnalysisPage";
 import Analysis from "./components/Analysis";
+import SessionListRemoveDialog from "./components/session-list/SessionListRemoveDialog";
 
 const testData = {
   request: {
@@ -92,7 +93,8 @@ export default class App extends Component {
         <Route exact path="/" component={SessionList} />
         <Route path="/session/:guid" component={AnalysisPage} />
         <Route path="/test">
-          <Analysis analysis={testData as any} />
+          <SessionListRemoveDialog />
+          {/* <Analysis analysis={testData as any} /> */}
         </Route>
       </Switch>
     );
