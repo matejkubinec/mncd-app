@@ -7,7 +7,7 @@ namespace MNCD.Domain.Entities
     {
         public int Id { get; set; }
         public DateTime CreateDate { get; set; }
-        public NetworkDataSet Dataset { get; set; }
+        public NetworkDataSet DataSet { get; set; }
         public int SelectedLayer { get; set; }
 
         public AnalysisApproach Approach { get; set; }

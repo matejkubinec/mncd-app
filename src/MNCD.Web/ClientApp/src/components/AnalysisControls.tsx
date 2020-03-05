@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import React, { Fragment } from "react";
 import { RootState } from "../store";
-import { push } from 'connected-react-router'
+import { push } from "connected-react-router";
 import {
   Stack,
   StackItem,
@@ -11,22 +11,28 @@ import {
   PrimaryButton,
   Separator
 } from "office-ui-fabric-react";
-import {
-  AnalysisApproach,
-} from "../types";
+import { AnalysisApproach, DataSetRowViewModel } from "../types";
+import { openDataSetsModal } from "../slices/DataSetSlice";
 import {
   analyzeDataSet,
   updateAnalysisRequest,
+  updateAnalysisDataSet,
   openDataSetModal,
   AnalysisState
 } from "../slices/AnalysisSlice";
 import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
-import AnalysisDataSetModal from "./AnalysisDataSetModal";
-import { NeutralColors, SharedColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
+// import AnalysisDataSetModal from "./AnalysisDataSetModal";
+import {
+  NeutralColors,
+  SharedColors
+} from "@uifabric/fluent-theme/lib/fluent/FluentColors";
 import AnalysisControlsFlattening from "./AnalysisControlsFlattening";
 import AnalysisControlsAlgorithm from "./AnalysisControlsAlgorithm";
+import { DataSetsModal } from "./dataset";
 
 interface IProps extends AnalysisState {
+  openDataSetsModal: () => void;
+  updateAnalysisDataSet: (dataSet: DataSetRowViewModel) => void;
   updateAnalysisRequest: typeof updateAnalysisRequest;
   openDataSetModal: typeof openDataSetModal;
   analyzeDataSet: Function;
@@ -34,12 +40,12 @@ interface IProps extends AnalysisState {
 }
 
 class AnalysisControls extends React.Component<IProps> {
-
   constructor(props: IProps) {
     super(props);
 
     this.updateRequest = this.updateRequest.bind(this);
     this.onAnalyzeDataSet = this.onAnalyzeDataSet.bind(this);
+    this.onDataSetChosen = this.onDataSetChosen.bind(this);
   }
 
   updateRequest(change: object) {
@@ -78,11 +84,15 @@ class AnalysisControls extends React.Component<IProps> {
   }
 
   onOpenDataSetModal() {
-    this.props.openDataSetModal();
+    this.props.openDataSetsModal();
   }
 
   onAnalyzeDataSet() {
     this.props.analyzeDataSet();
+  }
+
+  onDataSetChosen(dataSet: DataSetRowViewModel) {
+    this.props.updateAnalysisDataSet(dataSet);
   }
 
   render() {
@@ -90,7 +100,7 @@ class AnalysisControls extends React.Component<IProps> {
 
     return (
       <Fragment>
-        <AnalysisDataSetModal />
+        <DataSetsModal onDataSetChosen={this.onDataSetChosen} />
         <Stack
           tokens={{ padding: 15 }}
           style={{
@@ -98,11 +108,15 @@ class AnalysisControls extends React.Component<IProps> {
             backgroundColor: NeutralColors.white
           }}
         >
-          <Stack horizontal horizontalAlign="start" tokens={{ childrenGap: 25 }}>
+          <Stack
+            horizontal
+            horizontalAlign="start"
+            tokens={{ childrenGap: 25 }}
+          >
             <StackItem align="center">
               <DefaultButton onClick={() => this.onOpenDataSetModal()}>
                 Choose Data
-            </DefaultButton>
+              </DefaultButton>
               {dataSetName !== "" ? (
                 <div style={{ textAlign: "center" }}>
                   <strong>{dataSetName}</strong>
@@ -111,10 +125,16 @@ class AnalysisControls extends React.Component<IProps> {
             </StackItem>
             <StackItem>{this.renderApproach()}</StackItem>
             <StackItem>
-              <AnalysisControlsFlattening request={this.props.request} updateRequest={this.updateRequest} />
+              <AnalysisControlsFlattening
+                request={this.props.request}
+                updateRequest={this.updateRequest}
+              />
             </StackItem>
             <StackItem>
-              <AnalysisControlsAlgorithm request={this.props.request} updateRequest={this.updateRequest} />
+              <AnalysisControlsAlgorithm
+                request={this.props.request}
+                updateRequest={this.updateRequest}
+              />
             </StackItem>
           </Stack>
           <StackItem>
@@ -122,19 +142,26 @@ class AnalysisControls extends React.Component<IProps> {
           </StackItem>
           <Stack horizontalAlign="end">
             <StackItem>
-              <PrimaryButton onClick={this.onAnalyzeDataSet}>Analyze</PrimaryButton>
+              <PrimaryButton onClick={this.onAnalyzeDataSet}>
+                Analyze
+              </PrimaryButton>
             </StackItem>
           </Stack>
         </Stack>
       </Fragment>
     );
   }
-
-
 }
 
 const mapState = (state: RootState) => state.analysis;
 
-const mapDisptach = { updateAnalysisRequest, openDataSetModal, push, analyzeDataSet };
+const mapDisptach = {
+  openDataSetsModal,
+  updateAnalysisRequest,
+  updateAnalysisDataSet,
+  openDataSetModal,
+  push,
+  analyzeDataSet
+};
 
 export default connect(mapState, mapDisptach)(AnalysisControls);

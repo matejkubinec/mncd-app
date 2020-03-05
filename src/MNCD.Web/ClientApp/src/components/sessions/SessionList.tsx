@@ -18,9 +18,7 @@ import {
   IColumn,
   SelectionMode,
   DetailsList,
-  Text,
-  IconButton,
-  Link
+  Text
 } from "office-ui-fabric-react";
 import { SessionRowViewModel } from "../../types";
 import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";

@@ -1,10 +1,8 @@
 import React, { Component } from "react";
 import { Route, Switch } from "react-router";
-import Home from "./components/Home";
-import { SessionList } from "./components/session-list";
+import { SessionList } from "./components/sessions";
 import AnalysisPage from "./components/AnalysisPage";
-import Analysis from "./components/Analysis";
-import SessionListRemoveDialog from "./components/session-list/SessionListRemoveDialog";
+import { DataSetsModal } from "./components/dataset";
 
 const testData = {
   request: {
@@ -92,10 +90,6 @@ export default class App extends Component {
       <Switch>
         <Route exact path="/" component={SessionList} />
         <Route path="/session/:guid" component={AnalysisPage} />
-        <Route path="/test">
-          <SessionListRemoveDialog />
-          {/* <Analysis analysis={testData as any} /> */}
-        </Route>
       </Switch>
     );
   }

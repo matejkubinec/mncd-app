@@ -18,56 +18,54 @@ namespace MNCD.Services.Impl
     {
         private readonly MNCDContext _ctx;
         private readonly IVisualizationService _visualization;
+        private readonly INetworkDataSetService _dataSets;
+        private readonly IAnalysisSessionService _sessions;
 
-        public AnalysisService(MNCDContext ctx, IVisualizationService visualization)
+        public AnalysisService(
+            MNCDContext ctx,
+            IVisualizationService visualization,
+            INetworkDataSetService dataSets,
+            IAnalysisSessionService sessions)
         {
             _ctx = ctx;
             _visualization = visualization;
+            _dataSets = dataSets;
+            _sessions = sessions;
         }
 
-        public List<Analysis> GetAnalysesForSession(int sessionId)
+        public async Task<List<Analysis>> GetAnalysesForSession(int sessionId)
         {
-            // TODO: switch to async
-            var session = _ctx
+            var session = await _ctx
                 .AnalysisSessions
                 .Include(a => a.Analyses)
-                .FirstOrDefault(a => a.Id == sessionId);
+                .FirstOrDefaultAsync(a => a.Id == sessionId);
 
-            if (session == null)
+            if (session is null)
             {
-                throw new ApplicationException("Session was not found.");
+                throw new ArgumentException($"Session with id '{sessionId}' was not found.");
             }
 
             return session.Analyses?.ToList() ?? new List<Analysis>();
         }
 
-        public Analysis GetAnalysis(int id)
+        public async Task<Analysis> GetAnalysis(int id)
         {
-            // TODO: switch to async
-            var analysis = _ctx.Analyses.FirstOrDefault(a => a.Id == id);
+            var analysis = await _ctx.Analyses.FirstOrDefaultAsync(a => a.Id == id);
 
-            if (analysis == null)
+            if (analysis is null)
             {
-                throw new ApplicationException("Analysis was not found.");
+                throw new ArgumentException($"Analysis with id '{id}' was not found.");
             }
 
             return analysis;
         }
 
-        public Analysis Analyze(int sessionId, AnalysisRequest request, bool visualize)
+        public async Task<Analysis> Analyze(int sessionId, int dataSetId, AnalysisRequest request, bool visualize)
         {
-            var session = _ctx.AnalysisSessions.FirstOrDefault(a => a.Id == sessionId);
-            var dataSet = request.Dataset;
+            var session = await _sessions.GetAnalysisSession(sessionId).ConfigureAwait(false);
+            var dataSet = await _dataSets.GetDataSet(dataSetId).ConfigureAwait(false);
 
-            if (session == null)
-            {
-                throw new ArgumentException($"Session with id {sessionId} was not found.");
-            }
-
-            if (dataSet == null)
-            {
-                throw new ApplicationException("Dataset is required.");
-            }
+            request.DataSet = dataSet;
 
             var network = NetworkReaderHelper.ReadDataSet(dataSet);
             var result = AnalyzeNetwork(request, network);
@@ -92,18 +90,25 @@ namespace MNCD.Services.Impl
 
             if (visualize)
             {
-                analysis = AddVisualizations(analysis).GetAwaiter().GetResult();
+                try
+                {
+                    await AddVisualizations(analysis);
+                }
+                catch (Exception e)
+                {
+                    // TODO: handle
+                }
+
             }
 
-            // TODO: switch to async
-            _ctx.SaveChanges();
+            await _ctx.SaveChangesAsync();
 
             return analysis;
         }
 
-        private async Task<Analysis> AddVisualizations(Analysis analysis)
+        private async Task AddVisualizations(Analysis analysis)
         {
-            var edgeListMultiLayer = analysis.Request.Dataset.EdgeList;
+            var edgeListMultiLayer = analysis.Request.DataSet.EdgeList;
             var edgeListAnalyzed = analysis.Result.AnalyzedNetworkEdgeList;
             var communityList = string.Join('\n', analysis.Result.ActorToCommunity.Select((c, a) => a + " " + c));
             var actorToCommunity = analysis.Result.ActorToCommunity;
@@ -147,29 +152,23 @@ namespace MNCD.Services.Impl
             var label = labels.Select((l, i) => l + '\n' + sizes.ElementAt(i));
             analysis.CommunitiesTreemap = await _visualization.VisualizeTreemap(sizes, label);
 
-            return analysis;
+            await _ctx.SaveChangesAsync();
         }
 
-        public void RemoveFromSession(int sessionId, int analysisId)
+        public async Task RemoveFromSession(int sessionId, int analysisId)
         {
-            // TODO: switch to async
-            var session = _ctx
-                .AnalysisSessions
-                .Include(a => a.Analyses)
-                .FirstOrDefault(a => a.Id == sessionId);
+            var session = await _sessions.GetAnalysisSession(sessionId);
 
-            if (session == null)
-            {
-                throw new ApplicationException("Session was not found.");
-            }
-
-            // TODO: switch to async
             var analysis = session.Analyses.FirstOrDefault(a => a.Id == analysisId);
+
+            if (analysis is null)
+            {
+                throw new ArgumentException($"Analysis with id '{analysisId}' doesn't exist in sesion with id '{sessionId}'.");
+            }
 
             _ctx.Analyses.Remove(analysis);
 
-            // TODO: switch to async
-            _ctx.SaveChanges();
+            await _ctx.SaveChangesAsync();
         }
 
         private AnalysisResult AnalyzeNetwork(AnalysisRequest request, Network network)

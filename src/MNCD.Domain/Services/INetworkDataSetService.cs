@@ -1,18 +1,19 @@
 using MNCD.Domain.Entities;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MNCD.Domain.Services
 {
     public interface INetworkDataSetService
     {
-        IList<NetworkDataSet> GetDataSets();
+        Task<List<NetworkDataSet>> GetDataSets();
 
-        NetworkDataSet GetDataSet(int id);
+        Task<NetworkDataSet> GetDataSet(int id);
 
-        void AddDataSet(string name, string content, FileType fileType);
+        Task AddDataSet(string name, string content, FileType fileType);
 
-        void UpdateDataSet(int id, string name);
+        Task UpdateDataSet(int id, string name);
 
-        void DeleteDataSet(int id);
+        Task DeleteDataSet(int id);
     }
 }

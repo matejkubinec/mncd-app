@@ -1,16 +1,17 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MNCD.Domain.Entities;
 
 namespace MNCD.Domain.Services
 {
     public interface IAnalysisService
     {
-        List<Analysis> GetAnalysesForSession(int sessionId);
+        Task<List<Analysis>> GetAnalysesForSession(int sessionId);
 
-        Analysis GetAnalysis(int id);
+        Task<Analysis> GetAnalysis(int id);
 
-        Analysis Analyze(int sessionId, AnalysisRequest request, bool visualize);
+        Task<Analysis> Analyze(int sessionId, int dataSetId, AnalysisRequest request, bool visualize);
 
-        void RemoveFromSession(int sessionId, int analysisId);
+        Task RemoveFromSession(int sessionId, int analysisId);
     }
 }

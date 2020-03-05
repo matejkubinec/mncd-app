@@ -1,55 +1,75 @@
 import axios from "../axios";
-import { DataSetRowViewModel, DataSetAddViewModel } from "../types";
+import { DataSetRowViewModel, DataSetAddViewModel, FileType } from "../types";
 import { createSlice, Dispatch } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
-export type DataSetsDetailState = {
+export type DataSetsState = {
+  isOpen: boolean;
+  isLoading: boolean;
+  isAdding: boolean;
   isSaving: boolean;
-  item: DataSetAddViewModel;
-  successMessage: string;
-  errorMessage: string;
+  items: DataSetRowViewModel[];
+  itemToAdd: DataSetAddViewModel;
 };
 
 const initialState = {
-  list: {
-    isLoading: false,
-    items: [] as DataSetRowViewModel[]
-  },
-  detail: {
-    isSaving: false,
-    item: {} as DataSetAddViewModel,
-    successMessage: "",
-    errorMessage: ""
-  } as DataSetsDetailState
-};
+  isLoading: false,
+  isOpen: false,
+  isAdding: false,
+  isSaving: false,
+  items: [],
+  itemToAdd: {} as DataSetAddViewModel
+} as DataSetsState;
 
 const slice = createSlice({
   name: "data-set-slice",
   initialState: initialState,
   reducers: {
+    openDataSetsModal: state => {
+      state.isOpen = true;
+    },
+    closeDataSetsModal: state => {
+      state.isOpen = false;
+    },
     fetchDataSetsListStart: state => {
-      state.list.isLoading = true;
+      state.isLoading = true;
     },
     fetchDataSetsListSuccess: (state, action) => {
-      state.list.isLoading = false;
-      state.list.items = action.payload;
+      state.isLoading = false;
+      state.items = action.payload;
     },
-    updateDataSetsDetailItem: (state, action) => {
-      state.detail.item = { ...state.detail.item, ...action.payload };
+    openAddDataSetForm: state => {
+      state.isAdding = true;
+      state.itemToAdd = {
+        name: "",
+        format: FileType.MPX,
+        file: ""
+      };
+    },
+    updateItemToAdd: (state, action) => {
+      state.itemToAdd = { ...state.itemToAdd, ...action.payload };
+    },
+    closeAddDataSetForm: state => {
+      state.isAdding = false;
     },
     saveDataSetStart: state => {
-      state.detail.isSaving = true;
+      state.isSaving = true;
     },
     saveDataSetSuccess: (state, action) => {
-      state.detail.isSaving = false;
+      state.isSaving = false;
+      state.isAdding = false;
     }
   }
 });
 
 export const {
+  openDataSetsModal,
+  closeDataSetsModal,
   fetchDataSetsListStart,
   fetchDataSetsListSuccess,
-  updateDataSetsDetailItem,
+  openAddDataSetForm,
+  updateItemToAdd,
+  closeAddDataSetForm,
   saveDataSetStart,
   saveDataSetSuccess
 } = slice.actions;
@@ -73,10 +93,11 @@ export const saveDataSet = (file: File) => (
   getState: () => RootState
 ) => {
   const state = getState();
-  const { name } = state.dataset.detail.item;
+  const { name, format } = state.dataset.itemToAdd;
   const formData = new FormData();
   formData.append("file", file);
   formData.append("name", name);
+  formData.append("format", String(format));
 
   dispatch(saveDataSetStart());
 

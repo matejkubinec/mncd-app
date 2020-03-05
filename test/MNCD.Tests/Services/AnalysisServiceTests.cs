@@ -49,7 +49,7 @@ namespace MNCD.Tests.Services
                 var request = new AnalysisRequest()
                 {
                     CreateDate = new DateTime(2020, 12, 01),
-                    Dataset = DataSetHelper.LouvainTest,
+                    DataSet = DataSetHelper.LouvainTest,
                     SelectedLayer = 0,
                     Approach = AnalysisApproach.SingleLayerOnly,
                     AnalysisAlgorithm = AnalysisAlgorithm.FluidC,
@@ -78,7 +78,7 @@ namespace MNCD.Tests.Services
                 new AnalysisRequest
                 {
                     CreateDate = new DateTime(2020, 12, 01),
-                    Dataset = DataSetHelper.Florentine,
+                    DataSet = DataSetHelper.Florentine,
                     SelectedLayer = 0,
                     Approach = AnalysisApproach.SingleLayerFlattening,
                     AnalysisAlgorithm = AnalysisAlgorithm.Louvain,

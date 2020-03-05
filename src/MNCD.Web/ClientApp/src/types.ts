@@ -21,7 +21,8 @@ export enum FlattenningAlgorithm {
 }
 
 export enum FileType {
-  MPX = 0
+  MPX = 0,
+  EdgeList = 1
 }
 
 export interface DataSetRowViewModel {
@@ -34,7 +35,8 @@ export interface DataSetRowViewModel {
 
 export interface DataSetAddViewModel {
   name: string;
-  file: File;
+  file: string;
+  format: FileType;
 }
 
 export interface SessionRowViewModel {

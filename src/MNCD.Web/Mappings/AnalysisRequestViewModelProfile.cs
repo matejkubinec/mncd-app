@@ -11,7 +11,7 @@ namespace MNCD.Web.Mappings
             CreateMap<AnalysisRequest, AnalysisRequestViewModel>()
                 .ForMember(
                     dst => dst.DatasetId,
-                    opt => opt.MapFrom(src => src.Dataset.Id)
+                    opt => opt.MapFrom(src => src.DataSet.Id)
                 );
             CreateMap<AnalysisRequestViewModel, AnalysisRequest>();
         }

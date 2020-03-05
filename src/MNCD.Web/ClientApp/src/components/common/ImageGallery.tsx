@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { Stack, Image, IconButton, ImageFit } from "office-ui-fabric-react";
 
 interface IProps {

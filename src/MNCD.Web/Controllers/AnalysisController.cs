@@ -38,11 +38,10 @@ namespace MNCD.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Analyze([FromBody]AnalysisRequestViewModel model)
+        public async Task<IActionResult> Analyze([FromBody]AnalysisRequestViewModel model)
         {
             var request = _mapper.Map<AnalysisRequest>(model);
-            request.Dataset = _dataSetService.GetDataSet(model.DatasetId);
-            var analysis = _analysisService.Analyze(model.SessionId, request, true);
+            var analysis = await _analysisService.Analyze(model.SessionId, model.DatasetId, request, true);
             var response = _mapper.Map<AnalysisViewModel>(analysis);
             return new JsonResult(response);
         }
