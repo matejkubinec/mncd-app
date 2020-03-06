@@ -8,13 +8,23 @@ namespace MNCD.Tests.Services
 {
     public class VisualizationServiceTests
     {
-        private readonly VisualizationService _service = new VisualizationService(null, "http://127.0.0.1:5000");
+        private static string Url => "https://mncd-viz.azurewebsites.net/";
+        private readonly VisualizationService _service = new VisualizationService(null, Url);
 
-
-        [Fact(Skip = "Local testing only")]
+        [Fact]
         public async Task VisualizeMultilayer()
         {
-            var edgeList = "0 l1 1 l1 1\n1 l1 2 l2 1\n2 l1 0 l2 1";
+            var edgeList = string.Join('\n', new string[]
+            {
+                "0 0 1 1 1",
+                "# Actors",
+                "0 a0",
+                "1 a1",
+                "# Layers",
+                "0 l0",
+                "1 l1"
+            });
+
             var layouts = new List<MultiLayerLayout>
             {
                 MultiLayerLayout.Diagonal
@@ -23,16 +33,34 @@ namespace MNCD.Tests.Services
             foreach (var layout in layouts)
             {
                 var visualisation = await _service.VisualizeMultilayer(edgeList, layout);
-
                 Assert.NotNull(visualisation);
             }
         }
 
-        [Fact(Skip = "Local testing only")]
+        [Fact]
         public async Task VisualizeMultilayerCommunities()
         {
-            var edgeList = "0 l1 1 l1 1\n1 l1 2 l2 1\n2 l1 0 l2 1";
-            var communityList = "0 1\n1 1\n2 2";
+            var edgeList = string.Join('\n', new string[]
+            {
+                "0 0 1 1 1",
+                "# Actors",
+                "0 a0",
+                "1 a1",
+                "# Layers",
+                "0 l0",
+                "1 l1"
+            });
+            var communityList = string.Join('\n', new string[]
+            {
+                "0 0",
+                "1 1",
+                "# Actors",
+                "0 a0",
+                "1 a1",
+                "# Communities",
+                "0 c0",
+                "1 c1"
+            });
             var layouts = new List<MultiLayerCommunitiesLayout>
             {
                 MultiLayerCommunitiesLayout.Hairball
@@ -41,51 +69,78 @@ namespace MNCD.Tests.Services
             foreach (var layout in layouts)
             {
                 var visualisation = await _service.VisualizeMultilayerCommunities(edgeList, communityList, layout);
-
                 Assert.NotNull(visualisation);
             }
         }
 
-        [Fact(Skip = "Local testing only")]
+        [Fact]
         public async Task VisualizeSingleLayerNetwork()
         {
-            var edgeList = "0 1\n1 2\n2 0";
+            var edgeList = string.Join('\n', new string[]
+            {
+                "0 0 1 0 1",
+                "0 0 2 0 1",
+                "# Actors",
+                "0 a0",
+                "1 a1",
+                "1 a2",
+                "# Layers",
+                "0 l0",
+            });
             var layouts = new List<SingleLayerLayout>
             {
                 SingleLayerLayout.Circular,
                 SingleLayerLayout.Spiral,
                 SingleLayerLayout.Spring
             };
-
             foreach (var layout in layouts)
             {
                 var visualisation = await _service.VisualizeSingleLayer(edgeList, layout);
-
                 Assert.NotNull(visualisation);
             }
         }
 
-        [Fact(Skip = "Local testing only")]
+        [Fact]
         public async Task VisualizeSingleLayerNetworkCommunities()
         {
-            var edgeList = "0 1\n1 2\n2 0";
-            var communityList = "0 1\n1 1\n2 2";
+            var edgeList = string.Join('\n', new string[]
+            {
+                "0 0 1 0 1",
+                "0 0 2 0 1",
+                "# Actors",
+                "0 a0",
+                "1 a1",
+                "1 a2",
+                "# Layers",
+                "0 l0",
+            });
+            var communityList = string.Join('\n', new string[]
+            {
+                "0 0",
+                "1 1",
+                "2 1",
+                "# Actors",
+                "0 a0",
+                "1 a1",
+                "2 a2",
+                "# Communities",
+                "0 c0",
+                "1 c1"
+            });
             var layouts = new List<SingleLayerLayout>
             {
                 SingleLayerLayout.Circular,
                 SingleLayerLayout.Spiral,
                 SingleLayerLayout.Spring
             };
-
             foreach (var layout in layouts)
             {
                 var visualisation = await _service.VisualizeSingleLayerCommunity(edgeList, communityList, layout);
-
                 Assert.NotNull(visualisation);
             }
         }
 
-        [Fact(Skip = "Local testing only")]
+        [Fact]
         public async Task VisualizeBarplot()
         {
             var x = new[] { 1, 2, 3, 4, 5 };
@@ -99,14 +154,13 @@ namespace MNCD.Tests.Services
             Assert.NotNull(visualization);
         }
 
-        [Fact(Skip = "Local testing only")]
+        [Fact]
         public async Task VisualizeTreemap()
         {
             var sizes = new[] { 1, 2, 3, 4, 5 };
             var label = new[] { "a", "b", "c", "d", "e" };
 
             var visualization = await _service.VisualizeTreemap(sizes, label);
-
             Assert.NotNull(visualization);
         }
     }

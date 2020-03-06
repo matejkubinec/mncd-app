@@ -5,6 +5,7 @@ using MNCD.Services.Impl;
 using MNCD.Tests.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace MNCD.Tests.Services
@@ -13,56 +14,49 @@ namespace MNCD.Tests.Services
     {
         public AnalysisServiceTests()
         {
-
         }
 
         [Fact]
-        public void GetAnalysisFound()
+        public async Task GetAnalysisFound()
         {
-            using (var ctx = SetupDB("GetAnalysisFound"))
-            {
-                var service = new AnalysisService(ctx, null);
+            var analysis = await InitService("GetAnalysisFound").GetAnalysis(1);
 
-                var analysis = service.GetAnalysis(1);
-
-                Assert.NotNull(analysis);
-            }
+            Assert.NotNull(analysis);
         }
 
         [Fact]
-        public void GetAnalysisNotFound()
+        public async Task GetAnalysisNotFound()
         {
-            using (var ctx = SetupDB("GetAnalysisNotFound"))
-            {
-                var service = new AnalysisService(ctx, null);
-
-                Assert.Throws<ApplicationException>(() => service.GetAnalysis(2));
-            }
+            await Assert.ThrowsAsync<ArgumentException>(async () => await InitService("GetAnalysisNotFound").GetAnalysis(2));
         }
 
         [Fact]
-        public void ApplyFluidC()
+        public async Task ApplyFluidC()
         {
-            using (var ctx = SetupDB("GetAnalysisNotFound"))
+            var request = new AnalysisRequest()
             {
-                var service = new AnalysisService(ctx, null);
-                var request = new AnalysisRequest()
+                CreateDate = new DateTime(2020, 12, 01),
+                DataSet = DataSetHelper.LouvainTest,
+                SelectedLayer = 0,
+                Approach = AnalysisApproach.SingleLayerOnly,
+                AnalysisAlgorithm = AnalysisAlgorithm.FluidC,
+                AnalysisAlgorithmParameters = new Dictionary<string, string>()
                 {
-                    CreateDate = new DateTime(2020, 12, 01),
-                    DataSet = DataSetHelper.LouvainTest,
-                    SelectedLayer = 0,
-                    Approach = AnalysisApproach.SingleLayerOnly,
-                    AnalysisAlgorithm = AnalysisAlgorithm.FluidC,
-                    AnalysisAlgorithmParameters = new Dictionary<string, string>()
-                    {
-                        { "k", "2" },
-                        { "maxIterations", "100" },
-                    },
-                    FlattenningAlgorithm = FlattenningAlgorithm.BasicFlattening,
-                    FlattenningAlgorithmParameters = new Dictionary<string, string>(),
-                };
-                var result = service.Analyze(1, request, false);
-            }
+                    { "k", "2" },
+                    { "maxIterations", "100" },
+                },
+                FlattenningAlgorithm = FlattenningAlgorithm.BasicFlattening,
+                FlattenningAlgorithmParameters = new Dictionary<string, string>(),
+            };
+            var result = await InitService("ApplyFluidC").Analyze(1, 1, request, false);
+        }
+
+        private AnalysisService InitService(string dbName)
+        {
+            var ctx = SetupDB(dbName);
+            var data = new NetworkDataSetService(ctx, new HashService(), new ReaderService(), null);
+            var session = new AnalysisSessionService(ctx);
+            return new AnalysisService(ctx, null, data, session);
         }
 
         private MNCDContext SetupDB(string databaseName)
@@ -98,7 +92,7 @@ namespace MNCD.Tests.Services
 
             var session = new AnalysisSession
             {
-                Name = "LouvainSession"
+                Name = "AnalysisSession"
             };
 
             var options = new DbContextOptionsBuilder<MNCDContext>()
