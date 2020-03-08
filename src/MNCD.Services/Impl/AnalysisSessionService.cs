@@ -59,6 +59,7 @@ namespace MNCD.Services.Impl
                 .ThenInclude(a => a.CommunitiesTreemap)
                 .FirstOrDefaultAsync(a => a.Guid == guid);
 
+            
             if (session is null)
             {
                 // TODO: custom exception

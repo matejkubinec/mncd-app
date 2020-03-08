@@ -35,7 +35,7 @@ namespace MNCD.Data
 
             builder
                 .Entity<AnalysisRequest>()
-                .Property(e => e.FlattenningAlgorithmParameters)
+                .Property(e => e.FlatteningAlgorithmParameters)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
                     v => JsonConvert.DeserializeObject<Dictionary<string, string>>(v)
@@ -46,7 +46,7 @@ namespace MNCD.Data
                 .Property(e => e.ActorToCommunity)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<List<int>>(v)
+                    v => JsonConvert.DeserializeObject<Dictionary<int, int>>(v)
                 );
 
             builder
@@ -54,7 +54,7 @@ namespace MNCD.Data
                 .Property(e => e.Varieties)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<List<double>>(v)
+                    v => JsonConvert.DeserializeObject<List<double?>>(v)
                 );
 
             builder
@@ -62,7 +62,7 @@ namespace MNCD.Data
                 .Property(e => e.Exclusivities)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<List<double>>(v)
+                    v => JsonConvert.DeserializeObject<List<double?>>(v)
                 );
 
             builder
@@ -70,7 +70,7 @@ namespace MNCD.Data
                 .Property(e => e.Homogenities)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<List<double>>(v)
+                    v => JsonConvert.DeserializeObject<List<double?>>(v)
                 );
         }
     }

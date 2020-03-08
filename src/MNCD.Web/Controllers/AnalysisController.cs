@@ -41,7 +41,16 @@ namespace MNCD.Web.Controllers
         public async Task<IActionResult> Analyze([FromBody]AnalysisRequestViewModel model)
         {
             var request = _mapper.Map<AnalysisRequest>(model);
-            var analysis = await _analysisService.Analyze(model.SessionId, model.DatasetId, request, true);
+            var analysis = await _analysisService.Analyze(model.SessionId, model.DatasetId, request, false);
+            var response = _mapper.Map<AnalysisViewModel>(analysis);
+            return new JsonResult(response);
+        }
+
+        [HttpPost]
+        [Route("visualize/{id}")]
+        public async Task<IActionResult> Visualize(int id)
+        {
+            var analysis = await _analysisService.AddVisualizations(id);
             var response = _mapper.Map<AnalysisViewModel>(analysis);
             return new JsonResult(response);
         }

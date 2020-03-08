@@ -150,7 +150,6 @@ namespace MNCD.Tests.Services
             var ylabel = "foY";
 
             var visualization = await _service.VisualizeBarplot(x, y, labels, xlabel, ylabel);
-
             Assert.NotNull(visualization);
         }
 

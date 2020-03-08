@@ -75,6 +75,7 @@ export interface AnalysisResultViewModel {
 
   coverage: number | null;
   performance: number | null;
+  modularity: number | null;
 }
 
 export interface AnalysisVisualizationItemViewModel {
@@ -94,6 +95,7 @@ export interface AnalysisVisualizationViewModel {
 }
 
 export interface AnalysisViewModel {
+  id: number;
   request: AnalysisRequestViewModel;
   result: AnalysisResultViewModel;
   visualization: AnalysisVisualizationViewModel;

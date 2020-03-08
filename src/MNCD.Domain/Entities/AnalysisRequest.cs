@@ -14,7 +14,7 @@ namespace MNCD.Domain.Entities
         public AnalysisAlgorithm AnalysisAlgorithm { get; set; }
         public Dictionary<string, string> AnalysisAlgorithmParameters { get; set; }
 
-        public FlattenningAlgorithm FlattenningAlgorithm { get; set; }
-        public Dictionary<string, string> FlattenningAlgorithmParameters { get; set; }
+        public FlatteningAlgorithm FlatteningAlgorithm { get; set; }
+        public Dictionary<string, string> FlatteningAlgorithmParameters { get; set; }
     }
 }

@@ -103,7 +103,7 @@ class DataSetsModal extends React.Component<IProps, IState> {
         isOpen={this.props.isOpen}
         isBlocking={false}
         onDismiss={this.onDismiss}
-        styles={{ main: { overflow: "hidden" } }}
+        styles={{ main: { overflow: "hidden", minHeight: 350 } }}
       >
         <Stack horizontal>
           <Stack tokens={{ padding: "50px 20px" }}>

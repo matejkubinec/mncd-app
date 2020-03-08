@@ -12,6 +12,8 @@ namespace MNCD.Domain.Services
 
         Task<Analysis> Analyze(int sessionId, int dataSetId, AnalysisRequest request, bool visualize);
 
+        Task<Analysis> AddVisualizations(int id);
+
         Task RemoveFromSession(int sessionId, int analysisId);
     }
 }

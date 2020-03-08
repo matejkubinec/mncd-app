@@ -56,6 +56,10 @@ class DataSetsList extends React.Component<IProps, IState> {
   ];
 
   render() {
+    if (this.props.items.length === 0) {
+      return "No datasets to display.";
+    }
+
     return (
       <DetailsList
         items={this.props.items}

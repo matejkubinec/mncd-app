@@ -1,20 +1,42 @@
 import React from "react";
-import { Dictionary, AnalysisRequestViewModel, AnalysisApproach, FlattenningAlgorithm } from "../types"
 import {
-  Stack, StackItem, IDropdownOption, Dropdown, Toggle, TextField, Label, IDropdownStyles, IStyleSet, IDetailsGroupRenderProps
+  Dictionary,
+  AnalysisRequestViewModel,
+  AnalysisApproach,
+  FlattenningAlgorithm
+} from "../types";
+import {
+  Stack,
+  StackItem,
+  IDropdownOption,
+  Dropdown,
+  Toggle,
+  TextField,
+  Label,
+  IDropdownStyles,
+  IStyleSet,
+  IDetailsGroupRenderProps
 } from "office-ui-fabric-react";
 
 interface IProps {
-  request: AnalysisRequestViewModel,
-  updateRequest: (change: object) => void
+  request: AnalysisRequestViewModel;
+  updateRequest: (change: object) => void;
 }
 
-export default class AnalysisControlsFlattening extends React.Component<IProps> {
+export default class AnalysisControlsFlattening extends React.Component<
+  IProps
+> {
   private options: IDropdownOption[] = [
     { key: FlattenningAlgorithm.BasicFlattening, text: "Basic Flattening" },
-    { key: FlattenningAlgorithm.LocalSimplification, text: "Local Simplification" },
+    {
+      key: FlattenningAlgorithm.LocalSimplification,
+      text: "Local Simplification"
+    },
     { key: FlattenningAlgorithm.MergeFlattening, text: "Merge Flattening" },
-    { key: FlattenningAlgorithm.WeightedFlattening, text: "Weighted Flattening" },
+    {
+      key: FlattenningAlgorithm.WeightedFlattening,
+      text: "Weighted Flattening"
+    }
   ];
 
   constructor(props: IProps) {
@@ -51,7 +73,7 @@ export default class AnalysisControlsFlattening extends React.Component<IProps> 
           onChange={onChange}
         />
         TODO: local simplification layer relevances
-        </Stack>
+      </Stack>
     );
   }
 
@@ -93,16 +115,21 @@ export default class AnalysisControlsFlattening extends React.Component<IProps> 
       return null;
     }
 
-    return (<Stack>
-      <StackItem>
-        <Label>Flattening</Label>
-      </StackItem>
-      <StackItem>
-        <Dropdown styles={{ dropdown: { width: 250 } }} options={this.options} selectedKey={flatteningAlgorithm} onChange={this.onChange} />
-      </StackItem>
-      <StackItem>
-        {this.renderParameters()}
-      </StackItem>
-    </Stack>)
+    return (
+      <Stack>
+        <StackItem>
+          <Label>Flattening</Label>
+        </StackItem>
+        <StackItem>
+          <Dropdown
+            styles={{ dropdown: { width: 250 } }}
+            options={this.options}
+            selectedKey={flatteningAlgorithm}
+            onChange={this.onChange}
+          />
+        </StackItem>
+        <StackItem>{this.renderParameters()}</StackItem>
+      </Stack>
+    );
   }
 }

@@ -69,76 +69,86 @@ export default class AddDataSet extends React.Component<IProps, IState> {
     return true;
   }
 
+  handleSubmit = (e: React.FormEvent) => {
+    if (this.isValid()) {
+      this.props.onSave();
+    }
+    e.preventDefault();
+  };
+
   render() {
     return (
-      <Stack tokens={{ childrenGap: 10 }}>
-        <Stack.Item>
-          <h2>Add Dataset</h2>
-        </Stack.Item>
-        <Stack.Item>Supported formats</Stack.Item>
-        <Stack.Item>
-          <TextField
-            label="Name"
-            value={this.props.item.name}
-            onChange={this.onNameChange}
-            validateOnLoad={false}
-            validateOnFocusIn={false}
-            validateOnFocusOut={true}
-            onGetErrorMessage={this.onNameGetErrorMessage}
-          />
-        </Stack.Item>
-        <Stack.Item>
-          <Dropdown
-            label="Format"
-            selectedKey={this.props.item.format}
-            options={this.options}
-            onChange={this.onFormatChange}
-          />
-        </Stack.Item>
-        <Stack.Item>
-          <FileInput
-            text="Choose file"
-            accept="mpx,txt"
-            onFileChange={file => this.onFileChange(file)}
-            buttonProps={{
-              label: "Network File",
-              style: { width: "100%" },
-              iconProps: { iconName: "Upload" }
-            }}
-          />
-        </Stack.Item>
-        <Stack.Item>
-          <Stack
-            horizontal
-            tokens={{ childrenGap: 5 }}
-            horizontalAlign="space-between"
-          >
-            <Stack.Item styles={{ root: { width: "50%" } }}>
-              <DefaultButton
-                styles={{ root: { width: "100%" } }}
-                onClick={() => this.props.onCancel()}
-              >
-                Cancel
-              </DefaultButton>
-            </Stack.Item>
-            <Stack.Item styles={{ root: { width: "50%" } }}>
-              <PrimaryButton
-                disabled={!this.isValid()}
-                styles={{ root: { width: "100%" } }}
-                onClick={() => this.props.onSave()}
-              >
-                {this.props.isSaving ? (
-                  <Spinner
-                    style={{ marginRight: 10 }}
-                    size={SpinnerSize.small}
-                  />
-                ) : null}
-                Save
-              </PrimaryButton>
-            </Stack.Item>
-          </Stack>
-        </Stack.Item>
-      </Stack>
+      <form onSubmit={this.handleSubmit}>
+        <Stack tokens={{ childrenGap: 10 }}>
+          <Stack.Item>
+            <h2>Add Dataset</h2>
+          </Stack.Item>
+          <Stack.Item>Supported formats</Stack.Item>
+          <Stack.Item>
+            <TextField
+              label="Name"
+              value={this.props.item.name}
+              onChange={this.onNameChange}
+              validateOnLoad={false}
+              validateOnFocusIn={false}
+              validateOnFocusOut={true}
+              onGetErrorMessage={this.onNameGetErrorMessage}
+            />
+          </Stack.Item>
+          <Stack.Item>
+            <Dropdown
+              label="Format"
+              selectedKey={this.props.item.format}
+              options={this.options}
+              onChange={this.onFormatChange}
+            />
+          </Stack.Item>
+          <Stack.Item>
+            <FileInput
+              text="Choose file"
+              accept="mpx,txt"
+              onFileChange={file => this.onFileChange(file)}
+              buttonProps={{
+                label: "Network File",
+                style: { width: "100%" },
+                iconProps: { iconName: "Upload" }
+              }}
+            />
+          </Stack.Item>
+          <Stack.Item>{this.props.item.file}</Stack.Item>
+          <Stack.Item>
+            <Stack
+              horizontal
+              tokens={{ childrenGap: 5 }}
+              horizontalAlign="space-between"
+            >
+              <Stack.Item styles={{ root: { width: "50%" } }}>
+                <DefaultButton
+                  styles={{ root: { width: "100%" } }}
+                  onClick={() => this.props.onCancel()}
+                >
+                  Cancel
+                </DefaultButton>
+              </Stack.Item>
+              <Stack.Item styles={{ root: { width: "50%" } }}>
+                <PrimaryButton
+                  disabled={!this.isValid()}
+                  styles={{ root: { width: "100%" } }}
+                  onClick={() => this.props.onSave()}
+                >
+                  {this.props.isSaving ? (
+                    <Spinner
+                      style={{ marginRight: 10 }}
+                      size={SpinnerSize.small}
+                    />
+                  ) : null}
+                  Save
+                </PrimaryButton>
+              </Stack.Item>
+            </Stack>
+          </Stack.Item>
+        </Stack>
+      </form>
     );
   }
 }

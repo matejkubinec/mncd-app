@@ -17,7 +17,6 @@ import {
   analyzeDataSet,
   updateAnalysisRequest,
   updateAnalysisDataSet,
-  openDataSetModal,
   AnalysisState
 } from "../slices/AnalysisSlice";
 import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
@@ -34,7 +33,6 @@ interface IProps extends AnalysisState {
   openDataSetsModal: () => void;
   updateAnalysisDataSet: (dataSet: DataSetRowViewModel) => void;
   updateAnalysisRequest: typeof updateAnalysisRequest;
-  openDataSetModal: typeof openDataSetModal;
   analyzeDataSet: Function;
   push: typeof push;
 }
@@ -96,7 +94,7 @@ class AnalysisControls extends React.Component<IProps> {
   }
 
   render() {
-    const { dataSetName } = this.props;
+    const dataSetName = "";
 
     return (
       <Fragment>
@@ -159,7 +157,6 @@ const mapDisptach = {
   openDataSetsModal,
   updateAnalysisRequest,
   updateAnalysisDataSet,
-  openDataSetModal,
   push,
   analyzeDataSet
 };

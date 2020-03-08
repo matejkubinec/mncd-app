@@ -15,5 +15,6 @@ namespace MNCD.Web.Models.Analysis
 
         public double? Coverage { get; set; }
         public double? Performance { get; set; }
+        public double? Modularity { get; set; }
     }
 }

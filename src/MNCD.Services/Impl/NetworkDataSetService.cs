@@ -51,6 +51,7 @@ namespace MNCD.Services.Impl
             {
                 Name = name,
                 Content = content,
+                EdgeList = edgeList,
                 FileType = fileType,
                 Hash = hash,
                 Info = info,

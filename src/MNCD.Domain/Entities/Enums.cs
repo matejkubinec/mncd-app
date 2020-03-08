@@ -14,7 +14,7 @@ namespace MNCD.Domain.Entities
         KClique = 2
     }
 
-    public enum FlattenningAlgorithm
+    public enum FlatteningAlgorithm
     {
         BasicFlattening = 0,
         LocalSimplification = 1,

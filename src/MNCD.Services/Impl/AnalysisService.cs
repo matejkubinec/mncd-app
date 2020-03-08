@@ -8,9 +8,10 @@ using MNCD.Data;
 using MNCD.Domain.Entities;
 using MNCD.Domain.Extensions;
 using MNCD.Domain.Services;
-using MNCD.Services.AnalysisAlgorithms;
+using MNCD.Services.Algorithms;
+using MNCD.Services.Algorithms.Analysis;
+using MNCD.Services.Algorithms.Flattening;
 using MNCD.Services.Helpers;
-using Newtonsoft.Json;
 
 namespace MNCD.Services.Impl
 {
@@ -20,6 +21,20 @@ namespace MNCD.Services.Impl
         private readonly IVisualizationService _visualization;
         private readonly INetworkDataSetService _dataSets;
         private readonly IAnalysisSessionService _sessions;
+
+        private readonly Dictionary<FlatteningAlgorithm, IFlatteningAlgorithm> Flattening = new Dictionary<FlatteningAlgorithm, IFlatteningAlgorithm>
+        {
+            {  FlatteningAlgorithm.BasicFlattening, new BasicFlattening() },
+            {  FlatteningAlgorithm.LocalSimplification, new LocalSimplification() },
+            {  FlatteningAlgorithm.MergeFlattening, new MergeFlattening() },
+            {  FlatteningAlgorithm.WeightedFlattening, new WeightedFlattening() }
+        };
+
+        private readonly Dictionary<AnalysisAlgorithm, IAnalysisAlgorithm> Analysis = new Dictionary<AnalysisAlgorithm, IAnalysisAlgorithm>
+        {
+            { AnalysisAlgorithm.FluidC, new FluidCAnalysis() },
+            { AnalysisAlgorithm.Louvain, new LouvainAnalysis() }
+        };
 
         public AnalysisService(
             MNCDContext ctx,
@@ -67,7 +82,7 @@ namespace MNCD.Services.Impl
 
             request.DataSet = dataSet;
 
-            var network = NetworkReaderHelper.ReadDataSet(dataSet);
+            var network = GetNetworkToAnalyze(request);
             var result = AnalyzeNetwork(request, network);
 
             var analysis = new Analysis
@@ -90,15 +105,7 @@ namespace MNCD.Services.Impl
 
             if (visualize)
             {
-                try
-                {
-                    await AddVisualizations(analysis);
-                }
-                catch (Exception e)
-                {
-                    // TODO: handle
-                }
-
+                await AddVisualizations(analysis);
             }
 
             await _ctx.SaveChangesAsync();
@@ -106,35 +113,57 @@ namespace MNCD.Services.Impl
             return analysis;
         }
 
-        private async Task AddVisualizations(Analysis analysis)
+        public async Task<Analysis> AddVisualizations(int id)
+        {
+            var analysis = await _ctx.Analyses
+                .Include(a => a.Request)
+                .ThenInclude(r => r.DataSet)
+                .Include(a => a.Result)
+                .FirstOrDefaultAsync(a => a.Id == id);
+
+            if (analysis is null)
+            {
+                throw new ArgumentException($"Analysis with id '{id}' was not found.");
+            }
+
+            return await AddVisualizations(analysis);
+        }
+
+        public async Task<Analysis> AddVisualizations(Analysis analysis)
         {
             var edgeListMultiLayer = analysis.Request.DataSet.EdgeList;
             var edgeListAnalyzed = analysis.Result.AnalyzedNetworkEdgeList;
-            var communityList = string.Join('\n', analysis.Result.ActorToCommunity.Select((c, a) => a + " " + c));
+            var communityList = string.Join('\n', analysis.Result.ActorToCommunity.Select(c => c.Key + " " + c.Value));
             var actorToCommunity = analysis.Result.ActorToCommunity;
-            var communities = actorToCommunity.Distinct();
-            var communitiesCount = communities.Select(c => actorToCommunity.Count(ac => ac == c));
+            var communities = actorToCommunity.Values.Distinct();
+            var communitiesCount = actorToCommunity.GroupBy(c => c.Value).Select(c => c.Count());
+
 
             var multilayer = await _visualization.VisualizeMultilayer(edgeListMultiLayer, MultiLayerLayout.Diagonal);
+            analysis.MultiLayer.RemoveAll(m => true);
             analysis.MultiLayer.Add(multilayer);
 
+
             var multilayerCommunities = await _visualization.VisualizeMultilayerCommunities(edgeListMultiLayer, communityList, MultiLayerCommunitiesLayout.Hairball);
+            analysis.MultiLayerCommunities.RemoveAll(m => true);
             analysis.MultiLayerCommunities.Add(multilayerCommunities);
 
             if (analysis.Request.Approach.IsSingleLayerApproach())
             {
                 var singleLayerLayouts = new List<SingleLayerLayout>
                 {
-                    SingleLayerLayout.Circular,
+                    SingleLayerLayout.Spring,
                     SingleLayerLayout.Spiral,
-                    SingleLayerLayout.Spring
+                    SingleLayerLayout.Circular
                 };
 
+                analysis.SingleLayer.RemoveAll(s => true);
                 foreach (var layout in singleLayerLayouts)
                 {
                     analysis.SingleLayer.Add(await _visualization.VisualizeSingleLayer(edgeListAnalyzed, layout));
                 }
 
+                analysis.SingleLayerCommunities.RemoveAll(s => true);
                 foreach (var layout in singleLayerLayouts)
                 {
                     analysis.SingleLayerCommunities.Add(await _visualization.VisualizeSingleLayerCommunity(edgeListAnalyzed, communityList, layout));
@@ -153,6 +182,8 @@ namespace MNCD.Services.Impl
             analysis.CommunitiesTreemap = await _visualization.VisualizeTreemap(sizes, label);
 
             await _ctx.SaveChangesAsync();
+
+            return await GetAnalysis(analysis.Id);
         }
 
         public async Task RemoveFromSession(int sessionId, int analysisId)
@@ -171,61 +202,57 @@ namespace MNCD.Services.Impl
             await _ctx.SaveChangesAsync();
         }
 
-        private AnalysisResult AnalyzeNetwork(AnalysisRequest request, Network network)
+        private Network GetNetworkToAnalyze(AnalysisRequest request)
         {
+            var network = NetworkReaderHelper.ReadDataSet(request.DataSet);
+
             if (request.Approach == AnalysisApproach.SingleLayerOnly)
             {
-                return SingleLayerAnalysis(request, network);
+                // TODO: validation
+                var selected = request.SelectedLayer;
+                var layer = network.Layers[selected];
+                return new Network(layer, network.Actors);
             }
 
-            throw new ArgumentException("Unsupported approach.");
+            if (request.Approach == AnalysisApproach.SingleLayerFlattening)
+            {
+                return Flattening[request.FlatteningAlgorithm].Flatten(network, request.FlatteningAlgorithmParameters);
+            }
+
+            return network;
         }
 
-        private AnalysisResult SingleLayerAnalysis(AnalysisRequest request, Network network)
+        private AnalysisResult AnalyzeNetwork(AnalysisRequest request, Network network)
         {
-            ValidateSingleLayerAnalysis(request, network);
-
-            var selectedLayer = network.Layers[request.SelectedLayer];
-            var networkToAnalyze = new Network
+            if (request.Approach == AnalysisApproach.MultiLayer)
             {
-                Actors = network.Actors,
-                Layers = new List<Layer>
-                {
-                    selectedLayer
-                }
-            };
-
-            if (request.AnalysisAlgorithm == AnalysisAlgorithm.Louvain)
-            {
-                return Louvain.Analyze(request, networkToAnalyze, network);
+                // TODO: multi layer analysis
             }
 
-            if (request.AnalysisAlgorithm == AnalysisAlgorithm.FluidC)
-            {
-                return FluidC.Analyze(request, networkToAnalyze, network);
-            }
-
-            throw new ArgumentException(JsonConvert.SerializeObject(new[] { "Unsupported algorithm." }));
+            return Analysis[request.AnalysisAlgorithm].Analyze(network, request.AnalysisAlgorithmParameters);
         }
 
-        private void ValidateSingleLayerAnalysis(AnalysisRequest request, Network network)
-        {
-            var errors = new List<string>();
 
-            if (request.SelectedLayer > network.Layers.Count || request.SelectedLayer < 0)
-            {
-                errors.Add("Selected layer must be greater than zero and not greater than number of layers in data set.");
-            }
+        //private void ValidateSingleLayerAnalysis(AnalysisRequest request, Network network)
+        //{
+        //    var errors = new List<string>();
 
-            if (request.AnalysisAlgorithm.IsMultiLayer())
-            {
-                errors.Add("A algorithm for single layer networks must be used.");
-            }
+        //    if (request.SelectedLayer > network.Layers.Count || request.SelectedLayer < 0)
+        //    {
+        //        errors.Add("Selected layer must be greater than zero and not greater than number of layers in data set.");
+        //    }
 
-            if (errors.Count > 0)
-            {
-                throw new ArgumentException(JsonConvert.SerializeObject(errors));
-            }
-        }
+        //    if (request.AnalysisAlgorithm.IsMultiLayer())
+        //    {
+        //        errors.Add("A algorithm for single layer networks must be used.");
+        //    }
+
+        //    return errors;
+
+        //    if (errors.Count > 0)
+        //    {
+        //        throw new ArgumentException(JsonConvert.SerializeObject(errors));
+        //    }
+        //}
     }
 }

@@ -45,8 +45,8 @@ namespace MNCD.Tests.Services
                     { "k", "2" },
                     { "maxIterations", "100" },
                 },
-                FlattenningAlgorithm = FlattenningAlgorithm.BasicFlattening,
-                FlattenningAlgorithmParameters = new Dictionary<string, string>(),
+                FlatteningAlgorithm = FlatteningAlgorithm.BasicFlattening,
+                FlatteningAlgorithmParameters = new Dictionary<string, string>(),
             };
             var result = await InitService("ApplyFluidC").Analyze(1, 1, request, false);
         }
@@ -77,8 +77,8 @@ namespace MNCD.Tests.Services
                     Approach = AnalysisApproach.SingleLayerFlattening,
                     AnalysisAlgorithm = AnalysisAlgorithm.Louvain,
                     AnalysisAlgorithmParameters = new Dictionary<string, string>(),
-                    FlattenningAlgorithm = FlattenningAlgorithm.BasicFlattening,
-                    FlattenningAlgorithmParameters = new Dictionary<string, string>(),
+                    FlatteningAlgorithm = FlatteningAlgorithm.BasicFlattening,
+                    FlatteningAlgorithmParameters = new Dictionary<string, string>(),
                 }
             };
 
