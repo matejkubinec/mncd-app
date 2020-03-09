@@ -54,5 +54,13 @@ namespace MNCD.Web.Controllers
             var response = _mapper.Map<AnalysisViewModel>(analysis);
             return new JsonResult(response);
         }
+
+        [HttpPost]
+        [Route("{id}/toggle-visibility")]
+        public async Task<IActionResult> Toggle(int id)
+        {
+            await _analysisService.ToggleVisibility(id);
+            return new OkResult();
+        }
     }
 }

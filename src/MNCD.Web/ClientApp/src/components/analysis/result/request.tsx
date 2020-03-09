@@ -5,9 +5,14 @@ import {
   AnalysisAlgorithm,
   FlattenningAlgorithm
 } from "../../../types";
-import { Stack, Text } from "office-ui-fabric-react";
-import { NeutralColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
+import {
+  approachToString,
+  analysisToString,
+  flatteningToString
+} from "../../../utils";
+import { Stack, Text, getTheme } from "office-ui-fabric-react";
 import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
+const theme = getTheme();
 
 interface AnalysisRequestRow {
   name: string;
@@ -16,42 +21,21 @@ interface AnalysisRequestRow {
 
 interface IProps {
   request: AnalysisRequestViewModel;
+  showDepth: boolean;
+  showHeader: boolean;
 }
 
 export default class AnalysisRequest extends Component<IProps> {
   get flatteningAlgorithm(): string {
-    switch (this.props.request.flatteningAlgorithm) {
-      case FlattenningAlgorithm.BasicFlattening:
-        return "Basic Flattening";
-      case FlattenningAlgorithm.LocalSimplification:
-        return "Local Simplification";
-      case FlattenningAlgorithm.MergeFlattening:
-        return "Merge Flattening";
-      case FlattenningAlgorithm.WeightedFlattening:
-        return "Weighted Flattening";
-    }
+    return flatteningToString(this.props.request.flatteningAlgorithm);
   }
 
   get algorithm(): string {
-    switch (this.props.request.analysisAlgorithm) {
-      case AnalysisAlgorithm.FluidC:
-        return "FluidC";
-      case AnalysisAlgorithm.Louvain:
-        return "Louvain";
-    }
+    return analysisToString(this.props.request.analysisAlgorithm);
   }
 
   get approach(): string {
-    switch (this.props.request.approach) {
-      case AnalysisApproach.MultiLayer:
-        return "Multi Layer";
-      case AnalysisApproach.SingleLayerFlattening:
-        return "Single Layer - Flattening";
-      case AnalysisApproach.SingleLayerOnly:
-        return "Single Layer";
-      default:
-        return "";
-    }
+    return approachToString(this.props.request.approach);
   }
 
   getRows(): AnalysisRequestRow[] {
@@ -105,18 +89,13 @@ export default class AnalysisRequest extends Component<IProps> {
 
   render() {
     const rows = this.getRows();
-
     return (
-      <Stack
-        tokens={{ padding: 10, childrenGap: 5 }}
-        style={{
-          backgroundColor: NeutralColors.white,
-          boxShadow: Depths.depth4
-        }}
-      >
-        <Stack.Item>
-          <h2>Request</h2>
-        </Stack.Item>
+      <Stack tokens={{ padding: 10, childrenGap: 5 }}>
+        {this.props.showHeader ? (
+          <Stack.Item>
+            <h2>Request</h2>
+          </Stack.Item>
+        ) : null}
         {this.renderRows(rows)}
       </Stack>
     );

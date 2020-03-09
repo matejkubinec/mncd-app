@@ -5,9 +5,7 @@ import {
   AnalysisVisualizationItemViewModel
 } from "../../types";
 import { Stack } from "office-ui-fabric-react";
-import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
-import { Evaluation, CommunitiesSize, Request, Visualization } from "./result";
-import { NeutralColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
+import { Evaluation, Request, Visualization } from "./result";
 import { RootState } from "../../store";
 import { addVisualizations } from "../../slices/AnalysisSlice";
 
@@ -33,6 +31,23 @@ class AnalysisResultItem extends Component<IProps & ReduxProps, IState> {
     return viz ? viz.multiLayer.concat(viz.multiLayerCommunities) : [];
   }
 
+  renderCommunitySizesVisualization() {
+    const header = "Community Count Visualization";
+    const titles = ["Barplot", "Treemap"];
+    const viz = this.props.analysis.visualization;
+    const urls = viz
+      ? [viz.communitiesBarplot.url, viz.communitiesTreemap.url]
+      : [];
+    return (
+      <Visualization
+        header={header}
+        titles={titles}
+        urls={urls}
+        isLoading={this.props.visualizing}
+      />
+    );
+  }
+
   componentDidMount() {
     if (!this.props.visualizing && !this.props.analysis.visualization) {
       this.props.addVisualizations(this.props.analysis);
@@ -45,21 +60,49 @@ class AnalysisResultItem extends Component<IProps & ReduxProps, IState> {
     const singleLayerViz = this.getSingleLayerViz();
     const singleLayerCommunitiesViz = this.getSingleLayerCommuntiesViz();
 
+    const itemStyles = {
+      root: {
+        border: "1px solid " + this.props.theme.palette.whiteTranslucent40,
+        borderRadius: this.props.theme.effects.roundedCorner2,
+        boxShadow: this.props.theme.effects.elevation4,
+        backgroundColor: this.props.theme.palette.white
+      }
+    };
+
+    const headerStyle = {
+      root: {
+        padding: 10,
+        border: "1px solid " + this.props.theme.palette.whiteTranslucent40,
+        borderRadius: this.props.theme.effects.roundedCorner2,
+        boxShadow: this.props.theme.effects.elevation4,
+        backgroundColor: this.props.theme.palette.accent,
+        color: this.props.theme.palette.white,
+        textAlign: "center"
+      }
+    };
+
     return (
       <Stack
         tokens={{ padding: 10, childrenGap: 15 }}
         style={{
-          boxShadow: Depths.depth16,
-          backgroundColor: NeutralColors.gray10
+          boxShadow: this.props.theme.effects.elevation16,
+          backgroundColor: this.props.theme.palette.neutralLighterAlt
         }}
       >
-        <Stack.Item>
-          <Request request={analysis.request} />
+        <Stack.Item styles={headerStyle}>
+          <h2>Analysis {analysis.id}</h2>
         </Stack.Item>
-        <Stack.Item>
+        <Stack.Item styles={itemStyles}>
+          <Request
+            request={analysis.request}
+            showHeader={true}
+            showDepth={true}
+          />
+        </Stack.Item>
+        <Stack.Item styles={itemStyles}>
           <Evaluation result={analysis.result} />
         </Stack.Item>
-        <Stack.Item>
+        <Stack.Item styles={itemStyles}>
           <Visualization
             header="Multi Layer Visualization"
             titles={multiLayerViz.map(v => v.title)}
@@ -67,7 +110,7 @@ class AnalysisResultItem extends Component<IProps & ReduxProps, IState> {
             isLoading={this.props.visualizing}
           />
         </Stack.Item>
-        <Stack.Item>
+        <Stack.Item styles={itemStyles}>
           <Visualization
             header="Single Layer Visualization"
             titles={singleLayerViz.map(v => v.title)}
@@ -75,7 +118,7 @@ class AnalysisResultItem extends Component<IProps & ReduxProps, IState> {
             isLoading={this.props.visualizing}
           />
         </Stack.Item>
-        <Stack.Item>
+        <Stack.Item styles={itemStyles}>
           <Visualization
             header="Single Layer Communities Visualization"
             titles={singleLayerCommunitiesViz.map(v => v.title)}
@@ -83,8 +126,8 @@ class AnalysisResultItem extends Component<IProps & ReduxProps, IState> {
             isLoading={this.props.visualizing}
           />
         </Stack.Item>
-        <Stack.Item>
-          <CommunitiesSize visualization={analysis.visualization} />
+        <Stack.Item styles={itemStyles}>
+          {this.renderCommunitySizesVisualization()}
         </Stack.Item>
       </Stack>
     );
@@ -95,6 +138,7 @@ const mapProps = (rootState: RootState, props: IProps) => {
   const { analysis } = props;
   const { visualizing } = rootState.analysis;
   return {
+    theme: rootState.theme.current,
     visualizing: !!visualizing[analysis.id]
   };
 };

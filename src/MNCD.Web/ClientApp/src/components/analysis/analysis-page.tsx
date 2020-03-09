@@ -10,7 +10,7 @@ interface MatchParams {
   guid: string;
 }
 
-interface IProps extends RouteComponentProps<MatchParams>, ReduxProps {}
+interface IProps extends RouteComponentProps<MatchParams>, ReduxProps { }
 
 class AnalysisPage extends React.Component<IProps> {
   componentDidMount() {
@@ -24,9 +24,7 @@ class AnalysisPage extends React.Component<IProps> {
         <Stack.Item>
           <AnalysisPageHeader />
         </Stack.Item>
-        <Stack.Item>
-          <AnalysisControls />
-        </Stack.Item>
+        <AnalysisControls />
         <Stack.Item>
           <AnalysisResult />
         </Stack.Item>

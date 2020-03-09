@@ -28,31 +28,13 @@ namespace MNCD.Domain.Entities
         EdgeList = 1
     }
 
-    // TODO: remove
-
     public enum VisualizationType
     {
-    }
-
-    public enum MultiLayerLayout
-    {
-        Diagonal
-    }
-
-    public enum MultiLayerCommunitiesLayout
-    {
-        Hairball
-    }
-
-    public enum SingleLayerLayout
-    {
-        Spring,
-        Circular,
-        Spiral
-    }
-
-    public enum VisualizationCommonChart
-    {
+        MultiLayerDiagonal,
+        MultiLayerHairball,
+        SingleLayerLayoutSpring,
+        SingleLayerLayoutCircular,
+        SingleLayerLayoutSpiral,
         Barplot,
         Treemap
     }

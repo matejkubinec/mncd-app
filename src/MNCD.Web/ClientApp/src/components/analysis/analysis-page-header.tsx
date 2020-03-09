@@ -1,9 +1,8 @@
 import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../store";
-import { Stack, IconButton, getTheme } from "office-ui-fabric-react";
+import { Stack, IconButton } from "office-ui-fabric-react";
 import { push } from "connected-react-router";
-const theme = getTheme();
 
 class AnalysisPage extends React.Component<ReduxProps> {
   handleBackToSessionListClick = () => {
@@ -20,15 +19,15 @@ class AnalysisPage extends React.Component<ReduxProps> {
           root: {
             position: "relative",
             zIndex: 10,
-            backgroundColor: theme.palette.accent,
-            color: theme.palette.white
+            backgroundColor: this.props.theme.palette.accent,
+            color: this.props.theme.palette.white
           }
         }}
       >
         <Stack.Item>
           <IconButton
             iconProps={{ iconName: "Back" }}
-            styles={{ root: { color: theme.palette.white } }}
+            styles={{ root: { color: this.props.theme.palette.white } }}
             onClick={this.handleBackToSessionListClick}
           />
         </Stack.Item>
@@ -48,6 +47,7 @@ class AnalysisPage extends React.Component<ReduxProps> {
 }
 
 const mapProps = (rootState: RootState) => ({
+  theme: rootState.theme.current,
   session: rootState.analysis.session
 });
 

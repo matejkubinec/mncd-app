@@ -52,13 +52,7 @@ export default class Evaluation extends Component<IProps, IState> {
   render() {
     const rows = this.getRows();
     return (
-      <Stack
-        tokens={{ padding: 10, childrenGap: 5 }}
-        style={{
-          backgroundColor: NeutralColors.white,
-          boxShadow: Depths.depth4
-        }}
-      >
+      <Stack tokens={{ padding: 10, childrenGap: 5 }}>
         <Stack.Item>
           <h2>Evaluation</h2>
         </Stack.Item>

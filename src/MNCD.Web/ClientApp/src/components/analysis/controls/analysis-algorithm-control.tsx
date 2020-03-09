@@ -4,12 +4,13 @@ import { RootState } from "../../../store";
 import { Stack, IDropdownOption, Dropdown } from "office-ui-fabric-react";
 import { AnalysisAlgorithm } from "../../../types";
 import { setAnalysisAlgorithm } from "../../../slices/AnalysisSlice";
-import { FluidC, Louvain } from "../algorithms";
+import { FluidC, Louvain, KClique } from "../algorithms";
 
 class AnalysisAlgorithmControl extends React.Component<ReduxProps> {
   private singleLayer: IDropdownOption[] = [
     { key: AnalysisAlgorithm.FluidC, text: "FluidC" },
-    { key: AnalysisAlgorithm.Louvain, text: "Louvain" }
+    { key: AnalysisAlgorithm.Louvain, text: "Louvain" },
+    { key: AnalysisAlgorithm.KClique, text: "KClique" }
   ];
 
   handleAlgorithmChange = (_: any, option?: IDropdownOption) => {
@@ -25,6 +26,8 @@ class AnalysisAlgorithmControl extends React.Component<ReduxProps> {
         return <FluidC />;
       case AnalysisAlgorithm.Louvain:
         return <Louvain />;
+      case AnalysisAlgorithm.KClique:
+        return <KClique />;
     }
   };
 

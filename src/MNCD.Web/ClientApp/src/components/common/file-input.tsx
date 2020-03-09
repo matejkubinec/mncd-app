@@ -8,26 +8,16 @@ interface IProps {
   onFileChange: (file: File) => void;
 }
 
-interface IState {}
-
-export default class FileInput extends React.Component<IProps, IState> {
+export default class FileInput extends React.Component<IProps> {
   private fileInput = React.createRef<HTMLInputElement>();
 
-  constructor(props: IProps) {
-    super(props);
-
-    this.onButtonClick = this.onButtonClick.bind(this);
-    this.onFileInputChange = this.onFileInputChange.bind(this);
-  }
-
-  onButtonClick() {
+  handleButtonClick = () => {
     if (this.fileInput.current) {
       this.fileInput.current.click();
     }
-  }
+  };
 
-  onFileInputChange() {
-    console.log("change");
+  handleFileInputChange = () => {
     if (!this.fileInput.current) {
       return;
     }
@@ -35,15 +25,17 @@ export default class FileInput extends React.Component<IProps, IState> {
     const files = this.fileInput.current.files;
     if (files && files.length > 0) {
       const file = files[0];
-      console.log("before file change");
       this.props.onFileChange(file);
     }
-  }
+  };
 
   render() {
     return (
       <React.Fragment>
-        <DefaultButton {...this.props.buttonProps} onClick={this.onButtonClick}>
+        <DefaultButton
+          {...this.props.buttonProps}
+          onClick={this.handleButtonClick}
+        >
           {this.props.text}
         </DefaultButton>
         <input
@@ -51,7 +43,7 @@ export default class FileInput extends React.Component<IProps, IState> {
           type="file"
           accept={this.props.accept}
           style={{ display: "none" }}
-          onChange={this.onFileInputChange}
+          onChange={this.handleFileInputChange}
         />
       </React.Fragment>
     );

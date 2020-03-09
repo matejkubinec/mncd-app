@@ -12,9 +12,9 @@ namespace MNCD.Domain.Services
 
         Task<AnalysisSession> GetAnalysisSession(string guid);
 
-        Task AddAnalysisSession(string name);
+        Task<AnalysisSession> AddAnalysisSession(string name);
 
-        Task UpdateAnalysisSession(int id, string name);
+        Task<AnalysisSession> UpdateAnalysisSession(int id, string name);
 
         Task RemoveAnalysisSession(int id);
     }

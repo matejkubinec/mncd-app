@@ -17,6 +17,8 @@ namespace MNCD.Domain.Entities
         public Visualization CommunitiesBarplot { get; set; }
         public Visualization CommunitiesTreemap { get; set; }
 
+        public bool IsOpen { get; set; }
+
         public Analysis()
         {
             MultiLayer = new List<Visualization>();

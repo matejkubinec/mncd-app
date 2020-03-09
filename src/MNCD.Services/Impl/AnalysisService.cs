@@ -33,7 +33,8 @@ namespace MNCD.Services.Impl
         private readonly Dictionary<AnalysisAlgorithm, IAnalysisAlgorithm> Analysis = new Dictionary<AnalysisAlgorithm, IAnalysisAlgorithm>
         {
             { AnalysisAlgorithm.FluidC, new FluidCAnalysis() },
-            { AnalysisAlgorithm.Louvain, new LouvainAnalysis() }
+            { AnalysisAlgorithm.Louvain, new LouvainAnalysis() },
+            { AnalysisAlgorithm.KClique, new KCliqueAnalysis() }
         };
 
         public AnalysisService(
@@ -87,6 +88,7 @@ namespace MNCD.Services.Impl
 
             var analysis = new Analysis
             {
+                IsOpen = true,
                 Request = request,
                 Result = result
             };
@@ -129,61 +131,11 @@ namespace MNCD.Services.Impl
             return await AddVisualizations(analysis);
         }
 
-        public async Task<Analysis> AddVisualizations(Analysis analysis)
+        public async Task ToggleVisibility(int id)
         {
-            var edgeListMultiLayer = analysis.Request.DataSet.EdgeList;
-            var edgeListAnalyzed = analysis.Result.AnalyzedNetworkEdgeList;
-            var communityList = string.Join('\n', analysis.Result.ActorToCommunity.Select(c => c.Key + " " + c.Value));
-            var actorToCommunity = analysis.Result.ActorToCommunity;
-            var communities = actorToCommunity.Values.Distinct();
-            var communitiesCount = actorToCommunity.GroupBy(c => c.Value).Select(c => c.Count());
-
-
-            var multilayer = await _visualization.VisualizeMultilayer(edgeListMultiLayer, MultiLayerLayout.Diagonal);
-            analysis.MultiLayer.RemoveAll(m => true);
-            analysis.MultiLayer.Add(multilayer);
-
-
-            var multilayerCommunities = await _visualization.VisualizeMultilayerCommunities(edgeListMultiLayer, communityList, MultiLayerCommunitiesLayout.Hairball);
-            analysis.MultiLayerCommunities.RemoveAll(m => true);
-            analysis.MultiLayerCommunities.Add(multilayerCommunities);
-
-            if (analysis.Request.Approach.IsSingleLayerApproach())
-            {
-                var singleLayerLayouts = new List<SingleLayerLayout>
-                {
-                    SingleLayerLayout.Spring,
-                    SingleLayerLayout.Spiral,
-                    SingleLayerLayout.Circular
-                };
-
-                analysis.SingleLayer.RemoveAll(s => true);
-                foreach (var layout in singleLayerLayouts)
-                {
-                    analysis.SingleLayer.Add(await _visualization.VisualizeSingleLayer(edgeListAnalyzed, layout));
-                }
-
-                analysis.SingleLayerCommunities.RemoveAll(s => true);
-                foreach (var layout in singleLayerLayouts)
-                {
-                    analysis.SingleLayerCommunities.Add(await _visualization.VisualizeSingleLayerCommunity(edgeListAnalyzed, communityList, layout));
-                }
-            }
-
-            var x = communities;
-            var y = communitiesCount;
-            var labels = communities.Select(c => "c" + c);
-            var xlabel = "Community";
-            var ylabel = "Number of nodes";
-            analysis.CommunitiesBarplot = await _visualization.VisualizeBarplot(x, y, labels, xlabel, ylabel);
-
-            var sizes = communitiesCount;
-            var label = labels.Select((l, i) => l + '\n' + sizes.ElementAt(i));
-            analysis.CommunitiesTreemap = await _visualization.VisualizeTreemap(sizes, label);
-
+            var analysis = await GetAnalysis(id);
+            analysis.IsOpen = !analysis.IsOpen;
             await _ctx.SaveChangesAsync();
-
-            return await GetAnalysis(analysis.Id);
         }
 
         public async Task RemoveFromSession(int sessionId, int analysisId)
@@ -254,5 +206,109 @@ namespace MNCD.Services.Impl
         //        throw new ArgumentException(JsonConvert.SerializeObject(errors));
         //    }
         //}
+
+        private async Task<Analysis> AddVisualizations(Analysis analysis)
+        {
+            var edgeListMultiLayer = analysis.Request.DataSet.EdgeList;
+            var edgeListAnalyzed = analysis.Result.AnalyzedNetworkEdgeList;
+            var communityList = string.Join('\n', analysis.Result.ActorToCommunity.Select(c => c.Key + " " + c.Value));
+            var actorToCommunity = analysis.Result.ActorToCommunity;
+            var communities = actorToCommunity.Values.Distinct();
+            var communitiesCount = actorToCommunity.GroupBy(c => c.Value).Select(c => c.Count());
+            var sizes = communitiesCount;
+            var labels = communities.Select(c => "c" + c);
+
+            // Clear previous visualizations
+            analysis.MultiLayer.RemoveAll(m => true);
+            analysis.MultiLayerCommunities.RemoveAll(m => true);
+            analysis.SingleLayer.RemoveAll(s => true);
+            analysis.SingleLayerCommunities.RemoveAll(s => true);
+            await _ctx.SaveChangesAsync();
+
+            var tasks = new List<Task>
+            {
+                AddMultiLayerVisualization(analysis, edgeListMultiLayer, VisualizationType.MultiLayerDiagonal),
+                AddMultiLayerCommunitiesVisualization(analysis, edgeListMultiLayer, communityList, VisualizationType.MultiLayerHairball)
+            };
+
+            if (analysis.Request.Approach.IsSingleLayerApproach())
+            {
+                var singleLayerLayouts = new List<VisualizationType>
+                {
+                    VisualizationType.SingleLayerLayoutSpring,
+                    VisualizationType.SingleLayerLayoutCircular,
+                    VisualizationType.SingleLayerLayoutSpiral
+                };
+
+                foreach (var layout in singleLayerLayouts)
+                {
+                    tasks.Add(AddSingleLayerVisualization(analysis, edgeListAnalyzed, layout));
+                }
+
+                foreach (var layout in singleLayerLayouts)
+                {
+                    tasks.Add(AddSingleLayerCommunityVisualization(analysis, edgeListAnalyzed, communityList, layout));
+
+                }
+            }
+
+            tasks.Add(AddBarplot(analysis, communities, sizes, labels));
+            tasks.Add(AddTreemap(analysis, sizes, labels));
+
+            await Task.WhenAll(tasks);
+
+            analysis.SingleLayer = analysis.SingleLayer.OrderBy(s => s.Type).ToList();
+            analysis.SingleLayerCommunities = analysis.SingleLayerCommunities.OrderBy(s => s.Type).ToList();
+
+            await _ctx.SaveChangesAsync();
+
+            return await GetAnalysis(analysis.Id);
+        }
+
+        private async Task AddMultiLayerVisualization(
+            Analysis analysis,
+            string edgeListMultiLayer,
+            VisualizationType type)
+        {
+            var multilayer = await _visualization.VisualizeMultilayer(edgeListMultiLayer, type);
+            analysis.MultiLayer.Add(multilayer);
+        }
+
+        private async Task AddMultiLayerCommunitiesVisualization(
+            Analysis analysis,
+            string edgeListMultiLayer,
+            string communityList,
+            VisualizationType type)
+        {
+            var multilayerCommunities = await _visualization.VisualizeMultilayerCommunities(edgeListMultiLayer, communityList, type);
+            analysis.MultiLayerCommunities.Add(multilayerCommunities);
+        }
+
+        private async Task AddSingleLayerVisualization(Analysis analysis, string edgeList, VisualizationType type)
+        {
+            var visualization = await _visualization.VisualizeSingleLayer(edgeList, type);
+            analysis.SingleLayer.Add(visualization);
+        }
+
+        private async Task AddSingleLayerCommunityVisualization(Analysis analysis, string edgeList, string communityList, VisualizationType type)
+        {
+            var visualization = await _visualization.VisualizeSingleLayerCommunity(edgeList, communityList, type);
+            analysis.SingleLayerCommunities.Add(visualization);
+        }
+
+        private async Task AddBarplot(Analysis analysis, IEnumerable<int> categories, IEnumerable<int> sizes, IEnumerable<string> labels)
+        {
+            var x = categories;
+            var y = sizes;
+            var xlabel = "Community";
+            var ylabel = "Number of nodes";
+            analysis.CommunitiesBarplot = await _visualization.VisualizeBarplot(x, y, labels, xlabel, ylabel);
+        }
+
+        private async Task AddTreemap(Analysis analysis, IEnumerable<int> sizes, IEnumerable<string> labels)
+        {
+            var label = labels.Select((l, i) => l + '\n' + sizes.ElementAt(i));
+            analysis.CommunitiesTreemap = await _visualization.VisualizeTreemap(sizes, label);
+        }
     }
 }

@@ -35,7 +35,7 @@ namespace MNCD.Services.Impl
             return visualization;
         }
 
-        public async Task<Visualization> VisualizeMultilayer(string edgeList, MultiLayerLayout layout)
+        public async Task<Visualization> VisualizeMultilayer(string edgeList, VisualizationType type)
         {
             var client = new HttpClient();
             var request = new VisualizeMultilayerRequest
@@ -53,6 +53,7 @@ namespace MNCD.Services.Impl
                 return new Visualization
                 {
                     Title = "Diagonal Layout",
+                    Type = type,
                     SvgImage = svg
                 };
             }
@@ -63,7 +64,7 @@ namespace MNCD.Services.Impl
             }
         }
 
-        public async Task<Visualization> VisualizeMultilayerCommunities(string edgeList, string communityList, MultiLayerCommunitiesLayout layout)
+        public async Task<Visualization> VisualizeMultilayerCommunities(string edgeList, string communityList, VisualizationType type)
         {
             var client = new HttpClient();
             var request = new VisualizeMultilayerCommunitiesRequest
@@ -82,6 +83,7 @@ namespace MNCD.Services.Impl
                 return new Visualization
                 {
                     Title = "Hairball Layout",
+                    Type = type,
                     SvgImage = svg
                 };
             }
@@ -92,13 +94,13 @@ namespace MNCD.Services.Impl
             }
         }
 
-        public async Task<Visualization> VisualizeSingleLayer(string edgeList, SingleLayerLayout layout)
+        public async Task<Visualization> VisualizeSingleLayer(string edgeList, VisualizationType type)
         {
             var client = new HttpClient();
             var request = new VisualizeSingleLayerRequest
             {
                 EdgeList = edgeList,
-                Layout = LayoutToString(layout)
+                Layout = LayoutToString(type)
             };
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -110,7 +112,8 @@ namespace MNCD.Services.Impl
                 var svg = await response.Content.ReadAsStringAsync();
                 return new Visualization
                 {
-                    Title = LayoutToTitle(layout),
+                    Title = LayoutToTitle(type),
+                    Type = type,
                     SvgImage = svg
                 };
             }
@@ -121,14 +124,14 @@ namespace MNCD.Services.Impl
             }
         }
 
-        public async Task<Visualization> VisualizeSingleLayerCommunity(string edgeList, string communityList, SingleLayerLayout layout)
+        public async Task<Visualization> VisualizeSingleLayerCommunity(string edgeList, string communityList, VisualizationType type)
         {
             var client = new HttpClient();
             var request = new VisualizeSingleLayerCommunityRequest
             {
                 EdgeList = edgeList,
                 CommunityList = communityList,
-                Layout = LayoutToString(layout)
+                Layout = LayoutToString(type)
             };
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -140,7 +143,8 @@ namespace MNCD.Services.Impl
                 var svg = await response.Content.ReadAsStringAsync();
                 return new Visualization
                 {
-                    Title = LayoutToTitle(layout),
+                    Title = LayoutToTitle(type),
+                    Type = type,
                     SvgImage = svg
                 };
             }
@@ -172,6 +176,7 @@ namespace MNCD.Services.Impl
                 var svg = await response.Content.ReadAsStringAsync();
                 return new Visualization
                 {
+                    Type = VisualizationType.Barplot,
                     SvgImage = svg
                 };
             }
@@ -200,6 +205,7 @@ namespace MNCD.Services.Impl
                 var svg = await response.Content.ReadAsStringAsync();
                 return new Visualization
                 {
+                    Type = VisualizationType.Treemap,
                     SvgImage = svg
                 };
             }
@@ -226,24 +232,24 @@ namespace MNCD.Services.Impl
             }
         }
 
-        private string LayoutToString(SingleLayerLayout layout)
+        private string LayoutToString(VisualizationType layout)
         {
             return layout switch
             {
-                SingleLayerLayout.Circular => "circular",
-                SingleLayerLayout.Spiral => "spiral",
-                SingleLayerLayout.Spring => "spring",
+                VisualizationType.SingleLayerLayoutCircular => "circular",
+                VisualizationType.SingleLayerLayoutSpiral => "spiral",
+                VisualizationType.SingleLayerLayoutSpring => "spring",
                 _ => throw new ArgumentException("Unsupported layout.")
             };
         }
 
-        private string LayoutToTitle(SingleLayerLayout layout)
+        private string LayoutToTitle(VisualizationType layout)
         {
             return layout switch
             {
-                SingleLayerLayout.Circular => "Circular Layout",
-                SingleLayerLayout.Spiral => "Spiral Layout",
-                SingleLayerLayout.Spring => "Spring Layout",
+                VisualizationType.SingleLayerLayoutCircular => "Circular Layout",
+                VisualizationType.SingleLayerLayoutSpiral => "Spiral Layout",
+                VisualizationType.SingleLayerLayoutSpring => "Spring Layout",
                 _ => throw new ArgumentException("Unsupported layout.")
             };
         }

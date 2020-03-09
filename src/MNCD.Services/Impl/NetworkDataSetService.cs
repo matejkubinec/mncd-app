@@ -133,7 +133,7 @@ namespace MNCD.Services.Impl
                 case FileType.MPX:
                     return _readerService.ReadMPXToEdgeList(content);
                 case FileType.EdgeList:
-                    return content;
+                    return _readerService.ReadEdgeListToString(content); ;
                 default:
                     // TODO: custom exception
                     throw new ArgumentException("File type is not supported.");

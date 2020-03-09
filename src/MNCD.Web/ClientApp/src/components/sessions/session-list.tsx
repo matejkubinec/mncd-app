@@ -3,11 +3,12 @@ import {
   fetchSessionsList,
   openAddEditDialog,
   openRemoveDialog,
-  SessionListState
-} from "../../slices/SessionSlice";
+  dismissSesionsListSuccessMessage,
+  dismissSesionsListErrorMessage
+} from "../../slices/session-slice";
 import { push } from "connected-react-router";
 import { RootState } from "../../store";
-import { connect } from "react-redux";
+import { connect, ConnectedProps } from "react-redux";
 import {
   Stack,
   Separator,
@@ -18,21 +19,14 @@ import {
   IColumn,
   SelectionMode,
   DetailsList,
-  Text
+  Text,
+  MessageBar,
+  MessageBarType
 } from "office-ui-fabric-react";
 import { SessionRowViewModel } from "../../types";
-import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
-import { NeutralColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
-import { SessionListRemoveDialog, SessionListAddEditDialog } from ".";
+import { SessionRemoveDialog, SessionAddEditDialog } from ".";
 
-interface IProps extends SessionListState {
-  fetchSessionsList: Function;
-  openAddEditDialog: Function;
-  openRemoveDialog: typeof openRemoveDialog;
-  push: typeof push;
-}
-
-class SessionList extends React.Component<IProps> {
+class SessionList extends React.Component<ReduxProps> {
   private columns: IColumn[] = [
     {
       key: "name",
@@ -68,7 +62,11 @@ class SessionList extends React.Component<IProps> {
       onRender: (item: SessionRowViewModel) => {
         const onRemove = () => this.props.openRemoveDialog(item);
         const onEdit = () => this.props.openAddEditDialog(item);
-        const onOpen = () => this.props.push(`/session/${item.guid}`);
+        const onOpen = () => {
+          this.props.dismissSesionsListSuccessMessage();
+          this.props.dismissSesionsListErrorMessage();
+          this.props.push(`/session/${item.guid}`);
+        };
         return (
           <Stack horizontal tokens={{ childrenGap: 5 }}>
             <DefaultButton
@@ -92,21 +90,15 @@ class SessionList extends React.Component<IProps> {
     }
   ];
 
-  constructor(props: IProps) {
-    super(props);
-
-    this.onAddSession = this.onAddSession.bind(this);
-  }
-
   componentDidMount() {
     this.props.fetchSessionsList();
   }
 
-  onAddSession() {
+  onAddSession = () => {
     this.props.openAddEditDialog();
-  }
+  };
 
-  renderTable() {
+  renderTable = () => {
     if (this.props.isLoading) {
       return <ProgressIndicator />;
     }
@@ -123,19 +115,48 @@ class SessionList extends React.Component<IProps> {
         isHeaderVisible={true}
       />
     );
-  }
+  };
+
+  handleSuccessDismiss = () => {
+    this.props.dismissSesionsListSuccessMessage();
+  };
+
+  handleErrorDismiss = () => {
+    this.props.dismissSesionsListErrorMessage();
+  };
 
   render() {
     return (
       <Stack tokens={{ padding: 50 }}>
         <Stack
-          style={{ boxShadow: Depths.depth16, background: NeutralColors.white }}
+          style={{
+            boxShadow: this.props.theme.effects.elevation16,
+            background: this.props.theme.palette.white
+          }}
           tokens={{ padding: 25 }}
         >
-          <SessionListAddEditDialog />
-          <SessionListRemoveDialog />
+          <SessionAddEditDialog />
+          <SessionRemoveDialog />
           <h2>Sessions</h2>
           <Separator></Separator>
+          {this.props.error ? (
+            <MessageBar
+              styles={{ root: { marginBottom: 10 } }}
+              messageBarType={MessageBarType.error}
+              onDismiss={this.handleErrorDismiss}
+            >
+              {this.props.error}
+            </MessageBar>
+          ) : null}
+          {this.props.success ? (
+            <MessageBar
+              styles={{ root: { marginBottom: 10 } }}
+              messageBarType={MessageBarType.success}
+              onDismiss={this.handleSuccessDismiss}
+            >
+              {this.props.success}
+            </MessageBar>
+          ) : null}
           <Stack>
             {this.renderTable()}
             <Stack horizontalAlign="end" tokens={{ padding: "25px 0 0 0" }}>
@@ -156,13 +177,22 @@ class SessionList extends React.Component<IProps> {
   }
 }
 
-const mapState = (state: RootState) => state.session.list;
+const mapState = (state: RootState) => ({
+  ...state.session.list,
+  theme: state.theme.current
+});
 
 const mapDispatch = {
   fetchSessionsList,
   openAddEditDialog,
   openRemoveDialog,
+  dismissSesionsListSuccessMessage,
+  dismissSesionsListErrorMessage,
   push
 };
 
-export default connect(mapState, mapDispatch)(SessionList);
+const connector = connect(mapState, mapDispatch);
+
+type ReduxProps = ConnectedProps<typeof connector>;
+
+export default connector(SessionList);

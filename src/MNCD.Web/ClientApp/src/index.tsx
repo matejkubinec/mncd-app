@@ -1,7 +1,8 @@
 import {
   Fabric,
   initializeIcons,
-  Customizations
+  Customizations,
+  loadTheme
 } from "office-ui-fabric-react";
 import React from "react";
 import ReactDOM from "react-dom";
@@ -10,25 +11,24 @@ import App from "./app";
 import { ConnectedRouter } from "connected-react-router";
 import { Provider } from "react-redux";
 import store, { history } from "./store";
-import theme from "./theme";
-import { NeutralColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
 
 import "./index.css";
 
 initializeIcons();
 
-// Customizations.applySettings({ theme });
-
-const baseUrl = document
-  .getElementsByTagName("base")[0]
-  .getAttribute("href") as string;
+const theme = store.getState().theme.current;
+const backgroundColor = theme.palette.neutralLighterAlt;
 const rootElement = document.getElementById("root");
+
+if (rootElement) {
+  rootElement.style.backgroundColor = backgroundColor;
+}
 
 ReactDOM.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
       <BrowserRouter>
-        <Fabric className="mncd-content" style={{ backgroundColor: NeutralColors.gray20 }}>
+        <Fabric applyTheme theme={theme} style={{ backgroundColor }}>
           <App />
         </Fabric>
       </BrowserRouter>

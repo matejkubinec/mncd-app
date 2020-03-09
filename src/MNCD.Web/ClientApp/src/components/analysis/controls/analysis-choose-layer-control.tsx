@@ -3,7 +3,6 @@ import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../../store";
 import { updateSelectedLayer } from "../../../slices/AnalysisSlice";
 import { Stack, TextField } from "office-ui-fabric-react";
-import Analysis from "../../Analysis";
 import { AnalysisApproach } from "../../../types";
 
 class AnalysisChooseLayerControl extends React.Component<ReduxProps> {

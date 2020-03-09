@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="MNCD" Version="0.0.1-pre-2020-03-08-10-44" />
+    <PackageReference Include="MNCD" Version="0.0.1-pre-2020-03-09-17-59" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,36 +1,36 @@
 import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../store";
-import { AnalysisResultItem } from "./index";
-import { Stack } from "office-ui-fabric-react";
+import { AnalysisResultItem, AnalysisResultControls } from "./index";
+import { Stack, ScrollablePane } from "office-ui-fabric-react";
 import { addVisualizations } from "../../slices/AnalysisSlice";
 
 class AnalysisResult extends React.Component<ReduxProps> {
   renderAnalyses = () => {
-    return this.props.items.map((item, i) => (
-      <Stack.Item key={i} grow={1}>
-        <AnalysisResultItem analysis={item} />
-      </Stack.Item>
-    ));
+    return this.props.items
+      .filter(i => i.isOpen)
+      .map((item, i) => (
+        <Stack.Item key={i} grow={1}>
+          <AnalysisResultItem analysis={item} />
+        </Stack.Item>
+      ));
   };
-
-  componentDidUpdate() {
-    // console.log("moun", this.props.items);
-    // this.props.items.forEach(analysis => {
-    //   if (!analysis.visualization && !this.props.visualizing[analysis.id]) {
-    //     this.props.addVisualizations(analysis);
-    //   }
-    // });
-  }
 
   render() {
     return (
-      <Stack
-        horizontal
-        horizontalAlign="space-evenly"
-        tokens={{ childrenGap: 20, padding: 20 }}
-      >
-        {this.renderAnalyses()}
+      <Stack horizontal tokens={{ childrenGap: 20, padding: 20 }}>
+        <Stack.Item styles={{ root: { width: 400 } }} align="start" grow={1}>
+          <AnalysisResultControls />
+        </Stack.Item>
+        <Stack.Item grow={2}>
+          <Stack
+            horizontal
+            horizontalAlign="space-evenly"
+            tokens={{ childrenGap: 20 }}
+          >
+            {this.renderAnalyses()}
+          </Stack>
+        </Stack.Item>
       </Stack>
     );
   }

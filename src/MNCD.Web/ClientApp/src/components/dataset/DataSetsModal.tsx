@@ -9,7 +9,7 @@ import {
   DataSetsState
 } from "../../slices/DataSetSlice";
 import { RootState } from "../../store";
-import { connect } from "react-redux";
+import { connect, ConnectedProps } from "react-redux";
 import {
   Stack,
   Separator,
@@ -28,14 +28,8 @@ import {
 import { NeutralColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
 import { DataSetAddViewModel, DataSetRowViewModel } from "../../types";
 
-interface IProps extends DataSetsState {
+interface IProps extends ReduxProps {
   onDataSetChosen: (dataSet: DataSetRowViewModel) => void;
-  closeDataSetsModal: () => void;
-  openAddDataSetForm: () => void;
-  updateItemToAdd: (item: DataSetAddViewModel) => void;
-  closeAddDataSetForm: () => void;
-  fetchDataSetsList: () => void;
-  saveDataSet: (file: File) => void;
 }
 
 interface IState {
@@ -136,7 +130,7 @@ class DataSetsModal extends React.Component<IProps, IState> {
             tokens={{ padding: 10 }}
             styles={{
               root: {
-                backgroundColor: NeutralColors.white,
+                backgroundColor: this.props.theme.palette.white,
                 width: 250,
                 height: "100%",
                 position: "absolute",
@@ -163,7 +157,10 @@ class DataSetsModal extends React.Component<IProps, IState> {
   }
 }
 
-const mapState = (state: RootState) => state.dataset;
+const mapState = (state: RootState) => ({
+  ...state.dataset,
+  theme: state.theme.current
+});
 
 const mapDispatch = {
   closeDataSetsModal,
@@ -174,4 +171,8 @@ const mapDispatch = {
   closeAddDataSetForm
 };
 
-export default connect(mapState, mapDispatch)(DataSetsModal);
+const connector = connect(mapState, mapDispatch);
+
+type ReduxProps = ConnectedProps<typeof connector>;
+
+export default connector(DataSetsModal);

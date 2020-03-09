@@ -1,4 +1,5 @@
-import FileInput from "./FileInput";
-import ImageGallery from "./ImageGallery";
+import FileInput from "./file-input";
+import ImageGallery from "./image-gallery";
+import NotificationsContainer from "./notifications-container";
 
-export { FileInput, ImageGallery };
+export { FileInput, ImageGallery, NotificationsContainer };

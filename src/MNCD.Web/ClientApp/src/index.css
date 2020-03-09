@@ -20,3 +20,9 @@ body {
   padding: 0;
   margin: 0;
 }
+
+.analyses-list-checkbox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}

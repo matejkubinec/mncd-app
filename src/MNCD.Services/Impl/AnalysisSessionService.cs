@@ -59,7 +59,7 @@ namespace MNCD.Services.Impl
                 .ThenInclude(a => a.CommunitiesTreemap)
                 .FirstOrDefaultAsync(a => a.Guid == guid);
 
-            
+
             if (session is null)
             {
                 // TODO: custom exception
@@ -69,7 +69,7 @@ namespace MNCD.Services.Impl
             return session;
         }
 
-        public async Task AddAnalysisSession(string name)
+        public async Task<AnalysisSession> AddAnalysisSession(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -85,9 +85,10 @@ namespace MNCD.Services.Impl
 
             await _ctx.AnalysisSessions.AddAsync(session);
             await _ctx.SaveChangesAsync();
+            return session;
         }
 
-        public async Task UpdateAnalysisSession(int id, string name)
+        public async Task<AnalysisSession> UpdateAnalysisSession(int id, string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -105,6 +106,7 @@ namespace MNCD.Services.Impl
             session.Name = name;
 
             await _ctx.SaveChangesAsync();
+            return session;
         }
 
         public async Task RemoveAnalysisSession(int id)

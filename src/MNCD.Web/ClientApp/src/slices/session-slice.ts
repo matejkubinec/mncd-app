@@ -1,10 +1,12 @@
 import axios from "axios";
-import { SessionRowViewModel } from "../types";
+import { SessionRowViewModel, ApiResponse } from "../types";
 import { createSlice, Dispatch, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
 export type SessionListState = {
   isLoading: boolean;
+  success: string | null;
+  error: string | null;
   items: SessionRowViewModel[];
 };
 
@@ -12,6 +14,7 @@ export type SessionRemoveDialogState = {
   isOpen: boolean;
   isRemoving: boolean;
   session: SessionRowViewModel;
+  error: string | null;
 };
 
 export type SessionAddEditDialog = {
@@ -20,6 +23,7 @@ export type SessionAddEditDialog = {
   isEditing: boolean;
   id: number;
   name: string;
+  error: string | null;
 };
 
 export type SessionState = {
@@ -31,19 +35,23 @@ export type SessionState = {
 const initialState = {
   list: {
     isLoading: false,
+    success: null,
+    error: null,
     items: []
   },
   addEditDialog: {
     isOpen: false,
     isSaving: false,
     isEditing: false,
+    id: 0,
     name: "",
-    id: 0
+    error: null
   },
   removeDialog: {
     isOpen: false,
     isRemoving: false,
-    session: {}
+    session: {},
+    error: null
   } as SessionRemoveDialogState
 } as SessionState;
 
@@ -58,6 +66,15 @@ const slice = createSlice({
       state.list.isLoading = false;
       state.list.items = action.payload;
     },
+    fetchSessionsListError: (state, action: PayloadAction<string>) => {
+      state.list.error = action.payload;
+    },
+    dismissSesionsListSuccessMessage: state => {
+      state.list.success = null;
+    },
+    dismissSesionsListErrorMessage: state => {
+      state.list.error = null;
+    },
     openRemoveDialog: (state, action: PayloadAction<SessionRowViewModel>) => {
       state.removeDialog.isOpen = true;
       state.removeDialog.isRemoving = false;
@@ -65,10 +82,25 @@ const slice = createSlice({
     },
     removeSessionStart: state => {
       state.removeDialog.isRemoving = true;
+      state.list.error = null;
+      state.list.success = null;
     },
-    removeSessionSuccess: state => {
+    removeSessionSuccess: (
+      state,
+      action: PayloadAction<ApiResponse<number>>
+    ) => {
+      const { data, message } = action.payload;
       state.removeDialog.isRemoving = false;
       state.removeDialog.isOpen = false;
+      state.list.items = state.list.items.filter(i => i.id !== data);
+      state.list.success = message;
+    },
+    removeSessionError: (state, action: PayloadAction<string>) => {
+      state.removeDialog.isRemoving = false;
+      state.removeDialog.error = action.payload;
+    },
+    clearRemoveDialogError: state => {
+      state.removeDialog.error = null;
     },
     closeRemoveDialog: state => {
       state.removeDialog.isOpen = false;
@@ -92,15 +124,39 @@ const slice = createSlice({
     updateAddEditDialogName: (state, action) => {
       state.addEditDialog.name = action.payload;
     },
+    clearAddEditEdialogError: state => {
+      state.addEditDialog.error = null;
+    },
     closeAddEditDialog: state => {
       state.addEditDialog.isOpen = false;
     },
     saveSessionStart: state => {
       state.addEditDialog.isSaving = true;
+      state.list.error = null;
+      state.list.success = null;
     },
-    saveSessionSuccess: (state, action) => {
+    saveSessionSuccess: (
+      state,
+      action: PayloadAction<ApiResponse<SessionRowViewModel>>
+    ) => {
+      const { data, message } = action.payload;
       state.addEditDialog.isSaving = false;
       state.addEditDialog.isOpen = false;
+
+      const idx = state.list.items.findIndex(i => i.id == data.id);
+
+      if (idx !== -1) {
+        const items = [...state.list.items];
+        items[idx] = data;
+        state.list.items = items;
+      } else {
+        state.list.items = [...state.list.items, data];
+      }
+      console.log(state);
+      state.list.success = message;
+    },
+    saveSessionError: (state, action: PayloadAction<string>) => {
+      state.addEditDialog.error = action.payload;
     }
   }
 });
@@ -110,18 +166,27 @@ export const {
   openRemoveDialog,
   closeRemoveDialog,
   removeSessionStart,
+  clearRemoveDialogError,
   removeSessionSuccess,
+  removeSessionError,
 
   // Sessions List
   fetchSessionsListStart,
   fetchSessionsListSuccess,
+  fetchSessionsListError,
+  dismissSesionsListSuccessMessage,
+  dismissSesionsListErrorMessage,
 
   // Add/Edit Dialog
   openAddEditDialog,
   updateAddEditDialogName,
   closeAddEditDialog,
+  clearAddEditEdialogError,
+
+  // Save Session
   saveSessionStart,
-  saveSessionSuccess
+  saveSessionSuccess,
+  saveSessionError
 } = slice.actions;
 
 export const fetchSessionsList = () => (dispatch: Dispatch) => {
@@ -130,12 +195,15 @@ export const fetchSessionsList = () => (dispatch: Dispatch) => {
   axios
     .get("api/session")
     .then(response => {
-      const data = response.data;
-      dispatch(fetchSessionsListSuccess(data));
+      if (response.status === 200) {
+        const data = response.data;
+        dispatch(fetchSessionsListSuccess(data));
+      } else {
+        dispatch(fetchSessionsListError(response.statusText));
+      }
     })
     .catch(reason => {
-      // TODO: handle error
-      console.log(reason);
+      dispatch(fetchSessionsListError(reason.message));
     });
 };
 
@@ -150,15 +218,17 @@ export const saveSession = () => (
   dispatch(saveSessionStart());
 
   axios
-    .post("api/session", data)
+    .post<ApiResponse<SessionRowViewModel>>("api/session", data)
     .then(response => {
-      const data = response.data;
-      dispatch(saveSessionSuccess(data));
-      dispatch(fetchSessionsList() as any);
+      if (response.status === 200) {
+        const data = response.data;
+        dispatch(saveSessionSuccess(data));
+      } else {
+        dispatch(saveSessionError(response.statusText));
+      }
     })
     .catch(reason => {
-      // TODO: handle error
-      console.log(reason);
+      dispatch(saveSessionError(reason.message));
     });
 };
 
@@ -173,15 +243,17 @@ export const editSession = () => (
   dispatch(saveSessionStart());
 
   axios
-    .patch("api/session", data)
+    .patch<ApiResponse<SessionRowViewModel>>("api/session", data)
     .then(response => {
-      const data = response.data;
-      dispatch(saveSessionSuccess(data));
-      dispatch(fetchSessionsList() as any);
+      if (response.status === 200) {
+        const data = response.data;
+        dispatch(saveSessionSuccess(data));
+      } else {
+        dispatch(saveSessionError(response.statusText));
+      }
     })
     .catch(reason => {
-      // TODO: handle error
-      console.log(reason);
+      dispatch(saveSessionError(reason.message));
     });
 };
 
@@ -195,16 +267,16 @@ export const removeSession = () => (
   dispatch(removeSessionStart());
 
   axios
-    .delete("api/session/" + id)
+    .delete<ApiResponse<number>>("api/session/" + id)
     .then(response => {
       if (response.status === 200) {
-        dispatch(removeSessionSuccess());
-        dispatch(fetchSessionsList() as any);
+        dispatch(removeSessionSuccess(response.data));
+      } else {
+        dispatch(removeSessionError(response.statusText));
       }
     })
     .catch(reason => {
-      // TODO: handle error
-      console.log(reason);
+      dispatch(removeSessionError(reason.message));
     });
 };
 

@@ -4,9 +4,10 @@ import {
   editSession,
   updateAddEditDialogName,
   closeAddEditDialog,
-  SessionAddEditDialog
-} from "../../slices/SessionSlice";
-import { connect } from "react-redux";
+  SessionAddEditDialog,
+  clearAddEditEdialogError
+} from "../../slices/session-slice";
+import { connect, ConnectedProps } from "react-redux";
 import {
   Stack,
   TextField,
@@ -15,53 +16,41 @@ import {
   Spinner,
   SpinnerSize,
   Dialog,
-  DialogFooter
+  DialogFooter,
+  MessageBar,
+  MessageBarType
 } from "office-ui-fabric-react";
 import { RootState } from "../../store";
 
-interface IProps extends SessionAddEditDialog {
-  saveSession: Function;
-  editSession: Function;
-  closeAddEditDialog: Function;
-  updateAddEditDialogName: Function;
-}
-
-interface IState {}
-
-class SessionListAddEditDialog extends Component<IProps, IState> {
-  constructor(props: IProps) {
-    super(props);
-
-    this.onCancel = this.onCancel.bind(this);
-    this.onSave = this.onSave.bind(this);
-    this.onNameChange = this.onNameChange.bind(this);
-    this.onNameGetErrorMessage = this.onNameGetErrorMessage.bind(this);
-  }
-
-  onNameChange(_: any, value: string | undefined) {
+class SessionListAddEditDialog extends Component<ReduxProps> {
+  handleNameChange = (_: any, value: string | undefined) => {
     this.props.updateAddEditDialogName(value || "");
-  }
+  };
 
-  onCancel() {
+  handleCancel = () => {
     this.props.closeAddEditDialog();
-  }
+  };
 
-  onSave(e: React.FormEvent<any>) {
+  handleSave = (e: React.FormEvent<any>) => {
     if (this.props.isEditing) {
       this.props.editSession();
     } else {
       this.props.saveSession();
     }
     e.preventDefault();
-  }
+  };
 
-  onNameGetErrorMessage(value: string) {
+  handleNameGetErrorMessage = (value: string) => {
     if (value === "") {
       return "Name must not be empty.";
     }
 
     return "";
-  }
+  };
+
+  handleErrorMessageDismiss = () => {
+    this.props.clearAddEditEdialogError();
+  };
 
   render() {
     const { isOpen, isSaving, name } = this.props;
@@ -70,20 +59,29 @@ class SessionListAddEditDialog extends Component<IProps, IState> {
       <Dialog
         isOpen={isOpen}
         dialogContentProps={{ title: "Analysis Session" }}
-        onDismiss={this.onCancel}
+        onDismiss={this.handleCancel}
       >
-        <form onSubmit={this.onSave}>
+        {this.props.error ? (
+          <MessageBar
+            styles={{ root: { marginBottom: 10 } }}
+            messageBarType={MessageBarType.error}
+            onDismiss={this.handleErrorMessageDismiss}
+          >
+            {this.props.error}
+          </MessageBar>
+        ) : null}
+        <form onSubmit={this.handleSave}>
           <TextField
             value={name}
             label="Name"
-            onGetErrorMessage={this.onNameGetErrorMessage}
+            onGetErrorMessage={this.handleNameGetErrorMessage}
             validateOnLoad={false}
             required
-            onChange={this.onNameChange}
+            onChange={this.handleNameChange}
           ></TextField>
           <DialogFooter>
-            <DefaultButton onClick={this.onCancel}>Cancel</DefaultButton>
-            <PrimaryButton onClick={this.onSave}>
+            <DefaultButton onClick={this.handleCancel}>Cancel</DefaultButton>
+            <PrimaryButton onClick={this.handleSave}>
               {isSaving ? (
                 <Stack padding={5}>
                   <Spinner size={SpinnerSize.xSmall} />
@@ -104,7 +102,12 @@ const mapDisptach = {
   saveSession,
   editSession,
   closeAddEditDialog,
-  updateAddEditDialogName
+  updateAddEditDialogName,
+  clearAddEditEdialogError
 };
 
-export default connect(mapState, mapDisptach)(SessionListAddEditDialog);
+const connector = connect(mapState, mapDisptach);
+
+type ReduxProps = ConnectedProps<typeof connector>;
+
+export default connector(SessionListAddEditDialog);

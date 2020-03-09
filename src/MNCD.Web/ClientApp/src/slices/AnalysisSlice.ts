@@ -90,7 +90,9 @@ const slice = createSlice({
       // Set default parameters
       switch (action.payload) {
         case FlattenningAlgorithm.BasicFlattening:
-          state.request.flatteningAlgorithmParameters = {};
+          state.request.flatteningAlgorithmParameters = {
+            weightEdges: "false"
+          };
       }
     },
     updateFlatteningParameters: (state, action) => {
@@ -108,6 +110,10 @@ const slice = createSlice({
           state.request.analysisAlgorithmParameters = {
             k: "2",
             maxIterations: "100"
+          };
+        case AnalysisAlgorithm.KClique:
+          state.request.analysisAlgorithmParameters = {
+            k: "2"
           };
       }
     },
@@ -149,10 +155,23 @@ const slice = createSlice({
     ) => {
       state.visualizing[action.payload.id] = false;
       if (state.session) {
-        const i = state.session.analyses.findIndex(a => a.id == action.payload.id);
+        const i = state.session.analyses.findIndex(
+          a => a.id == action.payload.id
+        );
         state.session.analyses[i] = action.payload;
       }
       console.log(action.payload);
+    },
+    toggleVisibilityStart: (state, action: PayloadAction<number>) => {
+      const id = action.payload;
+
+      if (state.session) {
+        const analysis = state.session.analyses.find(a => a.id === id);
+
+        if (analysis) {
+          analysis.isOpen = !analysis.isOpen;
+        }
+      }
     }
   }
 });
@@ -172,17 +191,20 @@ export const {
   analysisStart,
   analysisSuccess,
   addVisualizationStart,
-  addVisualizationSuccess
+  addVisualizationSuccess,
+  toggleVisibilityStart
 } = slice.actions;
 
 export const fetchAnalysisSession = (guid: string) => (dispatch: Dispatch) => {
   dispatch(fetchAnalysisSessionStart());
 
-  axios.get("/api/analysis/" + guid).then(response => {
-    if (response.status === 200) {
-      dispatch(fetchAnalysisSessionSuccess(response.data));
-    }
-  });
+  axios
+    .get<AnalysisSessionViewModel>("/api/analysis/" + guid)
+    .then(response => {
+      if (response.status === 200) {
+        dispatch(fetchAnalysisSessionSuccess(response.data));
+      }
+    });
 };
 
 export const analyzeDataSet = () => (
@@ -226,6 +248,22 @@ export const addVisualizations = (analysis: AnalysisViewModel) => (
     })
     .catch(reason => {
       // TODO: react handle error
+      console.log(reason);
+    });
+};
+
+export const toggleVisibility = (id: number) => (dispatch: Dispatch) => {
+  dispatch(toggleVisibilityStart(id));
+  axios
+    .post(`api/analysis/${id}/toggle-visibility`)
+    .then(response => {
+      if (response.status !== 200) {
+        // TODO: handle error
+        console.log(response);
+      }
+    })
+    .catch(reason => {
+      // TODO: handle error
       console.log(reason);
     });
 };

@@ -1,9 +1,10 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using MNCD.Domain.Services;
+using MNCD.Web.Models;
 using MNCD.Web.Models.Session;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MNCD.Web.Controllers
 {
@@ -12,18 +13,14 @@ namespace MNCD.Web.Controllers
     public class SessionController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly IAnalysisService _analysisService;
         private readonly IAnalysisSessionService _analysisSessionService;
-
 
         public SessionController(
             IMapper mapper,
-            IAnalysisSessionService analysisSessionService,
-            IAnalysisService analysisService)
+            IAnalysisSessionService analysisSessionService)
         {
             _mapper = mapper;
             _analysisSessionService = analysisSessionService;
-            _analysisService = analysisService;
         }
 
         [HttpGet]
@@ -42,9 +39,13 @@ namespace MNCD.Web.Controllers
                 return new BadRequestObjectResult("Name must not be empty.");
             }
 
-            await _analysisSessionService.AddAnalysisSession(model.Name);
-
-            return new OkObjectResult("Analysis session created.");
+            var session = await _analysisSessionService.AddAnalysisSession(model.Name);
+            var data = _mapper.Map<SessionRowViewModel>(session);
+            return new JsonResult(new ApiResponse<SessionRowViewModel>
+            {
+                Message = $"Session was created.",
+                Data = data
+            });
         }
 
         [HttpPatch]
@@ -60,9 +61,13 @@ namespace MNCD.Web.Controllers
                 return new BadRequestObjectResult("Invalid session id.");
             }
 
-            await _analysisSessionService.UpdateAnalysisSession(model.Id, model.Name);
-
-            return new OkObjectResult("Analysis session updated.");
+            var session = await _analysisSessionService.UpdateAnalysisSession(model.Id, model.Name);
+            var data = _mapper.Map<SessionRowViewModel>(session);
+            return new JsonResult(new ApiResponse<SessionRowViewModel>
+            {
+                Message = $"Session was updated.",
+                Data = data
+            });
         }
 
         [HttpDelete]
@@ -76,7 +81,11 @@ namespace MNCD.Web.Controllers
 
             await _analysisSessionService.RemoveAnalysisSession(id);
 
-            return new OkObjectResult("Analysis session removed.");
+            return new JsonResult(new ApiResponse<int>
+            {
+                Message = $"Session was deleted.",
+                Data = id
+            });
         }
     }
 }

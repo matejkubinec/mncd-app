@@ -42,7 +42,7 @@ namespace MNCD.Services.Helpers
 
         public static string EdgeList(Network network)
         {
-            return EdgeListWriter.ToString(network);
+            return EdgeListWriter.ToString(network, true);
         }
     }
 }

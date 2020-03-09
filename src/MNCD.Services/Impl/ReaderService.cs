@@ -10,6 +10,7 @@ namespace MNCD.Services.Impl
     {
         private readonly MpxReader _mpxReader = new MpxReader();
         private readonly EdgeListReader _edgeListReader = new EdgeListReader();
+        private readonly EdgeListWriter _edgeListWriter = new EdgeListWriter();
 
         public NetworkInfo ReadMPX(string content)
         {
@@ -25,7 +26,13 @@ namespace MNCD.Services.Impl
         public string ReadMPXToEdgeList(string content)
         {
             var network = _mpxReader.FromString(content);
-            return new EdgeListWriter().ToString(network);
+            return _edgeListWriter.ToString(network, true);
+        }
+
+        public string ReadEdgeListToString(string content)
+        {
+            var network = _edgeListReader.FromString(content);
+            return _edgeListWriter.ToString(network, true);
         }
 
         public NetworkInfo ReadEdgeList(string content)

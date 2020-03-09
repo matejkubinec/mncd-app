@@ -10,7 +10,8 @@ export enum AnalysisApproach {
 
 export enum AnalysisAlgorithm {
   FluidC = 0,
-  Louvain = 1
+  Louvain = 1,
+  KClique = 2
 }
 
 export enum FlattenningAlgorithm {
@@ -96,6 +97,7 @@ export interface AnalysisVisualizationViewModel {
 
 export interface AnalysisViewModel {
   id: number;
+  isOpen: boolean;
   request: AnalysisRequestViewModel;
   result: AnalysisResultViewModel;
   visualization: AnalysisVisualizationViewModel;
@@ -107,4 +109,9 @@ export interface AnalysisSessionViewModel {
   guid: string;
   createDate: Date;
   analyses: AnalysisViewModel[];
+}
+
+export interface ApiResponse<T> {
+  message: string;
+  data: T;
 }

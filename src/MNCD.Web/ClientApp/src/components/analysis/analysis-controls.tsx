@@ -37,14 +37,18 @@ class AnalysisControls extends React.Component<ReduxProps> {
 
   render() {
     return (
-      <React.Fragment>
+      <Stack.Item
+        styles={{
+          root: { height: this.props.areControlsVisible ? "100%" : "50px" }
+        }}
+      >
         <Stack
           horizontal
           styles={{
             root: {
               position: "relative",
-              backgroundColor: NeutralColors.white,
-              boxShadow: Depths.depth4,
+              backgroundColor: this.props.theme.palette.white,
+              boxShadow: this.props.theme.effects.elevation4,
               zIndex: 10
             }
           }}
@@ -69,8 +73,8 @@ class AnalysisControls extends React.Component<ReduxProps> {
               top: this.props.areControlsVisible ? 0 : -330,
               transitionDuration: MotionDurations.duration2,
               transition: "all " + MotionAnimations.slideRightIn,
-              boxShadow: Depths.depth4,
-              backgroundColor: NeutralColors.white
+              boxShadow: this.props.theme.effects.elevation4,
+              backgroundColor: this.props.theme.palette.white
             }
           }}
         >
@@ -111,12 +115,13 @@ class AnalysisControls extends React.Component<ReduxProps> {
             </Stack.Item>
           </Stack>
         </Stack>
-      </React.Fragment>
+      </Stack.Item>
     );
   }
 }
 
 const mapProps = (rootState: RootState) => ({
+  theme: rootState.theme.current,
   isAnalyzing: rootState.analysis.isAnalyzing,
   isRequestValid: rootState.analysis.isRequestValid,
   areControlsVisible: rootState.analysis.areControlsVisible

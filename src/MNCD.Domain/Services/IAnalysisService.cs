@@ -14,6 +14,8 @@ namespace MNCD.Domain.Services
 
         Task<Analysis> AddVisualizations(int id);
 
+        Task ToggleVisibility(int id);
+
         Task RemoveFromSession(int sessionId, int analysisId);
     }
 }
