@@ -25,9 +25,9 @@ namespace MNCD.Tests.Services
                 "1 l1"
             });
 
-            var layouts = new List<MultiLayerLayout>
+            var layouts = new List<VisualizationType>
             {
-                MultiLayerLayout.Diagonal
+                VisualizationType.MultiLayerDiagonal
             };
 
             foreach (var layout in layouts)
@@ -61,9 +61,9 @@ namespace MNCD.Tests.Services
                 "0 c0",
                 "1 c1"
             });
-            var layouts = new List<MultiLayerCommunitiesLayout>
+            var layouts = new List<VisualizationType>
             {
-                MultiLayerCommunitiesLayout.Hairball
+                VisualizationType.MultiLayerHairball
             };
 
             foreach (var layout in layouts)
@@ -87,11 +87,11 @@ namespace MNCD.Tests.Services
                 "# Layers",
                 "0 l0",
             });
-            var layouts = new List<SingleLayerLayout>
+            var layouts = new List<VisualizationType>
             {
-                SingleLayerLayout.Circular,
-                SingleLayerLayout.Spiral,
-                SingleLayerLayout.Spring
+                VisualizationType.SingleLayerLayoutCircular,
+                VisualizationType.SingleLayerLayoutSpiral,
+                VisualizationType.SingleLayerLayoutSpring
             };
             foreach (var layout in layouts)
             {
@@ -127,11 +127,11 @@ namespace MNCD.Tests.Services
                 "0 c0",
                 "1 c1"
             });
-            var layouts = new List<SingleLayerLayout>
+            var layouts = new List<VisualizationType>
             {
-                SingleLayerLayout.Circular,
-                SingleLayerLayout.Spiral,
-                SingleLayerLayout.Spring
+                VisualizationType.SingleLayerLayoutCircular,
+                VisualizationType.SingleLayerLayoutSpiral,
+                VisualizationType.SingleLayerLayoutSpring
             };
             foreach (var layout in layouts)
             {
