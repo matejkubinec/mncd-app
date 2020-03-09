@@ -39,7 +39,7 @@ stages:
           inputs:
             command: 'restore'
             feedsToUse: 'select'
-            vstsFeed: '2461b18b-e6be-44f9-998f-f2da4ca72a8a'
+            vstsFeed: 'c576e1dd-4ca0-46b7-8ea3-b4de73f796eb/d9aebe10-63af-42e6-868c-18e277673283'
             projects: 'src/**/*.csproj'
 
         - task: DotNetCoreCLI@2
