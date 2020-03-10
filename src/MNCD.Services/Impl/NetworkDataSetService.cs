@@ -1,13 +1,10 @@
+using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using MNCD.Core;
 using MNCD.Data;
 using MNCD.Domain.Entities;
 using MNCD.Domain.Services;
-using MNCD.Readers;
-using MNCD.Writers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MNCD.Services.Impl
 {
@@ -30,20 +27,25 @@ namespace MNCD.Services.Impl
             _visualizationService = visualizationService;
         }
 
-        public void AddDataSet(string name, string content, FileType fileType)
+        public async Task AddDataSet(string name, string content, FileType fileType)
         {
             var hash = _hashService.GetHashFor(content);
+            var existing = await GetNetworkDataSetByHash(hash);
 
-            if (ExistsNetworkDataSet(hash) && false)
+            if (existing != null)
             {
-                // TODO: Throw exception or something
-                return;
+                if (existing.Deleted)
+                {
+                    existing.Deleted = false;
+                    await _ctx.SaveChangesAsync();
+                    return;
+                }
+
+                throw new ArgumentException($"DataSet already exists in the system with name {existing.Name}.");
             }
 
             var info = GetNetworkInfo(content, fileType);
-            var network = GetNetwork(content, fileType);
-            var edgeList = GetEdgeList(network);
-            var visualization = GetVisualisation(edgeList, VisualizationType.Diagonal);
+            var edgeList = GetEdgeList(content, fileType);
 
             var dataSet = new NetworkDataSet
             {
@@ -53,46 +55,40 @@ namespace MNCD.Services.Impl
                 FileType = fileType,
                 Hash = hash,
                 Info = info,
-                Visualization = visualization
             };
 
-            // TODO: switch to async methods
-            _ctx.DataSets.Add(dataSet);
-            _ctx.SaveChanges();
+            await _ctx.DataSets.AddAsync(dataSet);
+            await _ctx.SaveChangesAsync();
         }
 
-        public void DeleteDataSet(int id)
+        public async Task DeleteDataSet(int id)
         {
-            throw new System.NotImplementedException();
+            var dataSet = await _ctx.DataSets.FindAsync(id);
+
+            if (dataSet is null)
+            {
+                throw new ArgumentException($"DataSet with '{id}' was not found.");
+            }
+
+            dataSet.Deleted = true;
+            await _ctx.SaveChangesAsync();
         }
 
-        public NetworkDataSet GetDataSet(int id)
+        public async Task<NetworkDataSet> GetDataSet(int id)
         {
-            // TODO: switch to async
-            return _ctx
+            return await _ctx
                 .DataSets
-                .Include(d => d.Visualization)
-                .FirstOrDefault(d => d.Id == id);
+                .FirstOrDefaultAsync(d => d.Id == id);
         }
 
-        public IList<NetworkDataSet> GetDataSets()
+        public async Task UpdateDataSet(int id, string name)
         {
-            return _ctx
-                .DataSets
-                .Include(d => d.Info)
-                .Include(d => d.Visualization)
-                .ToList();
-        }
-
-        public void UpdateDataSet(int id, string name)
-        {
-            // TODO: switch to async
-            var dataSet = _ctx
+            var dataSet = await _ctx
                 .DataSets
                 .Include(d => d.Info)
-                .FirstOrDefault(d => d.Id == id);
+                .FirstOrDefaultAsync(d => d.Id == id);
 
-            if (dataSet == null)
+            if (dataSet is null)
             {
                 // TODO: custom exception
                 throw new ArgumentException("Network was not found.");
@@ -100,13 +96,20 @@ namespace MNCD.Services.Impl
 
             dataSet.Name = name;
 
-            // TODO: switch to async
-            _ctx.SaveChanges();
+            await _ctx.SaveChangesAsync();
         }
 
-        private bool ExistsNetworkDataSet(string hash)
+        public async Task<List<NetworkDataSet>> GetDataSets()
         {
-            return _ctx.DataSets.Any(d => d.Hash == hash);
+            return await _ctx
+                .DataSets
+                .Include(d => d.Info)
+                .ToListAsync();
+        }
+
+        private async Task<NetworkDataSet> GetNetworkDataSetByHash(string hash)
+        {
+            return await _ctx.DataSets.FirstOrDefaultAsync(d => d.Hash == hash);
         }
 
         private NetworkInfo GetNetworkInfo(string content, FileType fileType)
@@ -116,34 +119,25 @@ namespace MNCD.Services.Impl
                 case FileType.MPX:
                     return _readerService.ReadMPX(content);
                 case FileType.EdgeList:
-                    throw new NotImplementedException();
+                    return _readerService.ReadEdgeList(content);
                 default:
                     // TODO: custom exception
                     throw new ArgumentException("File type is not supported.");
             }
         }
 
-        private Network GetNetwork(string content, FileType fileType)
+        private string GetEdgeList(string content, FileType fileType)
         {
-            if (fileType != FileType.MPX)
+            switch (fileType)
             {
-                throw new ArgumentException("File type is not supported");
+                case FileType.MPX:
+                    return _readerService.ReadMPXToEdgeList(content);
+                case FileType.EdgeList:
+                    return _readerService.ReadEdgeListToString(content); ;
+                default:
+                    // TODO: custom exception
+                    throw new ArgumentException("File type is not supported.");
             }
-
-            var reader = new MpxReader();
-
-            return reader.FromString(content);
-        }
-
-        private string GetEdgeList(Network network)
-        {
-            var writer = new EdgeListWriter();
-            return writer.ToString(network);
-        }
-
-        private Visualization GetVisualisation(string edgeList, VisualizationType type)
-        {
-            return _visualizationService.VisualiseMultilayer(edgeList, type);
         }
     }
 }

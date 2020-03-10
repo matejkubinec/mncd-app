@@ -12,6 +12,7 @@ namespace MNCD.Services.Helpers
             return dataSet.FileType switch
             {
                 FileType.MPX => new MpxReader().FromString(dataSet.Content),
+                FileType.EdgeList => new EdgeListReader().FromString(dataSet.Content),
                 _ => throw new ApplicationException("Unsupported file type."),
             };
         }

@@ -1,20 +1,26 @@
 import { createBrowserHistory } from "history";
 import { connectRouter, routerMiddleware } from "connected-react-router";
+import { reducer as notifications } from "react-notification-system-redux";
 import {
   combineReducers,
   getDefaultMiddleware,
   configureStore
 } from "@reduxjs/toolkit";
-import dataSetReducer from "./slices/DataSetSlice";
-import sessionReducer from "./slices/SessionSlice";
-import analysisReducer from "./slices/AnalysisSlice";
+import {
+  AnalysisReducer,
+  DataSetReducer,
+  SessionReducer,
+  ThemeReducer
+} from "./slices";
 
 export const history = createBrowserHistory();
 
 const reducer = combineReducers({
-  session: sessionReducer,
-  dataset: dataSetReducer,
-  analysis: analysisReducer,
+  session: SessionReducer,
+  dataset: DataSetReducer,
+  analysis: AnalysisReducer,
+  theme: ThemeReducer,
+  notifications,
   router: connectRouter(history)
 });
 

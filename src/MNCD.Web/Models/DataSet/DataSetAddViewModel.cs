@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MNCD.Domain.Entities;
 
 namespace MNCD.Web.Models.DataSet
 {
@@ -7,6 +8,8 @@ namespace MNCD.Web.Models.DataSet
     {
         [FromForm]
         public string Name { get; set; }
+        [FromForm]
+        public FileType format { get; set; }
         public IFormFile File { get; set; }
     }
 }

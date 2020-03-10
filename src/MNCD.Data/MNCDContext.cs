@@ -13,6 +13,7 @@ namespace MNCD.Data
         public DbSet<Analysis> Analyses { get; set; }
         public DbSet<NetworkDataSet> DataSets { get; set; }
         public DbSet<NetworkInfo> NetworkInfos { get; set; }
+        public DbSet<Visualization> Visualizations { get; set; }
 
         public MNCDContext()
         {
@@ -20,7 +21,6 @@ namespace MNCD.Data
 
         public MNCDContext(DbContextOptions<MNCDContext> options) : base(options)
         {
-            Database.EnsureCreated();
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -35,7 +35,7 @@ namespace MNCD.Data
 
             builder
                 .Entity<AnalysisRequest>()
-                .Property(e => e.FlattenningAlgorithmParameters)
+                .Property(e => e.FlatteningAlgorithmParameters)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
                     v => JsonConvert.DeserializeObject<Dictionary<string, string>>(v)
@@ -46,7 +46,31 @@ namespace MNCD.Data
                 .Property(e => e.ActorToCommunity)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<List<int>>(v)
+                    v => JsonConvert.DeserializeObject<Dictionary<int, int>>(v)
+                );
+
+            builder
+                .Entity<AnalysisResult>()
+                .Property(e => e.Varieties)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<double?>>(v)
+                );
+
+            builder
+                .Entity<AnalysisResult>()
+                .Property(e => e.Exclusivities)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<double?>>(v)
+                );
+
+            builder
+                .Entity<AnalysisResult>()
+                .Property(e => e.Homogenities)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<double?>>(v)
                 );
         }
     }

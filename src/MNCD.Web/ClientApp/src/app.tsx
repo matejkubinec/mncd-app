@@ -1,23 +1,25 @@
 import React, { Component } from "react";
 import { Route, Switch } from "react-router";
-
-import "./custom.css";
-import DataSetList from "./components/DataSetList";
-import DataSetAdd from "./components/DataSetAdd";
-import SessionList from "./components/SessionList";
-import AnalysisPage from "./components/AnalysisPage";
+import { SessionList } from "./components/sessions";
+import {
+  AnalysisPage,
+  AnalysisResultControls
+} from "./components/analysis/index";
+import { NotificationsContainer } from "./components/common";
 
 export default class App extends Component {
-  static displayName = App.name;
-
   render() {
     return (
-      <div>
-        <AnalysisPage />
-        <SessionList />
-        <DataSetList />
-        <DataSetAdd />
-      </div>
+      <React.Fragment>
+        <Switch>
+          <Route exact path="/" component={SessionList} />
+          <Route path="/session/:guid" component={AnalysisPage} />
+          <Route path="/test">
+            <AnalysisResultControls />
+          </Route>
+        </Switch>
+        <NotificationsContainer />
+      </React.Fragment>
     );
   }
 }

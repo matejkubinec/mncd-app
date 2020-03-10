@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace MNCD.Domain.Entities
 {
     public class NetworkDataSet
@@ -13,6 +11,5 @@ namespace MNCD.Domain.Entities
         public bool Deleted { get; set; }
         public FileType FileType { get; set; }
         public NetworkInfo Info { get; set; }
-        public Visualization Visualization { get; set; }
     }
 }

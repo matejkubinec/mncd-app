@@ -29,6 +29,8 @@ namespace MNCD.Web
             RegisterServices(services);
             RegisterDbContext(services);
 
+            services.AddApplicationInsightsTelemetry();
+
             services.AddControllersWithViews();
 
             // In production, the React files will be served from this directory
@@ -41,6 +43,15 @@ namespace MNCD.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var ctx = scope.ServiceProvider.GetService<MNCDContext>();
+                if (!ctx.Database.EnsureCreated())
+                {
+                    ctx.Database.Migrate();
+                }
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -60,9 +71,7 @@ namespace MNCD.Web
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "api/{controller}/{action=Index}/{id?}");
+                endpoints.MapControllers();
             });
 
             app.UseSpa(spa =>
@@ -83,6 +92,9 @@ namespace MNCD.Web
                 cfg.AddProfile<DataSetRowViewModelProfile>();
                 cfg.AddProfile<SessionRowViewModelProfile>();
                 cfg.AddProfile<AnalysisRequestViewModelProfile>();
+                cfg.AddProfile<AnalysisResultViewModelProfile>();
+                cfg.AddProfile<AnalysisViewModelProfile>();
+                cfg.AddProfile<AnalysisSessionViewModelProfile>();
             });
             var mapper = mappingConfig.CreateMapper();
 
@@ -91,8 +103,13 @@ namespace MNCD.Web
 
         private void RegisterDbContext(IServiceCollection services)
         {
-            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            var connectionString = GetConnectionString();
             services.AddDbContext<MNCDContext>(opt => opt.UseSqlite(connectionString));
+        }
+
+        private string GetConnectionString()
+        {
+            return Configuration.GetConnectionString("DefaultConnection");
         }
 
         private void RegisterServices(IServiceCollection services)
@@ -101,8 +118,8 @@ namespace MNCD.Web
             services.AddSingleton<IHashService, HashService>();
 
             var vizUrl = Configuration.GetValue<string>("VisualizationApiUrl");
-            services.AddTransient<IVisualizationService, VisualisationService>(x =>
-                new VisualisationService(x.GetService<MNCDContext>(), vizUrl));
+            services.AddTransient<IVisualizationService, VisualizationService>(x =>
+                new VisualizationService(x.GetService<MNCDContext>(), vizUrl));
 
             services.AddTransient<INetworkDataSetService, NetworkDataSetService>();
             services.AddTransient<IAnalysisSessionService, AnalysisSessionService>();

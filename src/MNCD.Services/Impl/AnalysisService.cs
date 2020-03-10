@@ -1,84 +1,94 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MNCD.Core;
 using MNCD.Data;
 using MNCD.Domain.Entities;
+using MNCD.Domain.Extensions;
 using MNCD.Domain.Services;
-using MNCD.Services.AnalysisAlgorithms;
+using MNCD.Services.Algorithms;
+using MNCD.Services.Algorithms.Analysis;
+using MNCD.Services.Algorithms.Flattening;
 using MNCD.Services.Helpers;
 
 namespace MNCD.Services.Impl
 {
     public class AnalysisService : IAnalysisService
     {
-        private static List<AnalysisAlgorithm> SingleLayerAlgorithms = new List<AnalysisAlgorithm>
-        {
-            AnalysisAlgorithm.FluidC,
-            AnalysisAlgorithm.Louvain
-        };
-
-        private static List<AnalysisAlgorithm> MultiLayerAlgorithms = new List<AnalysisAlgorithm>
-        {
-        };
-
         private readonly MNCDContext _ctx;
+        private readonly IVisualizationService _visualization;
+        private readonly INetworkDataSetService _dataSets;
+        private readonly IAnalysisSessionService _sessions;
 
-        public AnalysisService(MNCDContext ctx)
+        private readonly Dictionary<FlatteningAlgorithm, IFlatteningAlgorithm> Flattening = new Dictionary<FlatteningAlgorithm, IFlatteningAlgorithm>
+        {
+            {  FlatteningAlgorithm.BasicFlattening, new BasicFlattening() },
+            {  FlatteningAlgorithm.LocalSimplification, new LocalSimplification() },
+            {  FlatteningAlgorithm.MergeFlattening, new MergeFlattening() },
+            {  FlatteningAlgorithm.WeightedFlattening, new WeightedFlattening() }
+        };
+
+        private readonly Dictionary<AnalysisAlgorithm, IAnalysisAlgorithm> Analysis = new Dictionary<AnalysisAlgorithm, IAnalysisAlgorithm>
+        {
+            { AnalysisAlgorithm.FluidC, new FluidCAnalysis() },
+            { AnalysisAlgorithm.Louvain, new LouvainAnalysis() },
+            { AnalysisAlgorithm.KClique, new KCliqueAnalysis() }
+        };
+
+        public AnalysisService(
+            MNCDContext ctx,
+            IVisualizationService visualization,
+            INetworkDataSetService dataSets,
+            IAnalysisSessionService sessions)
         {
             _ctx = ctx;
+            _visualization = visualization;
+            _dataSets = dataSets;
+            _sessions = sessions;
         }
 
-        public List<Analysis> GetAnalysesForSession(int sessionId)
+        public async Task<List<Analysis>> GetAnalysesForSession(int sessionId)
         {
-            // TODO: switch to async
-            var session = _ctx
+            var session = await _ctx
                 .AnalysisSessions
                 .Include(a => a.Analyses)
-                .FirstOrDefault(a => a.Id == sessionId);
+                .FirstOrDefaultAsync(a => a.Id == sessionId);
 
-            if (session == null)
+            if (session is null)
             {
-                throw new ApplicationException("Session was not found.");
+                throw new ArgumentException($"Session with id '{sessionId}' was not found.");
             }
 
             return session.Analyses?.ToList() ?? new List<Analysis>();
         }
 
-        public Analysis GetAnalysis(int id)
+        public async Task<Analysis> GetAnalysis(int id)
         {
-            // TODO: switch to async
-            var analysis = _ctx.Analyses.FirstOrDefault(a => a.Id == id);
+            var analysis = await _ctx.Analyses.FirstOrDefaultAsync(a => a.Id == id);
 
-            if (analysis == null)
+            if (analysis is null)
             {
-                throw new ApplicationException("Analysis was not found.");
+                throw new ArgumentException($"Analysis with id '{id}' was not found.");
             }
 
             return analysis;
         }
 
-        public Analysis Analyze(int sessionId, AnalysisRequest request)
+        public async Task<Analysis> Analyze(int sessionId, int dataSetId, AnalysisRequest request, bool visualize)
         {
-            var session = _ctx.AnalysisSessions.FirstOrDefault(a => a.Id == sessionId);
-            var dataSet = request.Dataset;
+            var session = await _sessions.GetAnalysisSession(sessionId).ConfigureAwait(false);
+            var dataSet = await _dataSets.GetDataSet(dataSetId).ConfigureAwait(false);
 
-            if (session == null)
-            {
-                throw new ArgumentException($"Session with id {sessionId} was not found.");
-            }
+            request.DataSet = dataSet;
 
-            if (dataSet == null)
-            {
-                throw new ApplicationException("Dataset is required.");
-            }
-
-            var network = NetworkReaderHelper.ReadDataSet(dataSet);
+            var network = GetNetworkToAnalyze(request);
             var result = AnalyzeNetwork(request, network);
 
             var analysis = new Analysis
             {
+                IsOpen = true,
                 Request = request,
                 Result = result
             };
@@ -95,77 +105,210 @@ namespace MNCD.Services.Impl
                 session.Analyses.Add(analysis);
             }
 
-            // TODO: switch to async
-            _ctx.SaveChanges();
+            if (visualize)
+            {
+                await AddVisualizations(analysis);
+            }
+
+            await _ctx.SaveChangesAsync();
 
             return analysis;
         }
 
-        public void RemoveFromSession(int sessionId, int analysisId)
+        public async Task<Analysis> AddVisualizations(int id)
         {
-            // TODO: switch to async
-            var session = _ctx
-                .AnalysisSessions
-                .Include(a => a.Analyses)
-                .FirstOrDefault(a => a.Id == sessionId);
+            var analysis = await _ctx.Analyses
+                .Include(a => a.Request)
+                .ThenInclude(r => r.DataSet)
+                .Include(a => a.Result)
+                .FirstOrDefaultAsync(a => a.Id == id);
 
-            if (session == null)
+            if (analysis is null)
             {
-                throw new ApplicationException("Session was not found.");
+                throw new ArgumentException($"Analysis with id '{id}' was not found.");
             }
 
-            // TODO: switch to async
+            return await AddVisualizations(analysis);
+        }
+
+        public async Task ToggleVisibility(int id)
+        {
+            var analysis = await GetAnalysis(id);
+            analysis.IsOpen = !analysis.IsOpen;
+            await _ctx.SaveChangesAsync();
+        }
+
+        public async Task RemoveFromSession(int sessionId, int analysisId)
+        {
+            var session = await _sessions.GetAnalysisSession(sessionId);
+
             var analysis = session.Analyses.FirstOrDefault(a => a.Id == analysisId);
+
+            if (analysis is null)
+            {
+                throw new ArgumentException($"Analysis with id '{analysisId}' doesn't exist in sesion with id '{sessionId}'.");
+            }
 
             _ctx.Analyses.Remove(analysis);
 
-            // TODO: switch to async
-            _ctx.SaveChanges();
+            await _ctx.SaveChangesAsync();
+        }
+
+        private Network GetNetworkToAnalyze(AnalysisRequest request)
+        {
+            var network = NetworkReaderHelper.ReadDataSet(request.DataSet);
+
+            if (request.Approach == AnalysisApproach.SingleLayerOnly)
+            {
+                // TODO: validation
+                var selected = request.SelectedLayer;
+                var layer = network.Layers[selected];
+                return new Network(layer, network.Actors);
+            }
+
+            if (request.Approach == AnalysisApproach.SingleLayerFlattening)
+            {
+                return Flattening[request.FlatteningAlgorithm].Flatten(network, request.FlatteningAlgorithmParameters);
+            }
+
+            return network;
         }
 
         private AnalysisResult AnalyzeNetwork(AnalysisRequest request, Network network)
         {
-            if (request.Approach == AnalysisApproach.SingleLayerOnly)
+            if (request.Approach == AnalysisApproach.MultiLayer)
             {
-                return SingleLayerAnalysis(request, network);
+                // TODO: multi layer analysis
             }
 
-            throw new ArgumentException("Unsupported approach.");
+            return Analysis[request.AnalysisAlgorithm].Analyze(network, request.AnalysisAlgorithmParameters);
         }
 
-        private AnalysisResult SingleLayerAnalysis(AnalysisRequest request, Network network)
-        {
-            ValidateSingleLayerAnalysis(request, network);
 
-            var selectedLayer = network.Layers[request.SelectedLayer];
-            var networkToAnalyze = new Network
+        //private void ValidateSingleLayerAnalysis(AnalysisRequest request, Network network)
+        //{
+        //    var errors = new List<string>();
+
+        //    if (request.SelectedLayer > network.Layers.Count || request.SelectedLayer < 0)
+        //    {
+        //        errors.Add("Selected layer must be greater than zero and not greater than number of layers in data set.");
+        //    }
+
+        //    if (request.AnalysisAlgorithm.IsMultiLayer())
+        //    {
+        //        errors.Add("A algorithm for single layer networks must be used.");
+        //    }
+
+        //    return errors;
+
+        //    if (errors.Count > 0)
+        //    {
+        //        throw new ArgumentException(JsonConvert.SerializeObject(errors));
+        //    }
+        //}
+
+        private async Task<Analysis> AddVisualizations(Analysis analysis)
+        {
+            var edgeListMultiLayer = analysis.Request.DataSet.EdgeList;
+            var edgeListAnalyzed = analysis.Result.AnalyzedNetworkEdgeList;
+            var communityList = string.Join('\n', analysis.Result.ActorToCommunity.Select(c => c.Key + " " + c.Value));
+            var actorToCommunity = analysis.Result.ActorToCommunity;
+            var communities = actorToCommunity.Values.Distinct();
+            var communitiesCount = actorToCommunity.GroupBy(c => c.Value).Select(c => c.Count());
+            var sizes = communitiesCount;
+            var labels = communities.Select(c => "c" + c);
+
+            // Clear previous visualizations
+            analysis.MultiLayer.RemoveAll(m => true);
+            analysis.MultiLayerCommunities.RemoveAll(m => true);
+            analysis.SingleLayer.RemoveAll(s => true);
+            analysis.SingleLayerCommunities.RemoveAll(s => true);
+            await _ctx.SaveChangesAsync();
+
+            var tasks = new List<Task>
             {
-                Actors = network.Actors,
-                Layers = new List<Layer>
-                    {
-                        selectedLayer
-                    }
+                AddMultiLayerVisualization(analysis, edgeListMultiLayer, VisualizationType.MultiLayerDiagonal),
+                AddMultiLayerCommunitiesVisualization(analysis, edgeListMultiLayer, communityList, VisualizationType.MultiLayerHairball)
             };
 
-            if (request.AnalysisAlgorithm == AnalysisAlgorithm.Louvain)
+            if (analysis.Request.Approach.IsSingleLayerApproach())
             {
-                return Louvain.Analyze(request, network);
+                var singleLayerLayouts = new List<VisualizationType>
+                {
+                    VisualizationType.SingleLayerLayoutSpring,
+                    VisualizationType.SingleLayerLayoutCircular,
+                    VisualizationType.SingleLayerLayoutSpiral
+                };
+
+                foreach (var layout in singleLayerLayouts)
+                {
+                    tasks.Add(AddSingleLayerVisualization(analysis, edgeListAnalyzed, layout));
+                }
+
+                foreach (var layout in singleLayerLayouts)
+                {
+                    tasks.Add(AddSingleLayerCommunityVisualization(analysis, edgeListAnalyzed, communityList, layout));
+
+                }
             }
 
-            throw new ArgumentException("Unsupported algorithm.");
+            tasks.Add(AddBarplot(analysis, communities, sizes, labels));
+            tasks.Add(AddTreemap(analysis, sizes, labels));
+
+            await Task.WhenAll(tasks);
+
+            analysis.SingleLayer = analysis.SingleLayer.OrderBy(s => s.Type).ToList();
+            analysis.SingleLayerCommunities = analysis.SingleLayerCommunities.OrderBy(s => s.Type).ToList();
+
+            await _ctx.SaveChangesAsync();
+
+            return await GetAnalysis(analysis.Id);
         }
 
-        private void ValidateSingleLayerAnalysis(AnalysisRequest request, Network network)
+        private async Task AddMultiLayerVisualization(
+            Analysis analysis,
+            string edgeListMultiLayer,
+            VisualizationType type)
         {
-            if (request.SelectedLayer > network.Layers.Count || request.SelectedLayer < 0)
-            {
-                throw new ArgumentOutOfRangeException("Selected layer must be greater than zero and not greater than number of layers in data set.");
-            }
+            var multilayer = await _visualization.VisualizeMultilayer(edgeListMultiLayer, type);
+            analysis.MultiLayer.Add(multilayer);
+        }
 
-            if (!SingleLayerAlgorithms.Any(alg => alg == request.AnalysisAlgorithm))
-            {
-                throw new ArgumentException("A algorithm for single layer networks must be used.");
-            }
+        private async Task AddMultiLayerCommunitiesVisualization(
+            Analysis analysis,
+            string edgeListMultiLayer,
+            string communityList,
+            VisualizationType type)
+        {
+            var multilayerCommunities = await _visualization.VisualizeMultilayerCommunities(edgeListMultiLayer, communityList, type);
+            analysis.MultiLayerCommunities.Add(multilayerCommunities);
+        }
+
+        private async Task AddSingleLayerVisualization(Analysis analysis, string edgeList, VisualizationType type)
+        {
+            var visualization = await _visualization.VisualizeSingleLayer(edgeList, type);
+            analysis.SingleLayer.Add(visualization);
+        }
+
+        private async Task AddSingleLayerCommunityVisualization(Analysis analysis, string edgeList, string communityList, VisualizationType type)
+        {
+            var visualization = await _visualization.VisualizeSingleLayerCommunity(edgeList, communityList, type);
+            analysis.SingleLayerCommunities.Add(visualization);
+        }
+
+        private async Task AddBarplot(Analysis analysis, IEnumerable<int> categories, IEnumerable<int> sizes, IEnumerable<string> labels)
+        {
+            var x = categories;
+            var y = sizes;
+            var xlabel = "Community";
+            var ylabel = "Number of nodes";
+            analysis.CommunitiesBarplot = await _visualization.VisualizeBarplot(x, y, labels, xlabel, ylabel);
+        }
+
+        private async Task AddTreemap(Analysis analysis, IEnumerable<int> sizes, IEnumerable<string> labels)
+        {
+            var label = labels.Select((l, i) => l + '\n' + sizes.ElementAt(i));
+            analysis.CommunitiesTreemap = await _visualization.VisualizeTreemap(sizes, label);
         }
     }
 }

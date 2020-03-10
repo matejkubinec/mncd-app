@@ -1,16 +1,16 @@
 import { createTheme } from "office-ui-fabric-react";
 
-const theme = createTheme({
+const light = createTheme({
   palette: {
-    themePrimary: "#6d81d2",
-    themeLighterAlt: "#f8f9fd",
-    themeLighter: "#e5e8f8",
-    themeLight: "#ced5f1",
-    themeTertiary: "#a2afe3",
-    themeSecondary: "#7c8ed7",
-    themeDarkAlt: "#6274bc",
-    themeDark: "#53629f",
-    themeDarker: "#3d4875",
+    themePrimary: "#0078d4",
+    themeLighterAlt: "#eff6fc",
+    themeLighter: "#deecf9",
+    themeLight: "#c7e0f4",
+    themeTertiary: "#71afe5",
+    themeSecondary: "#2b88d8",
+    themeDarkAlt: "#106ebe",
+    themeDark: "#005a9e",
+    themeDarker: "#004578",
     neutralLighterAlt: "#faf9f8",
     neutralLighter: "#f3f2f1",
     neutralLight: "#edebe9",
@@ -27,4 +27,31 @@ const theme = createTheme({
   }
 });
 
-export default theme;
+const dark = createTheme({
+  palette: {
+    themePrimary: "#00ff08",
+    themeLighterAlt: "#000a00",
+    themeLighter: "#002901",
+    themeLight: "#004d03",
+    themeTertiary: "#009905",
+    themeSecondary: "#00e007",
+    themeDarkAlt: "#19ff21",
+    themeDark: "#3dff44",
+    themeDarker: "#70ff75",
+    neutralLighterAlt: "#121212",
+    neutralLighter: "#121212",
+    neutralLight: "#121212",
+    neutralQuaternaryAlt: "#121212",
+    neutralQuaternary: "#121212",
+    neutralTertiaryAlt: "#121212",
+    neutralTertiary: "#fafafa",
+    neutralSecondary: "#fbfbfb",
+    neutralPrimaryAlt: "#fcfcfc",
+    neutralPrimary: "#f7f7f7",
+    neutralDark: "#fdfdfd",
+    black: "#fefefe",
+    white: "#292929"
+  }
+});
+
+export { light, dark };
