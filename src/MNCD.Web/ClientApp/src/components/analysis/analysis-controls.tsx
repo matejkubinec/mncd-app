@@ -70,7 +70,7 @@ class AnalysisControls extends React.Component<ReduxProps> {
             root: {
               position: "relative",
               width: "100%",
-              top: this.props.areControlsVisible ? 0 : -330,
+              top: this.props.areControlsVisible ? 0 : -550,
               transitionDuration: MotionDurations.duration2,
               transition: "all " + MotionAnimations.slideRightIn,
               boxShadow: this.props.theme.effects.elevation4,
