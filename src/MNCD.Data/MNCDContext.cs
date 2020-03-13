@@ -72,6 +72,14 @@ namespace MNCD.Data
                     v => JsonConvert.SerializeObject(v),
                     v => JsonConvert.DeserializeObject<List<double?>>(v)
                 );
+
+            builder
+                .Entity<NetworkInfo>()
+                .Property(e => e.LayerNames)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<string>>(v)
+                );
         }
     }
 }

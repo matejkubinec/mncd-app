@@ -2,8 +2,7 @@ import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { Stack, TextField, DefaultButton, Separator, ScrollablePane } from "office-ui-fabric-react";
 import { RootState } from "../../../store";
-import { updateAnalysisParameters } from "../../../slices/AnalysisSlice";
-import { LocalSimplificationRelevances } from ".";
+import { updateFlatteningParameters } from "../../../slices/AnalysisSlice";
 
 interface IState {
   relevanceAll: string;
@@ -20,21 +19,21 @@ class LocalSimplification extends React.Component<ReduxProps, IState> {
 
   handleApplyRelevanceAll = () => {
     const rel = this.props.relevances.map(() => this.state.relevanceAll);
-    this.props.updateAnalysisParameters({ relevances: JSON.stringify(rel) });
+    this.props.updateFlatteningParameters({ relevances: JSON.stringify(rel) });
   }
 
   handleRelevanceAllChange = (_: any, value?: string) => {
-    if (value) {
-      this.setState({ relevanceAll: value })
-    }
+    if (value === undefined) return;
+
+    this.setState({ relevanceAll: value })
   }
 
   handleRelevanceChange = (i: number, value?: string) => {
-    if (value) {
-      const rel = this.props.relevances;
-      rel[i] = value;
-      this.props.updateAnalysisParameters({ relevances: JSON.stringify(rel) });
-    }
+    if (value === undefined) return;
+
+    const rel = this.props.relevances;
+    rel[i] = value;
+    this.props.updateFlatteningParameters({ relevances: JSON.stringify(rel) });
   }
 
   handleTresholdChange = (_: any, value?: string) => {
@@ -42,77 +41,89 @@ class LocalSimplification extends React.Component<ReduxProps, IState> {
 
     const treshold = Number(value);
     if (0.0 <= treshold && treshold <= 1.0) {
-      this.props.updateAnalysisParameters({ treshold });
+      this.props.updateFlatteningParameters({ treshold: value });
     }
   }
 
   renderRows = () => {
-    // TODO: add layer names
-    return this.props.relevances.map((rel, i) => (
-      <Stack.Item key={i}>
+    return this.props.relevances.map((rel, i) => {
+      const over = this.props.theme.palette.greenDark;
+      const under = this.props.theme.palette.redDark;
+      const borderColor = Number(rel) >= Number(this.props.treshold) ? over : under;
+      const onChange = (_: any, v: string | undefined) => this.handleRelevanceChange(i, v);
+      return (<Stack.Item key={i}>
         <TextField
-          label={`Layer ${i}`}
+          styles={{ fieldGroup: { borderColor } }}
+          label={this.props.names[i]}
           type="number"
+          step="0.01"
           value={rel}
-          onChange={(_, v) => this.handleRelevanceChange(i, v)}
+          onChange={onChange}
         />
-      </Stack.Item>
-    ));
+      </Stack.Item>)
+    });
   };
 
   render() {
     return (
-      <Stack>
-        <Stack.Item>
-          <TextField
-            styles={{ fieldGroup: { width: 250 } }}
-            label="Threshold"
-            type="number"
-            value={String(this.props.treshold)}
-            onChange={this.handleTresholdChange}
-          />
-        </Stack.Item>
-        <Stack.Item>
-          <Stack horizontal verticalAlign="end" tokens={{ childrenGap: 5 }}>
-            <Stack.Item grow={2}>
-              <TextField
-                label="Relevance All Layers"
-                type="number"
-                onChange={this.handleRelevanceAllChange}
-                value={this.state.relevanceAll}
-              />
-            </Stack.Item>
-            <Stack.Item grow={1}>
-              <DefaultButton onClick={this.handleApplyRelevanceAll}>
-                Apply
+      <Stack horizontal tokens={{ childrenGap: 5 }}>
+        <Stack>
+          <Stack.Item>
+            <TextField
+              styles={{ fieldGroup: { width: 250 } }}
+              label="Threshold"
+              type="number"
+              step="0.01"
+              value={String(this.props.treshold)}
+              onChange={this.handleTresholdChange}
+            />
+          </Stack.Item>
+        </Stack>
+        <Stack>
+          <Stack.Item>
+            <Stack horizontal verticalAlign="end" tokens={{ childrenGap: 5 }}>
+              <Stack.Item grow={2}>
+                <TextField
+                  label="Relevance All Layers"
+                  type="number"
+                  step="0.01"
+                  onChange={this.handleRelevanceAllChange}
+                  value={this.state.relevanceAll}
+                />
+              </Stack.Item>
+              <Stack.Item grow={1}>
+                <DefaultButton onClick={this.handleApplyRelevanceAll}>
+                  Apply
               </DefaultButton>
-            </Stack.Item>
-          </Stack>
-        </Stack.Item>
-        <Stack.Item>
-          <Separator />
-          <div style={{ width: "100%", height: 200, paddingTop: 30, position: "relative" }}>
-            <ScrollablePane>
-              <Stack>{this.renderRows()}</Stack>
-            </ScrollablePane>
-          </div>
-        </Stack.Item>
-        <LocalSimplificationRelevances />
+              </Stack.Item>
+            </Stack>
+          </Stack.Item>
+          <Stack.Item>
+            <Separator />
+            <div style={{ width: "100%", height: 200, paddingTop: 30, paddingBottom: 10, position: "relative" }}>
+              <ScrollablePane>
+                <Stack>{this.renderRows()}</Stack>
+              </ScrollablePane>
+            </div>
+          </Stack.Item>
+        </Stack>
       </Stack>
     );
   }
 }
 
 const mapProps = (state: RootState) => {
-  const params = state.analysis.request.flatteningAlgorithmParameters
-  const { treshold, relevances } = params;
+  const { dataSet, request } = state.analysis;
+  const { treshold, relevances } = request.flatteningAlgorithmParameters;
   return {
+    theme: state.theme.current,
     treshold: treshold,
+    names: dataSet ? dataSet.layerNames : [],
     relevances: JSON.parse(relevances) as string[]
   }
 };
 
-const mapDispatch = { updateAnalysisParameters };
+const mapDispatch = { updateFlatteningParameters };
 
 const connector = connect(mapProps, mapDispatch);
 

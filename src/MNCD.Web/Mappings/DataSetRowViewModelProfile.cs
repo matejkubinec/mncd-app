@@ -20,6 +20,10 @@ namespace MNCD.Web.Mappings
                 .ForMember(
                     dest => dest.LayerCount,
                     opt => opt.MapFrom(src => src.Info.LayerCount)
+                )
+                .ForMember(
+                    dest => dest.LayerNames,
+                    opt => opt.MapFrom(src => src.Info.LayerNames)
                 );
         }
     }
