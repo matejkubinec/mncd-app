@@ -103,6 +103,16 @@ const slice = createSlice({
             relevances: JSON.stringify(relevances)
           };
           break;
+        case FlattenningAlgorithm.MergeFlattening:
+          const layerIndices = dataSet
+            ? new Array(dataSet.layerCount).fill(0).map((_, i) => i)
+            : [];
+          console.log(layerIndices);
+          state.request.flatteningAlgorithmParameters = {
+            includeWeights: "true",
+            layerIndices: JSON.stringify(layerIndices)
+          };
+          break;
       }
     },
     updateFlatteningParameters: (state, action) => {
@@ -116,6 +126,8 @@ const slice = createSlice({
 
       // Set default parameters
       switch (action.payload) {
+        case AnalysisAlgorithm.Louvain:
+          state.request.analysisAlgorithmParameters = {}
         case AnalysisAlgorithm.FluidC:
           state.request.analysisAlgorithmParameters = {
             k: "2",
@@ -140,6 +152,33 @@ const slice = createSlice({
       state.dataSet = action.payload;
       state.request.datasetId = action.payload.id;
       state.isRequestValid = true;
+
+      if (state.request.approach === AnalysisApproach.SingleLayerFlattening) {
+        const { flatteningAlgorithm } = state.request;
+        const { dataSet } = state;
+
+        switch (flatteningAlgorithm) {
+          case FlattenningAlgorithm.LocalSimplification:
+            const relevances = dataSet
+              ? new Array(dataSet.layerCount).fill(1.0)
+              : [];
+            state.request.flatteningAlgorithmParameters = {
+              ...state.request.flatteningAlgorithmParameters,
+              relevances: JSON.stringify(relevances)
+            };
+            break;
+          case FlattenningAlgorithm.MergeFlattening:
+            const layerIndices = dataSet
+              ? new Array(dataSet.layerCount).fill(0).map((_, i) => i)
+              : [];
+            console.log(layerIndices);
+            state.request.flatteningAlgorithmParameters = {
+              ...state.request.flatteningAlgorithmParameters,
+              layerIndices: JSON.stringify(layerIndices)
+            };
+            break;
+        }
+      }
     },
     toggleControlsVisiblity: state => {
       state.areControlsVisible = !state.areControlsVisible;

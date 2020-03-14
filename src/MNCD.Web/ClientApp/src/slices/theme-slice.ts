@@ -4,7 +4,7 @@ import { loadTheme } from "office-ui-fabric-react";
 
 const initialState = {
   name: "light",
-  current: loadTheme(light)
+  current: loadTheme(dark)
 };
 
 const slice = createSlice({
