@@ -1,4 +1,5 @@
-﻿using MNCD.Domain.Entities;
+﻿using MNCD.Domain.DTO.Visualization;
+using MNCD.Domain.Entities;
 using MNCD.Services.Impl;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,30 +10,32 @@ namespace MNCD.Tests.Services
     public class VisualizationServiceTests
     {
         private static string Url => "https://mncd-viz.azurewebsites.net/";
-        private readonly VisualizationService _service = new VisualizationService(null, Url);
+        private readonly VisualizationService _service = new VisualizationService(null, null, Url);
 
         [Fact]
         public async Task VisualizeMultilayer()
         {
             var edgeList = string.Join('\n', new string[]
             {
-                "0 0 1 1 1",
-                "# Actors",
-                "0 a0",
-                "1 a1",
-                "# Layers",
-                "0 l0",
-                "1 l1"
+                 "0 0 1 1 1",
+                 "# Actors",
+                 "0 a0",
+                 "1 a1",
+                 "# Layers",
+                 "0 l0",
+                 "1 l1"
             });
-
-            var layouts = new List<VisualizationType>
+            var types = new List<VisualizationType>
+             {
+                 VisualizationType.MultiLayerDiagonal
+             };
+            foreach (var type in types)
             {
-                VisualizationType.MultiLayerDiagonal
-            };
-
-            foreach (var layout in layouts)
-            {
-                var visualisation = await _service.VisualizeMultilayer(edgeList, layout);
+                var visualisation = await _service.VisualizeMultilayer(new MultilayerRequest
+                {
+                    EdgeList = edgeList,
+                    Type = type
+                });
                 Assert.NotNull(visualisation);
             }
         }
@@ -42,33 +45,37 @@ namespace MNCD.Tests.Services
         {
             var edgeList = string.Join('\n', new string[]
             {
-                "0 0 1 1 1",
-                "# Actors",
-                "0 a0",
-                "1 a1",
-                "# Layers",
-                "0 l0",
-                "1 l1"
+                 "0 0 1 1 1",
+                 "# Actors",
+                 "0 a0",
+                 "1 a1",
+                 "# Layers",
+                 "0 l0",
+                 "1 l1"
             });
             var communityList = string.Join('\n', new string[]
             {
-                "0 0",
-                "1 1",
-                "# Actors",
-                "0 a0",
-                "1 a1",
-                "# Communities",
-                "0 c0",
-                "1 c1"
+                 "0 0",
+                 "1 1",
+                 "# Actors",
+                 "0 a0",
+                 "1 a1",
+                 "# Communities",
+                 "0 c0",
+                 "1 c1"
             });
-            var layouts = new List<VisualizationType>
+            var types = new List<VisualizationType>
             {
                 VisualizationType.MultiLayerHairball
             };
-
-            foreach (var layout in layouts)
+            foreach (var type in types)
             {
-                var visualisation = await _service.VisualizeMultilayerCommunities(edgeList, communityList, layout);
+                var visualisation = await _service.VisualizeMultilayerCommunities(new MultilayerCommunitiesRequest
+                {
+                    EdgeList = edgeList,
+                    CommunityList = communityList,
+                    Type = type
+                });
                 Assert.NotNull(visualisation);
             }
         }
@@ -78,24 +85,28 @@ namespace MNCD.Tests.Services
         {
             var edgeList = string.Join('\n', new string[]
             {
-                "0 0 1 0 1",
-                "0 0 2 0 1",
-                "# Actors",
-                "0 a0",
-                "1 a1",
-                "1 a2",
-                "# Layers",
-                "0 l0",
+                 "0 0 1 0 1",
+                 "0 0 2 0 1",
+                 "# Actors",
+                 "0 a0",
+                 "1 a1",
+                 "1 a2",
+                 "# Layers",
+                 "0 l0",
             });
-            var layouts = new List<VisualizationType>
+            var types = new List<VisualizationType>
+             {
+                 VisualizationType.SingleLayerCircular,
+                 VisualizationType.SingleLayerSpiral,
+                 VisualizationType.SingleLayerSpring
+             };
+            foreach (var type in types)
             {
-                VisualizationType.SingleLayerLayoutCircular,
-                VisualizationType.SingleLayerLayoutSpiral,
-                VisualizationType.SingleLayerLayoutSpring
-            };
-            foreach (var layout in layouts)
-            {
-                var visualisation = await _service.VisualizeSingleLayer(edgeList, layout);
+                var visualisation = await _service.VisualizeSingleLayer(new SingleLayerRequest
+                {
+                    EdgeList = edgeList,
+                    Type = type
+                });
                 Assert.NotNull(visualisation);
             }
         }
@@ -105,37 +116,42 @@ namespace MNCD.Tests.Services
         {
             var edgeList = string.Join('\n', new string[]
             {
-                "0 0 1 0 1",
-                "0 0 2 0 1",
-                "# Actors",
-                "0 a0",
-                "1 a1",
-                "1 a2",
-                "# Layers",
-                "0 l0",
+                 "0 0 1 0 1",
+                 "0 0 2 0 1",
+                 "# Actors",
+                 "0 a0",
+                 "1 a1",
+                 "1 a2",
+                 "# Layers",
+                 "0 l0",
             });
             var communityList = string.Join('\n', new string[]
             {
-                "0 0",
-                "1 1",
-                "2 1",
-                "# Actors",
-                "0 a0",
-                "1 a1",
-                "2 a2",
-                "# Communities",
-                "0 c0",
-                "1 c1"
+                 "0 0",
+                 "1 1",
+                 "2 1",
+                 "# Actors",
+                 "0 a0",
+                 "1 a1",
+                 "2 a2",
+                 "# Communities",
+                 "0 c0",
+                 "1 c1"
             });
-            var layouts = new List<VisualizationType>
+            var types = new List<VisualizationType>
+             {
+                 VisualizationType.SingleLayerCircular,
+                 VisualizationType.SingleLayerSpiral,
+                 VisualizationType.SingleLayerSpring
+             };
+            foreach (var type in types)
             {
-                VisualizationType.SingleLayerLayoutCircular,
-                VisualizationType.SingleLayerLayoutSpiral,
-                VisualizationType.SingleLayerLayoutSpring
-            };
-            foreach (var layout in layouts)
-            {
-                var visualisation = await _service.VisualizeSingleLayerCommunity(edgeList, communityList, layout);
+                var visualisation = await _service.VisualizeSingleLayerCommunity(new SingleLayerCommunityRequest
+                {
+                    EdgeList = edgeList,
+                    CommunityList = communityList,
+                    Type = type
+                });
                 Assert.NotNull(visualisation);
             }
         }
@@ -148,8 +164,18 @@ namespace MNCD.Tests.Services
             var labels = new[] { "a", "b", "c", "d", "e" };
             var xlabel = "foX";
             var ylabel = "foY";
-
-            var visualization = await _service.VisualizeBarplot(x, y, labels, xlabel, ylabel, true);
+            var visualization = await _service.VisualizeBarplot(new BarplotRequest<int, int>
+            {
+                X = x,
+                Y = y,
+                Labels = labels,
+                XLabel = xlabel,
+                YLabel = ylabel,
+                Params = new BarplotRequestParameters
+                {
+                    ColorCommunities = true
+                }
+            });
             Assert.NotNull(visualization);
         }
 
@@ -158,8 +184,11 @@ namespace MNCD.Tests.Services
         {
             var sizes = new[] { 1, 2, 3, 4, 5 };
             var label = new[] { "a", "b", "c", "d", "e" };
-
-            var visualization = await _service.VisualizeTreemap(sizes, label);
+            var visualization = await _service.VisualizeTreemap(new TreemapRequest<int>
+            {
+                Sizes = sizes,
+                Label = label
+            });
             Assert.NotNull(visualization);
         }
     }

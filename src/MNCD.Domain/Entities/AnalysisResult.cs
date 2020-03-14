@@ -6,6 +6,7 @@ namespace MNCD.Domain.Entities
     {
         public int Id { get; set; }
         public Dictionary<int, int> ActorToCommunity { get; set; }
+        public string CommunityList { get; set; }
         public string AnalyzedNetworkEdgeList { get; set; }
 
         public List<double?> Varieties { get; set; }

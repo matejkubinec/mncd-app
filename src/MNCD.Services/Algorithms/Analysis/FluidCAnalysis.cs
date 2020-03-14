@@ -28,6 +28,7 @@ namespace MNCD.Services.Algorithms.Analysis
             {
                 ActorToCommunity = AnalysisHelper.ActorToCommunity(network.Actors, communities),
                 AnalyzedNetworkEdgeList = AnalysisHelper.EdgeList(network),
+                CommunityList = AnalysisHelper.CommunityList(network.Actors, communities),
                 Coverage = AnalysisHelper.Coverage(network, communities),
                 Performance = AnalysisHelper.Performance(network, communities),
                 Modularity = AnalysisHelper.Modularity(network, communities)

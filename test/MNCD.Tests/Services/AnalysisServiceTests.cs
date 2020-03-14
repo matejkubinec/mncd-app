@@ -48,15 +48,18 @@ namespace MNCD.Tests.Services
                 FlatteningAlgorithm = FlatteningAlgorithm.BasicFlattening,
                 FlatteningAlgorithmParameters = new Dictionary<string, string>(),
             };
-            var result = await InitService("ApplyFluidC").Analyze(1, 1, request, false);
+            var analysis = await InitService("ApplyFluidC").Analyze(1, 1, request);
+            Assert.NotNull(analysis);
+            Assert.NotNull(analysis.Result);
+            Assert.NotNull(analysis.Request);
         }
 
         private AnalysisService InitService(string dbName)
         {
             var ctx = SetupDB(dbName);
-            var data = new NetworkDataSetService(ctx, new HashService(), new ReaderService(), null);
+            var data = new NetworkDataSetService(ctx, new HashService(), new ReaderService());
             var session = new AnalysisSessionService(ctx);
-            return new AnalysisService(ctx, null, data, session);
+            return new AnalysisService(ctx, data, session);
         }
 
         private MNCDContext SetupDB(string databaseName)

@@ -7,15 +7,12 @@ import {
 import { Stack } from "office-ui-fabric-react";
 import { Evaluation, Request, Visualization } from "./result";
 import { RootState } from "../../store";
-import { addVisualizations } from "../../slices/AnalysisSlice";
 
 interface IProps {
   analysis: AnalysisViewModel;
 }
 
-interface IState {}
-
-class AnalysisResultItem extends Component<IProps & ReduxProps, IState> {
+class AnalysisResultItem extends Component<IProps & ReduxProps> {
   getSingleLayerCommuntiesViz(): AnalysisVisualizationItemViewModel[] {
     const viz = this.props.analysis.visualization;
     return viz ? viz.singleLayerCommunities : [];
@@ -43,15 +40,8 @@ class AnalysisResultItem extends Component<IProps & ReduxProps, IState> {
         header={header}
         titles={titles}
         urls={urls}
-        isLoading={this.props.visualizing}
       />
     );
-  }
-
-  componentDidMount() {
-    if (!this.props.visualizing && !this.props.analysis.visualization) {
-      this.props.addVisualizations(this.props.analysis);
-    }
   }
 
   render() {
@@ -74,7 +64,7 @@ class AnalysisResultItem extends Component<IProps & ReduxProps, IState> {
         padding: 10,
         border: "1px solid " + this.props.theme.palette.whiteTranslucent40,
         borderRadius: this.props.theme.effects.roundedCorner2,
-        boxShadow: this.props.theme.effects.elevation4,
+        //boxShadow: this.props.theme.effects.elevation4,
         backgroundColor: this.props.theme.palette.accent,
         color: this.props.theme.palette.white,
         textAlign: "center"
@@ -107,7 +97,6 @@ class AnalysisResultItem extends Component<IProps & ReduxProps, IState> {
             header="Multi Layer Visualization"
             titles={multiLayerViz.map(v => v.title)}
             urls={multiLayerViz.map(v => v.url)}
-            isLoading={this.props.visualizing}
           />
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
@@ -115,7 +104,6 @@ class AnalysisResultItem extends Component<IProps & ReduxProps, IState> {
             header="Single Layer Visualization"
             titles={singleLayerViz.map(v => v.title)}
             urls={singleLayerViz.map(v => v.url)}
-            isLoading={this.props.visualizing}
           />
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
@@ -123,7 +111,6 @@ class AnalysisResultItem extends Component<IProps & ReduxProps, IState> {
             header="Single Layer Communities Visualization"
             titles={singleLayerCommunitiesViz.map(v => v.title)}
             urls={singleLayerCommunitiesViz.map(v => v.url)}
-            isLoading={this.props.visualizing}
           />
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
@@ -134,16 +121,13 @@ class AnalysisResultItem extends Component<IProps & ReduxProps, IState> {
   }
 }
 
-const mapProps = (rootState: RootState, props: IProps) => {
-  const { analysis } = props;
-  const { visualizing } = rootState.analysis;
+const mapProps = (rootState: RootState) => {
   return {
     theme: rootState.theme.current,
-    visualizing: !!visualizing[analysis.id]
   };
 };
 
-const mapDispatch = { addVisualizations };
+const mapDispatch = {};
 
 const connector = connect(mapProps, mapDispatch);
 

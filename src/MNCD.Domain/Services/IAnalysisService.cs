@@ -10,9 +10,7 @@ namespace MNCD.Domain.Services
 
         Task<Analysis> GetAnalysis(int id);
 
-        Task<Analysis> Analyze(int sessionId, int dataSetId, AnalysisRequest request, bool visualize);
-
-        Task<Analysis> AddVisualizations(int id);
+        Task<Analysis> Analyze(int sessionId, int dataSetId, AnalysisRequest request);
 
         Task ToggleVisibility(int id);
 
