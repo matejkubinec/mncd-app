@@ -302,7 +302,7 @@ namespace MNCD.Services.Impl
             var y = sizes;
             var xlabel = "Community";
             var ylabel = "Number of nodes";
-            analysis.CommunitiesBarplot = await _visualization.VisualizeBarplot(x, y, labels, xlabel, ylabel);
+            analysis.CommunitiesBarplot = await _visualization.VisualizeBarplot(x, y, labels, xlabel, ylabel, true);
         }
 
         private async Task AddTreemap(Analysis analysis, IEnumerable<int> sizes, IEnumerable<string> labels)

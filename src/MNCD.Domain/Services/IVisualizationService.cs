@@ -14,7 +14,7 @@ namespace MNCD.Domain.Services
         Task<Visualization> VisualizeSingleLayer(string edgeList, VisualizationType type);
         Task<Visualization> VisualizeSingleLayerCommunity(string edgeList, string communityList, VisualizationType type);
 
-        Task<Visualization> VisualizeBarplot<R, T>(IEnumerable<R> x, IEnumerable<T> y, IEnumerable<string> labels, string xlabel, string ylabel);
+        Task<Visualization> VisualizeBarplot<R, T>(IEnumerable<R> x, IEnumerable<T> y, IEnumerable<string> labels, string xlabel, string ylabel, bool visualizeCommunities);
         Task<Visualization> VisualizeTreemap<T>(IEnumerable<T> sizes, IEnumerable<string> label);
     }
 }
