@@ -50,6 +50,7 @@ stages:
               workingDirectory: src
 
 - stage: deploy
+  displayName: Deploy
   dependsOn: test
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
   jobs:
