@@ -51,16 +51,17 @@ class LocalSimplification extends React.Component<ReduxProps, IState> {
 
   handleWeightEdgesChange = (_: any, checked?: boolean) => {
     if (checked === undefined) return;
-    console.log(checked, String(checked))
+
     this.props.updateFlatteningParameters({ weightEdges: String(checked) });
   }
 
   renderRows = () => {
     return this.props.relevances.map((rel, i) => {
-      const over = this.props.theme.palette.greenDark;
-      const under = this.props.theme.palette.redDark;
+      const over = this.props.theme.palette.green;
+      const under = this.props.theme.palette.red;
       const borderBottomColor = Number(rel) >= Number(this.props.treshold) ? over : under;
       const onChange = (_: any, v: string | undefined) => this.handleRelevanceChange(i, v);
+
       return (<Stack.Item key={i}>
         <TextField
           styles={{ fieldGroup: { borderBottomColor, borderBottomWidth: 2 } }}
@@ -96,7 +97,7 @@ class LocalSimplification extends React.Component<ReduxProps, IState> {
             />
           </Stack.Item>
         </Stack>
-        <Stack>
+        <Stack tokens={{ childrenGap: 5 }}>
           <Stack.Item>
             <Stack horizontal verticalAlign="end" tokens={{ childrenGap: 5 }}>
               <Stack.Item grow={2}>
@@ -116,10 +117,7 @@ class LocalSimplification extends React.Component<ReduxProps, IState> {
             </Stack>
           </Stack.Item>
           <Stack.Item>
-            <Separator />
-          </Stack.Item>
-          <Stack.Item>
-            <Text variant="large">Layer Relevances</Text>
+            <label style={{ fontWeight: 600 }}>Layer Relevances</label>
           </Stack.Item>
           <Stack.Item>
             <div style={{ width: "100%", height: 200, paddingBottom: 10, position: "relative" }}>

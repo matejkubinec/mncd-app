@@ -66,6 +66,7 @@ class AnalysisFlatteningControl extends React.Component<ReduxProps> {
             options={this.options}
             selectedKey={this.props.algorithm}
             onChange={this.handleAlgorithmChange}
+            styles={{ dropdown: { minWidth: 300 } }}
           />
         </Stack.Item>
         <Stack.Item>{this.renderBody()}</Stack.Item>
