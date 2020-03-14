@@ -1,4 +1,5 @@
-﻿using MNCD.Domain.Entities;
+﻿using MNCD.Core;
+using MNCD.Domain.Entities;
 using MNCD.Domain.Services;
 using MNCD.Readers;
 using MNCD.Writers;
@@ -15,12 +16,7 @@ namespace MNCD.Services.Impl
         public NetworkInfo ReadMPX(string content)
         {
             var network = _mpxReader.FromString(content);
-            return new NetworkInfo
-            {
-                NodeCount = network.Actors.Count(),
-                EdgeCount = network.Layers.Sum(l => l.Edges.Count),
-                LayerCount = network.LayerCount
-            };
+            return NetworkToInfo(network);
         }
 
         public string ReadMPXToEdgeList(string content)
@@ -38,12 +34,15 @@ namespace MNCD.Services.Impl
         public NetworkInfo ReadEdgeList(string content)
         {
             var network = _edgeListReader.FromString(content);
-            return new NetworkInfo
-            {
-                NodeCount = network.Actors.Count(),
-                EdgeCount = network.Layers.SelectMany(l => l.Edges).Count(),
-                LayerCount = network.LayerCount
-            };
+            return NetworkToInfo(network);
         }
+
+        private NetworkInfo NetworkToInfo(Network network) => new NetworkInfo
+        {
+            NodeCount = network.Actors.Count(),
+            EdgeCount = network.Layers.SelectMany(l => l.Edges).Count(),
+            LayerCount = network.LayerCount,
+            LayerNames = network.Layers.Select(l => l.Name).ToList()
+        };
     }
 }

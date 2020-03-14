@@ -32,6 +32,7 @@ export interface DataSetRowViewModel {
   nodeCount: number;
   edgeCount: number;
   layerCount: number;
+  layerNames: string[];
 }
 
 export interface DataSetAddViewModel {

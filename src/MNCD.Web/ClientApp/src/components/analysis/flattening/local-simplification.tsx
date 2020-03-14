@@ -1,39 +1,152 @@
 import React from "react";
 import { connect, ConnectedProps } from "react-redux";
-import { Stack, TextField } from "office-ui-fabric-react";
+import { Stack, TextField, DefaultButton, Separator, ScrollablePane, Text, Toggle } from "office-ui-fabric-react";
 import { RootState } from "../../../store";
-import { updateAnalysisParameters } from "../../../slices/AnalysisSlice"
+import { updateFlatteningParameters } from "../../../slices/AnalysisSlice";
 
-class LocalSimplification extends React.Component<ReduxProps> {
+interface IState {
+  relevanceAll: string;
+}
 
-  onTresholdChange(_: any, value?: string) {
+class LocalSimplification extends React.Component<ReduxProps, IState> {
+
+  constructor(props: ReduxProps) {
+    super(props);
+    this.state = {
+      relevanceAll: "1.0"
+    }
+  }
+
+  handleApplyRelevanceAll = () => {
+    const rel = this.props.relevances.map(() => Number(this.state.relevanceAll));
+    this.props.updateFlatteningParameters({ relevances: JSON.stringify(rel) });
+  }
+
+  handleRelevanceAllChange = (_: any, value?: string) => {
+    if (value === undefined) return;
+
+    this.setState({ relevanceAll: value })
+  }
+
+  handleRelevanceChange = (i: number, value?: string) => {
+    if (value === undefined) return;
+
+    const relevance = Number(value);
+
+    if (relevance <= 1 && relevance >= 0) {
+      const rel = this.props.relevances;
+      rel[i] = relevance;
+      this.props.updateFlatteningParameters({ relevances: JSON.stringify(rel) });
+    }
+  }
+
+  handleTresholdChange = (_: any, value?: string) => {
     if (value === undefined) return;
 
     const treshold = Number(value);
     if (0.0 <= treshold && treshold <= 1.0) {
-      this.props.updateAnalysisParameters({ treshold });
+      this.props.updateFlatteningParameters({ treshold: value.replace(",", ".") });
     }
   }
 
+  handleWeightEdgesChange = (_: any, checked?: boolean) => {
+    if (checked === undefined) return;
+    console.log(checked, String(checked))
+    this.props.updateFlatteningParameters({ weightEdges: String(checked) });
+  }
+
+  renderRows = () => {
+    return this.props.relevances.map((rel, i) => {
+      const over = this.props.theme.palette.greenDark;
+      const under = this.props.theme.palette.redDark;
+      const borderBottomColor = Number(rel) >= Number(this.props.treshold) ? over : under;
+      const onChange = (_: any, v: string | undefined) => this.handleRelevanceChange(i, v);
+      return (<Stack.Item key={i}>
+        <TextField
+          styles={{ fieldGroup: { borderBottomColor, borderBottomWidth: 2 } }}
+          label={this.props.names[i]}
+          type="number"
+          step="0.01"
+          value={rel.toString()}
+          onChange={onChange}
+        />
+      </Stack.Item>)
+    });
+  };
+
   render() {
-    return <Stack>
-      <TextField
-        styles={{ fieldGroup: { width: 250 } }}
-        label="Threshold"
-        type="number"
-        value={String(this.props.treshold)}
-        onChange={this.onTresholdChange}
-      />
-      TODO: local simplification layer relevances
+    return (
+      <Stack horizontal horizontalAlign="space-evenly" tokens={{ childrenGap: 5 }}>
+        <Stack>
+          <Stack.Item>
+            <TextField
+              styles={{ fieldGroup: { width: 250 } }}
+              label="Threshold"
+              type="number"
+              step="0.01"
+              value={String(this.props.treshold)}
+              onChange={this.handleTresholdChange}
+            />
+          </Stack.Item>
+          <Stack.Item>
+            <Toggle
+              label="Weight Edges"
+              checked={this.props.weightEdges}
+              onChange={this.handleWeightEdgesChange}
+            />
+          </Stack.Item>
+        </Stack>
+        <Stack>
+          <Stack.Item>
+            <Stack horizontal verticalAlign="end" tokens={{ childrenGap: 5 }}>
+              <Stack.Item grow={2}>
+                <TextField
+                  label="Relevance All Layers"
+                  type="number"
+                  step="0.01"
+                  onChange={this.handleRelevanceAllChange}
+                  value={this.state.relevanceAll}
+                />
+              </Stack.Item>
+              <Stack.Item grow={1}>
+                <DefaultButton onClick={this.handleApplyRelevanceAll}>
+                  Apply
+              </DefaultButton>
+              </Stack.Item>
+            </Stack>
+          </Stack.Item>
+          <Stack.Item>
+            <Separator />
+          </Stack.Item>
+          <Stack.Item>
+            <Text variant="large">Layer Relevances</Text>
+          </Stack.Item>
+          <Stack.Item>
+            <div style={{ width: "100%", height: 200, paddingBottom: 10, position: "relative" }}>
+              <ScrollablePane>
+                <Stack>{this.renderRows()}</Stack>
+              </ScrollablePane>
+            </div>
+          </Stack.Item>
+        </Stack>
       </Stack>
+    );
   }
 }
 
-const mapProps = (rootState: RootState) => ({
-  treshold: rootState.analysis.request.flatteningAlgorithmParameters["treshold"]
-});
+const mapProps = (state: RootState) => {
+  const { dataSet, request } = state.analysis;
+  const { treshold, relevances, weightEdges } = request.flatteningAlgorithmParameters;
+  return {
+    theme: state.theme.current,
+    treshold: treshold,
+    weightEdges: weightEdges === "true",
+    names: dataSet ? dataSet.layerNames : [],
+    relevances: JSON.parse(relevances) as number[]
+  }
+};
 
-const mapDispatch = { updateAnalysisParameters };
+const mapDispatch = { updateFlatteningParameters };
 
 const connector = connect(mapProps, mapDispatch);
 

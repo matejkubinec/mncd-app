@@ -1,4 +1,6 @@
-﻿namespace MNCD.Domain.Entities
+﻿using System.Collections.Generic;
+
+namespace MNCD.Domain.Entities
 {
     public class NetworkInfo
     {
@@ -6,5 +8,6 @@
         public int NodeCount { get; set; }
         public int EdgeCount { get; set; }
         public int LayerCount { get; set; }
+        public List<string> LayerNames { get; set; }
     }
 }

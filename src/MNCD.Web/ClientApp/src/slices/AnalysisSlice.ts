@@ -85,6 +85,7 @@ const slice = createSlice({
       state,
       action: PayloadAction<FlattenningAlgorithm>
     ) => {
+      const { dataSet } = state;
       state.request.flatteningAlgorithm = action.payload;
 
       // Set default parameters
@@ -93,6 +94,17 @@ const slice = createSlice({
           state.request.flatteningAlgorithmParameters = {
             weightEdges: "false"
           };
+          break;
+        case FlattenningAlgorithm.LocalSimplification:
+          const relevances = dataSet
+            ? new Array(dataSet.layerCount).fill(1.0)
+            : [];
+          state.request.flatteningAlgorithmParameters = {
+            treshold: "1.0",
+            weightEdges: "true",
+            relevances: JSON.stringify(relevances)
+          };
+          break;
       }
     },
     updateFlatteningParameters: (state, action) => {
