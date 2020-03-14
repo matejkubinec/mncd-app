@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace MNCD.Services.Algorithms.Flattening
@@ -19,12 +20,11 @@ namespace MNCD.Services.Algorithms.Flattening
                 throw new ArgumentException(string.Join('\n', errors));
             }
             var weightEdges = bool.Parse(parameters["weightEdges"]);
-            var treshold = double.Parse(parameters["treshold"]);
-            var layerRelevances = JsonConvert.DeserializeObject<double[]>(parameters["layerRelevances"]);
+            var treshold = double.Parse(parameters["treshold"], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            var relevances = JsonConvert.DeserializeObject<double[]>(parameters["relevances"]);
 
-            return Algorithm.BasedOnLayerRelevance(network, layerRelevances, treshold, weightEdges);
+            return Algorithm.BasedOnLayerRelevance(network, relevances, treshold, weightEdges);
         }
-
         public List<string> ValidateParameters(Network network, Dictionary<string, string> parameters)
         {
             var errors = new List<string>();
@@ -43,7 +43,7 @@ namespace MNCD.Services.Algorithms.Flattening
 
             if (parameters.ContainsKey("treshold"))
             {
-                if (double.TryParse(parameters["treshold"], out var treshold))
+                if (double.TryParse(parameters["treshold"], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var treshold))
                 {
                     if (treshold > 1.0 || treshold < 0.0)
                     {
@@ -60,24 +60,24 @@ namespace MNCD.Services.Algorithms.Flattening
                 errors.Add("Parameter 'weightEdges' is required.");
             }
 
-            if (parameters.ContainsKey("layerRelevances"))
+            if (parameters.ContainsKey("relevances"))
             {
                 try
                 {
-                    var relevances = JsonConvert.DeserializeObject<double[]>(parameters["layerRelevances"]);
+                    var relevances = JsonConvert.DeserializeObject<double[]>(parameters["relevances"]);
                     if (relevances.Any(r => r > 1.0 || r < 0.0))
                     {
-                        errors.Add("Parameter 'layerRelevances' must be an array of floating point numbers between 0.0 and 1.0.");
+                        errors.Add("Parameter 'relevances' must be an array of floating point numbers between 0.0 and 1.0.");
                     }
                 }
                 catch (Exception)
                 {
-                    errors.Add("Parameter 'layerRelevances' must be an array of floating point numbers.");
+                    errors.Add("Parameter 'relevances' must be an array of floating point numbers.");
                 }
             }
             else
             {
-                errors.Add("Parameter 'layerRelevances' is required.");
+                errors.Add("Parameter 'relevances' is required.");
             }
 
             return errors;

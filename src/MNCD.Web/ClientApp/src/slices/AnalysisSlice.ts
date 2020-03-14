@@ -97,10 +97,11 @@ const slice = createSlice({
           break;
         case FlattenningAlgorithm.LocalSimplification:
           const relevances = dataSet
-            ? new Array(dataSet.layerCount).fill("1.0")
+            ? new Array(dataSet.layerCount).fill(1.0)
             : [];
           state.request.flatteningAlgorithmParameters = {
             treshold: "1.0",
+            weightEdges: "true",
             relevances: JSON.stringify(relevances)
           };
           break;

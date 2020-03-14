@@ -1,6 +1,6 @@
 import React from "react";
 import { connect, ConnectedProps } from "react-redux";
-import { Stack, TextField, DefaultButton, Separator, ScrollablePane } from "office-ui-fabric-react";
+import { Stack, TextField, DefaultButton, Separator, ScrollablePane, Text, Toggle } from "office-ui-fabric-react";
 import { RootState } from "../../../store";
 import { updateFlatteningParameters } from "../../../slices/AnalysisSlice";
 
@@ -18,7 +18,7 @@ class LocalSimplification extends React.Component<ReduxProps, IState> {
   }
 
   handleApplyRelevanceAll = () => {
-    const rel = this.props.relevances.map(() => this.state.relevanceAll);
+    const rel = this.props.relevances.map(() => Number(this.state.relevanceAll));
     this.props.updateFlatteningParameters({ relevances: JSON.stringify(rel) });
   }
 
@@ -31,9 +31,13 @@ class LocalSimplification extends React.Component<ReduxProps, IState> {
   handleRelevanceChange = (i: number, value?: string) => {
     if (value === undefined) return;
 
-    const rel = this.props.relevances;
-    rel[i] = value;
-    this.props.updateFlatteningParameters({ relevances: JSON.stringify(rel) });
+    const relevance = Number(value);
+
+    if (relevance <= 1 && relevance >= 0) {
+      const rel = this.props.relevances;
+      rel[i] = relevance;
+      this.props.updateFlatteningParameters({ relevances: JSON.stringify(rel) });
+    }
   }
 
   handleTresholdChange = (_: any, value?: string) => {
@@ -41,23 +45,29 @@ class LocalSimplification extends React.Component<ReduxProps, IState> {
 
     const treshold = Number(value);
     if (0.0 <= treshold && treshold <= 1.0) {
-      this.props.updateFlatteningParameters({ treshold: value });
+      this.props.updateFlatteningParameters({ treshold: value.replace(",", ".") });
     }
+  }
+
+  handleWeightEdgesChange = (_: any, checked?: boolean) => {
+    if (checked === undefined) return;
+    console.log(checked, String(checked))
+    this.props.updateFlatteningParameters({ weightEdges: String(checked) });
   }
 
   renderRows = () => {
     return this.props.relevances.map((rel, i) => {
       const over = this.props.theme.palette.greenDark;
       const under = this.props.theme.palette.redDark;
-      const borderColor = Number(rel) >= Number(this.props.treshold) ? over : under;
+      const borderBottomColor = Number(rel) >= Number(this.props.treshold) ? over : under;
       const onChange = (_: any, v: string | undefined) => this.handleRelevanceChange(i, v);
       return (<Stack.Item key={i}>
         <TextField
-          styles={{ fieldGroup: { borderColor } }}
+          styles={{ fieldGroup: { borderBottomColor, borderBottomWidth: 2 } }}
           label={this.props.names[i]}
           type="number"
           step="0.01"
-          value={rel}
+          value={rel.toString()}
           onChange={onChange}
         />
       </Stack.Item>)
@@ -66,7 +76,7 @@ class LocalSimplification extends React.Component<ReduxProps, IState> {
 
   render() {
     return (
-      <Stack horizontal tokens={{ childrenGap: 5 }}>
+      <Stack horizontal horizontalAlign="space-evenly" tokens={{ childrenGap: 5 }}>
         <Stack>
           <Stack.Item>
             <TextField
@@ -76,6 +86,13 @@ class LocalSimplification extends React.Component<ReduxProps, IState> {
               step="0.01"
               value={String(this.props.treshold)}
               onChange={this.handleTresholdChange}
+            />
+          </Stack.Item>
+          <Stack.Item>
+            <Toggle
+              label="Weight Edges"
+              checked={this.props.weightEdges}
+              onChange={this.handleWeightEdgesChange}
             />
           </Stack.Item>
         </Stack>
@@ -100,7 +117,12 @@ class LocalSimplification extends React.Component<ReduxProps, IState> {
           </Stack.Item>
           <Stack.Item>
             <Separator />
-            <div style={{ width: "100%", height: 200, paddingTop: 30, paddingBottom: 10, position: "relative" }}>
+          </Stack.Item>
+          <Stack.Item>
+            <Text variant="large">Layer Relevances</Text>
+          </Stack.Item>
+          <Stack.Item>
+            <div style={{ width: "100%", height: 200, paddingBottom: 10, position: "relative" }}>
               <ScrollablePane>
                 <Stack>{this.renderRows()}</Stack>
               </ScrollablePane>
@@ -114,12 +136,13 @@ class LocalSimplification extends React.Component<ReduxProps, IState> {
 
 const mapProps = (state: RootState) => {
   const { dataSet, request } = state.analysis;
-  const { treshold, relevances } = request.flatteningAlgorithmParameters;
+  const { treshold, relevances, weightEdges } = request.flatteningAlgorithmParameters;
   return {
     theme: state.theme.current,
     treshold: treshold,
+    weightEdges: weightEdges === "true",
     names: dataSet ? dataSet.layerNames : [],
-    relevances: JSON.parse(relevances) as string[]
+    relevances: JSON.parse(relevances) as number[]
   }
 };
 
