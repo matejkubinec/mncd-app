@@ -7,6 +7,9 @@
 trigger:
 - master
 
+pr:
+  - master
+
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -17,10 +20,12 @@ variables:
 
 stages:
 - stage: build
+  displayName: Build
   jobs:
     - job: build_job
       steps:
         - task: DotNetCoreCLI@2
+          displayName: 'dotnet restore'
           inputs:
             command: 'restore'
             feedsToUse: 'select'
@@ -31,7 +36,31 @@ stages:
           displayName: 'dotnet build $(buildConfiguration)'
           workingDirectory: 'src'
 
+- stage: test
+  displayName: Test
+  dependsOn: build
+  jobs:
+    - job: test
+      displayName: Test
+      steps:
+          - task: DotNetCoreCLI@2
+            displayName: 'dotnet restore'
+            inputs:
+              command: 'restore'
+              feedsToUse: 'select'
+              vstsFeed: 'c576e1dd-4ca0-46b7-8ea3-b4de73f796eb/d9aebe10-63af-42e6-868c-18e277673283'
+              projects: 'src/**/*.csproj'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'dotnet test'
+            inputs:
+              command: 'test'
+              workingDirectory: src
+
 - stage: deploy
+  displayName: Deploy
+  dependsOn: test
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
   jobs:
     - job: deploy_job
       steps:
