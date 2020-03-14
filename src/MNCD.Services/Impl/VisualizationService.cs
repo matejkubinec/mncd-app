@@ -155,7 +155,7 @@ namespace MNCD.Services.Impl
             }
         }
 
-        public async Task<Visualization> VisualizeBarplot<R, T>(IEnumerable<R> x, IEnumerable<T> y, IEnumerable<string> labels, string xlabel, string ylabel)
+        public async Task<Visualization> VisualizeBarplot<R, T>(IEnumerable<R> x, IEnumerable<T> y, IEnumerable<string> labels, string xlabel, string ylabel, bool visualizeCommunities)
         {
             var client = new HttpClient();
             var request = new BarplotRequest<R, T>
@@ -164,7 +164,11 @@ namespace MNCD.Services.Impl
                 Y = y,
                 Labels = labels,
                 XLabel = xlabel,
-                YLabel = ylabel
+                YLabel = ylabel,
+                Params = new BarplotRequestParameters
+                {
+                    ColorCommunities = visualizeCommunities
+                }
             };
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -306,6 +310,15 @@ namespace MNCD.Services.Impl
 
             [JsonProperty("ylabel")]
             public string YLabel { get; set; }
+
+            [JsonProperty("params")]
+            public BarplotRequestParameters Params { get; set; }
+        }
+
+        private class BarplotRequestParameters
+        {
+            [JsonProperty("color_communities")]
+            public bool ColorCommunities { get; set; }
         }
 
         private class Treemap<T>
