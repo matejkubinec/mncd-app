@@ -1,9 +1,12 @@
 ﻿using MNCD.Data;
+using MNCD.Domain.DTO.Visualization;
 using MNCD.Domain.Entities;
+using MNCD.Domain.Extensions;
 using MNCD.Domain.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -14,11 +17,13 @@ namespace MNCD.Services.Impl
     public class VisualizationService : IVisualizationService
     {
         private readonly MNCDContext _ctx;
+        private readonly IAnalysisService _analysisService;
         private readonly string _baseUrl;
 
-        public VisualizationService(MNCDContext ctx, string baseUrl)
+        public VisualizationService(MNCDContext ctx, IAnalysisService analysisService, string baseUrl)
         {
             _ctx = ctx;
+            _analysisService = analysisService;
             _baseUrl = baseUrl;
         }
 
@@ -35,13 +40,15 @@ namespace MNCD.Services.Impl
             return visualization;
         }
 
-        public async Task<Visualization> VisualizeMultilayer(string edgeList, VisualizationType type)
+        public async Task<Visualization> GetVisualization(int analysisId, VisualizationType type)
+        {
+            var analysis = await _analysisService.GetAnalysis(analysisId);
+            return await GetVisualizationFromAnalysis(analysis, type);
+        }
+
+        public async Task<Visualization> VisualizeMultilayer(MultilayerRequest request)
         {
             var client = new HttpClient();
-            var request = new VisualizeMultilayerRequest
-            {
-                EdgeList = edgeList
-            };
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var uri = _baseUrl + "/api/multi-layer/diagonal";
@@ -52,8 +59,8 @@ namespace MNCD.Services.Impl
                 var svg = await response.Content.ReadAsStringAsync();
                 return new Visualization
                 {
-                    Title = "Diagonal Layout",
-                    Type = type,
+                    Title = request.Type.ToTitle(),
+                    Type = request.Type,
                     SvgImage = svg
                 };
             }
@@ -64,14 +71,9 @@ namespace MNCD.Services.Impl
             }
         }
 
-        public async Task<Visualization> VisualizeMultilayerCommunities(string edgeList, string communityList, VisualizationType type)
+        public async Task<Visualization> VisualizeMultilayerCommunities(MultilayerCommunitiesRequest request)
         {
             var client = new HttpClient();
-            var request = new VisualizeMultilayerCommunitiesRequest
-            {
-                EdgeList = edgeList,
-                CommunityList = communityList
-            };
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var uri = _baseUrl + "/api/multi-layer/hairball";
@@ -82,8 +84,8 @@ namespace MNCD.Services.Impl
                 var svg = await response.Content.ReadAsStringAsync();
                 return new Visualization
                 {
-                    Title = "Hairball Layout",
-                    Type = type,
+                    Title = request.Type.ToTitle(),
+                    Type = request.Type,
                     SvgImage = svg
                 };
             }
@@ -94,14 +96,9 @@ namespace MNCD.Services.Impl
             }
         }
 
-        public async Task<Visualization> VisualizeSingleLayer(string edgeList, VisualizationType type)
+        public async Task<Visualization> VisualizeSingleLayer(SingleLayerRequest request)
         {
             var client = new HttpClient();
-            var request = new VisualizeSingleLayerRequest
-            {
-                EdgeList = edgeList,
-                Layout = LayoutToString(type)
-            };
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var uri = _baseUrl + "/api/single-layer/network";
@@ -112,8 +109,8 @@ namespace MNCD.Services.Impl
                 var svg = await response.Content.ReadAsStringAsync();
                 return new Visualization
                 {
-                    Title = LayoutToTitle(type),
-                    Type = type,
+                    Title = request.Type.ToTitle(),
+                    Type = request.Type,
                     SvgImage = svg
                 };
             }
@@ -124,15 +121,9 @@ namespace MNCD.Services.Impl
             }
         }
 
-        public async Task<Visualization> VisualizeSingleLayerCommunity(string edgeList, string communityList, VisualizationType type)
+        public async Task<Visualization> VisualizeSingleLayerCommunity(SingleLayerCommunityRequest request)
         {
             var client = new HttpClient();
-            var request = new VisualizeSingleLayerCommunityRequest
-            {
-                EdgeList = edgeList,
-                CommunityList = communityList,
-                Layout = LayoutToString(type)
-            };
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var uri = _baseUrl + "/api/single-layer/community";
@@ -143,8 +134,8 @@ namespace MNCD.Services.Impl
                 var svg = await response.Content.ReadAsStringAsync();
                 return new Visualization
                 {
-                    Title = LayoutToTitle(type),
-                    Type = type,
+                    Title = request.Type.ToTitle(),
+                    Type = request.Type,
                     SvgImage = svg
                 };
             }
@@ -155,21 +146,9 @@ namespace MNCD.Services.Impl
             }
         }
 
-        public async Task<Visualization> VisualizeBarplot<R, T>(IEnumerable<R> x, IEnumerable<T> y, IEnumerable<string> labels, string xlabel, string ylabel, bool visualizeCommunities)
+        public async Task<Visualization> VisualizeBarplot<R, T>(BarplotRequest<R, T> request)
         {
             var client = new HttpClient();
-            var request = new BarplotRequest<R, T>
-            {
-                X = x,
-                Y = y,
-                Labels = labels,
-                XLabel = xlabel,
-                YLabel = ylabel,
-                Params = new BarplotRequestParameters
-                {
-                    ColorCommunities = visualizeCommunities
-                }
-            };
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var uri = _baseUrl + "/api/common-charts/barplot";
@@ -191,14 +170,9 @@ namespace MNCD.Services.Impl
             }
         }
 
-        public async Task<Visualization> VisualizeTreemap<T>(IEnumerable<T> sizes, IEnumerable<string> label)
+        public async Task<Visualization> VisualizeTreemap<T>(TreemapRequest<T> request)
         {
             var client = new HttpClient();
-            var request = new Treemap<T>
-            {
-                Sizes = sizes,
-                Label = label
-            };
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var uri = _baseUrl + "/api/common-charts/treemap";
@@ -236,98 +210,113 @@ namespace MNCD.Services.Impl
             }
         }
 
-        private string LayoutToString(VisualizationType layout)
+        private async Task<Visualization> GetVisualizationFromAnalysis(Analysis analysis, VisualizationType type)
         {
-            return layout switch
+            if (type.IsMultiLayer())
             {
-                VisualizationType.SingleLayerLayoutCircular => "circular",
-                VisualizationType.SingleLayerLayoutSpiral => "spiral",
-                VisualizationType.SingleLayerLayoutSpring => "spring",
-                _ => throw new ArgumentException("Unsupported layout.")
-            };
-        }
-
-        private string LayoutToTitle(VisualizationType layout)
-        {
-            return layout switch
+                var viz = analysis.MultiLayer.FirstOrDefault(a => a.Type == type);
+                if (viz == null)
+                {
+                    viz = await VisualizeMultilayer(new MultilayerRequest
+                    {
+                        EdgeList = analysis.Request.DataSet.EdgeList,
+                        Type = type
+                    });
+                    analysis.MultiLayer.Add(viz);
+                    await _ctx.SaveChangesAsync();
+                }
+                return viz;
+            }
+            else if (type.IsMultiLayerCommunities())
             {
-                VisualizationType.SingleLayerLayoutCircular => "Circular Layout",
-                VisualizationType.SingleLayerLayoutSpiral => "Spiral Layout",
-                VisualizationType.SingleLayerLayoutSpring => "Spring Layout",
-                _ => throw new ArgumentException("Unsupported layout.")
-            };
-        }
-
-        private class VisualizeMultilayerRequest
-        {
-            [JsonProperty("edge_list")]
-            public string EdgeList { get; set; }
-        }
-
-        private class VisualizeMultilayerCommunitiesRequest
-        {
-            [JsonProperty("edge_list")]
-            public string EdgeList { get; set; }
-
-            [JsonProperty("community_list")]
-            public string CommunityList { get; set; }
-        }
-
-        private class VisualizeSingleLayerRequest
-        {
-            [JsonProperty("edge_list")]
-            public string EdgeList { get; set; }
-
-            [JsonProperty("layout")]
-            public string Layout { get; set; }
-        }
-
-        private class VisualizeSingleLayerCommunityRequest
-        {
-            [JsonProperty("edge_list")]
-            public string EdgeList { get; set; }
-
-            [JsonProperty("community_list")]
-            public string CommunityList { get; set; }
-
-            [JsonProperty("layout")]
-            public string Layout { get; set; }
-        }
-
-        private class BarplotRequest<R, T>
-        {
-            [JsonProperty("x")]
-            public IEnumerable<R> X { get; set; }
-
-            [JsonProperty("y")]
-            public IEnumerable<T> Y { get; set; }
-
-            [JsonProperty("labels")]
-            public IEnumerable<string> Labels { get; set; }
-
-            [JsonProperty("xlabel")]
-            public string XLabel { get; set; }
-
-            [JsonProperty("ylabel")]
-            public string YLabel { get; set; }
-
-            [JsonProperty("params")]
-            public BarplotRequestParameters Params { get; set; }
-        }
-
-        private class BarplotRequestParameters
-        {
-            [JsonProperty("color_communities")]
-            public bool ColorCommunities { get; set; }
-        }
-
-        private class Treemap<T>
-        {
-            [JsonProperty("sizes")]
-            public IEnumerable<T> Sizes { get; set; }
-
-            [JsonProperty("label")]
-            public IEnumerable<string> Label { get; set; }
+                var viz = analysis.MultiLayerCommunities.FirstOrDefault(a => a.Type == type);
+                if (viz == null)
+                {
+                    viz = await VisualizeMultilayerCommunities(new MultilayerCommunitiesRequest
+                    {
+                        EdgeList = analysis.Request.DataSet.EdgeList,
+                        CommunityList = analysis.Result.CommunityList,
+                        Type = type
+                    });
+                    analysis.MultiLayerCommunities.Add(viz);
+                    await _ctx.SaveChangesAsync();
+                }
+                return viz;
+            }
+            else if (type.IsSingleLayer())
+            {
+                var viz = analysis.SingleLayer.FirstOrDefault(a => a.Type == type);
+                if (viz == null)
+                {
+                    viz = await VisualizeSingleLayer(new SingleLayerRequest
+                    {
+                        EdgeList = analysis.Result.AnalyzedNetworkEdgeList,
+                        Type = type
+                    });
+                    analysis.SingleLayer.Add(viz);
+                    await _ctx.SaveChangesAsync();
+                }
+                return viz;
+            }
+            else if (type.IsSingleLayerCommunities())
+            {
+                var viz = analysis.SingleLayerCommunities.FirstOrDefault(a => a.Type == type);
+                if (viz == null)
+                {
+                    viz = await VisualizeSingleLayerCommunity(new SingleLayerCommunityRequest
+                    {
+                        EdgeList = analysis.Result.AnalyzedNetworkEdgeList,
+                        CommunityList = analysis.Result.CommunityList,
+                        Type = type
+                    });
+                    analysis.SingleLayerCommunities.Add(viz);
+                    await _ctx.SaveChangesAsync();
+                }
+                return viz;
+            }
+            else if (type == VisualizationType.Barplot)
+            {
+                var viz = analysis.CommunitiesBarplot;
+                if (viz == null)
+                {
+                    var communities = analysis.Result.ActorToCommunity.Values.Distinct().OrderByDescending(c => c);
+                    var communitiesCount = communities.Select(c => analysis.Result.ActorToCommunity.Where(a => a.Value == c).Count());
+                    viz = await VisualizeBarplot(new BarplotRequest<int, int>
+                    {
+                        X = communities,
+                        Y = communitiesCount,
+                        Labels = communities.Select(c => "C" + c),
+                        XLabel = "Community",
+                        YLabel = "Actor Count",
+                        Params = new BarplotRequestParameters
+                        {
+                            ColorCommunities = true
+                        }
+                    });
+                    analysis.CommunitiesBarplot = viz;
+                    await _ctx.SaveChangesAsync();
+                }
+                return viz;
+            }
+            else if (type == VisualizationType.Treemap)
+            {
+                var viz = analysis.CommunitiesTreemap;
+                if (viz == null)
+                {
+                    var communities = analysis.Result.ActorToCommunity.Values.Distinct().OrderByDescending(c => c);
+                    var communitiesCount = communities.Select(c => analysis.Result.ActorToCommunity.Where(a => a.Value == c).Count());
+                    viz = await VisualizeTreemap(new TreemapRequest<int>
+                    {
+                        Label = communities.Select(c => "C" + c),
+                        Sizes = communitiesCount,
+                        Type = type
+                    });
+                    analysis.CommunitiesTreemap = viz;
+                    await _ctx.SaveChangesAsync();
+                }
+                return viz;
+            }
+            return null;
         }
 
         private class ErrorResponse

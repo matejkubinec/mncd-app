@@ -2,8 +2,7 @@ import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../store";
 import { AnalysisResultItem, AnalysisResultControls } from "./index";
-import { Stack, ScrollablePane } from "office-ui-fabric-react";
-import { addVisualizations } from "../../slices/AnalysisSlice";
+import { Stack } from "office-ui-fabric-react";
 
 class AnalysisResult extends React.Component<ReduxProps> {
   renderAnalyses = () => {
@@ -37,14 +36,13 @@ class AnalysisResult extends React.Component<ReduxProps> {
 }
 
 const mapProps = (rootState: RootState) => {
-  const { session, visualizing } = rootState.analysis;
+  const { session } = rootState.analysis;
   return {
     items: session ? session.analyses : [],
-    visualizing: visualizing
   };
 };
 
-const mapDispatch = { addVisualizations };
+const mapDispatch = {};
 
 const connector = connect(mapProps, mapDispatch);
 

@@ -116,14 +116,16 @@ namespace MNCD.Web
         {
             services.AddSingleton<IReaderService, ReaderService>();
             services.AddSingleton<IHashService, HashService>();
-
-            var vizUrl = Configuration.GetValue<string>("VisualizationApiUrl");
-            services.AddTransient<IVisualizationService, VisualizationService>(x =>
-                new VisualizationService(x.GetService<MNCDContext>(), vizUrl));
-
             services.AddTransient<INetworkDataSetService, NetworkDataSetService>();
             services.AddTransient<IAnalysisSessionService, AnalysisSessionService>();
             services.AddTransient<IAnalysisService, AnalysisService>();
+
+            var vizUrl = Configuration.GetValue<string>("VisualizationApiUrl");
+            services.AddTransient<IVisualizationService, VisualizationService>(x =>
+                new VisualizationService(
+                    x.GetService<MNCDContext>(),
+                    x.GetService<IAnalysisService>(),
+                    vizUrl));
         }
     }
 }

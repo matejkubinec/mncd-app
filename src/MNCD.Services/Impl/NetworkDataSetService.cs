@@ -13,18 +13,15 @@ namespace MNCD.Services.Impl
         private readonly MNCDContext _ctx;
         private readonly IReaderService _readerService;
         private readonly IHashService _hashService;
-        private readonly IVisualizationService _visualizationService;
 
         public NetworkDataSetService(
             MNCDContext ctx,
             IHashService hashService,
-            IReaderService readerService,
-            IVisualizationService visualizationService)
+            IReaderService readerService)
         {
             _ctx = ctx;
             _hashService = hashService;
             _readerService = readerService;
-            _visualizationService = visualizationService;
         }
 
         public async Task AddDataSet(string name, string content, FileType fileType)

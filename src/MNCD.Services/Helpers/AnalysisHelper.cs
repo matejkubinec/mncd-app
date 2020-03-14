@@ -40,6 +40,11 @@ namespace MNCD.Services.Helpers
             return res;
         }
 
+        public static string CommunityList(List<Actor> actors, List<Community> communities)
+        {
+            return new EdgeListWriter().ToString(actors, communities, true);
+        }
+
         public static string EdgeList(Network network)
         {
             return EdgeListWriter.ToString(network, true);

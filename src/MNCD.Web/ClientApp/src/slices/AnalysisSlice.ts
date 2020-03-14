@@ -16,7 +16,6 @@ export type AnalysisState = {
   isAnalyzing: boolean;
   isRequestValid: boolean;
   areControlsVisible: boolean;
-  visualizing: { [id: number]: boolean };
   request: AnalysisRequestViewModel;
   session: AnalysisSessionViewModel | null;
   dataSet: DataSetRowViewModel | null;
@@ -27,7 +26,6 @@ const initialState: AnalysisState = {
   isRequestValid: false,
   isAnalyzing: false,
   areControlsVisible: true,
-  visualizing: {},
   session: null,
   request: {
     id: 0,
@@ -155,25 +153,6 @@ const slice = createSlice({
         state.session.analyses.push(action.payload);
       }
     },
-    addVisualizationStart: (
-      state,
-      action: PayloadAction<AnalysisViewModel>
-    ) => {
-      state.visualizing[action.payload.id] = true;
-    },
-    addVisualizationSuccess: (
-      state,
-      action: PayloadAction<AnalysisViewModel>
-    ) => {
-      state.visualizing[action.payload.id] = false;
-      if (state.session) {
-        const i = state.session.analyses.findIndex(
-          a => a.id == action.payload.id
-        );
-        state.session.analyses[i] = action.payload;
-      }
-      console.log(action.payload);
-    },
     toggleVisibilityStart: (state, action: PayloadAction<number>) => {
       const id = action.payload;
 
@@ -202,8 +181,6 @@ export const {
   toggleControlsVisiblity,
   analysisStart,
   analysisSuccess,
-  addVisualizationStart,
-  addVisualizationSuccess,
   toggleVisibilityStart
 } = slice.actions;
 
@@ -234,27 +211,6 @@ export const analyzeDataSet = () => (
       const data = response.data;
       if (response.status == 200) {
         dispatch(analysisSuccess(data));
-      } else {
-      }
-    })
-    .catch(reason => {
-      // TODO: react handle error
-      console.log(reason);
-    });
-};
-
-export const addVisualizations = (analysis: AnalysisViewModel) => (
-  dispatch: Dispatch
-) => {
-  dispatch(addVisualizationStart(analysis));
-
-  axios
-    .post<AnalysisViewModel>(`/api/analysis/visualize/${analysis.id}`)
-    .then(response => {
-      const data = response.data;
-      console.log(data);
-      if (response.status == 200) {
-        dispatch(addVisualizationSuccess(data));
       } else {
       }
     })

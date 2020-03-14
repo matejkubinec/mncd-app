@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MNCD.Domain.Entities;
 using MNCD.Domain.Services;
 using System;
 using System.Collections.Generic;
@@ -18,12 +19,12 @@ namespace MNCD.Web.Controllers
         }
 
         [HttpGet]
-        [Route("{id}")]
-        public async Task<IActionResult> Get(int id)
+        [Route("analysis/{analysisId}/{type}")]
+        public async Task<IActionResult> Get(int analysisId, VisualizationType type)
         {
             try
             {
-                var visualization = await _visualizationService.GetVisualization(id);
+                var visualization = await _visualizationService.GetVisualization(analysisId, type);
                 return new ContentResult()
                 {
                     Content = visualization.SvgImage,
