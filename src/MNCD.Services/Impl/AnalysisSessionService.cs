@@ -43,6 +43,8 @@ namespace MNCD.Services.Impl
             var session = await _ctx.AnalysisSessions
                 .Include(a => a.Analyses)
                 .ThenInclude(a => a.Request)
+                .ThenInclude(r => r.DataSet)
+                .ThenInclude(r => r.Info)
                 .Include(a => a.Analyses)
                 .ThenInclude(a => a.Result)
                 .Include(a => a.Analyses)

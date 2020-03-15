@@ -30,7 +30,7 @@ const initialState: AnalysisState = {
   request: {
     id: 0,
     sessionId: 0,
-    datasetId: 0,
+    dataSetId: 0,
     selectedLayer: 0,
     approach: AnalysisApproach.SingleLayerFlattening,
     analysisAlgorithm: AnalysisAlgorithm.FluidC,
@@ -150,7 +150,7 @@ const slice = createSlice({
       action: PayloadAction<DataSetRowViewModel>
     ) => {
       state.dataSet = action.payload;
-      state.request.datasetId = action.payload.id;
+      state.request.dataSetId = action.payload.id;
       state.isRequestValid = true;
 
       if (state.request.approach === AnalysisApproach.SingleLayerFlattening) {

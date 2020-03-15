@@ -7,8 +7,12 @@ namespace MNCD.Web.Models.Analysis
     {
         public int Id { get; set; }
         public int SessionId { get; set; }
+
         public int DatasetId { get; set; }
+        public string DataSetName { get; set; }
+
         public int SelectedLayer { get; set; }
+        public string SelectedLayerName { get; set; }
 
         public AnalysisApproach Approach { get; set; }
         public AnalysisAlgorithm AnalysisAlgorithm { get; set; }

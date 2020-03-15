@@ -1,7 +1,5 @@
 import React, { Component } from "react";
-import { Stack, Text } from "office-ui-fabric-react";
-import { NeutralColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
-import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
+import { Stack } from "office-ui-fabric-react";
 import { AnalysisResultViewModel } from "../../../types";
 
 interface IRow {
@@ -13,10 +11,8 @@ interface IProps {
   result: AnalysisResultViewModel;
 }
 
-interface IState {}
-
 // TODO: rename file
-export default class Evaluation extends Component<IProps, IState> {
+export default class Evaluation extends Component<IProps> {
   getRows(): IRow[] {
     const res = this.props.result;
     const rows = new Array<IRow>();
@@ -40,10 +36,10 @@ export default class Evaluation extends Component<IProps, IState> {
     return rows.map((r, i) => (
       <Stack horizontal horizontalAlign="center" key={i}>
         <Stack.Item styles={{ root: { width: "50%" } }}>
-          <Text style={{ fontWeight: "bold" }}>{r.name}</Text>
+          <span style={{ fontWeight: 600 }}>{r.name}</span>
         </Stack.Item>
         <Stack.Item styles={{ root: { width: "50%" } }}>
-          <Text>{r.value}</Text>
+          {r.value}
         </Stack.Item>
       </Stack>
     ));
