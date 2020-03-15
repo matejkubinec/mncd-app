@@ -1,8 +1,8 @@
 import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../store";
-import { Stack } from "office-ui-fabric-react";
-import { fetchAnalysisSession } from "../../slices/AnalysisSlice";
+import { Stack, ProgressIndicator } from "office-ui-fabric-react";
+import { fetchAnalysisSession } from "../../slices/analysis-slice";
 import { AnalysisPageHeader, AnalysisControls, AnalysisResult } from "./index";
 import { RouteComponentProps } from "react-router";
 
@@ -24,16 +24,24 @@ class AnalysisPage extends React.Component<IProps> {
         <Stack.Item>
           <AnalysisPageHeader />
         </Stack.Item>
-        <AnalysisControls />
-        <Stack.Item>
-          <AnalysisResult />
-        </Stack.Item>
+        {this.props.isLoading ?
+          <ProgressIndicator />
+          :
+          <React.Fragment>
+            <AnalysisControls />
+            <Stack.Item>
+              <AnalysisResult />
+            </Stack.Item>
+          </React.Fragment>
+        }
       </Stack>
     );
   }
 }
 
-const mapProps = (rootState: RootState) => ({});
+const mapProps = (state: RootState) => ({
+  isLoading: state.analysis.isSessionLoading
+});
 
 const mapDispatch = { fetchAnalysisSession };
 

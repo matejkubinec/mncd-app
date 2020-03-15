@@ -27,7 +27,7 @@ const initialState: AnalysisState = {
   isRequestValid: false,
   isAnalyzing: false,
   areControlsVisible: true,
-  areResultControlsVisible: false,
+  areResultControlsVisible: true,
   session: null,
   request: {
     id: 0,

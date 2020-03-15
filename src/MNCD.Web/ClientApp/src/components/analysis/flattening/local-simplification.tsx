@@ -2,7 +2,7 @@ import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { Stack, TextField, DefaultButton, Separator, ScrollablePane, Text, Toggle } from "office-ui-fabric-react";
 import { RootState } from "../../../store";
-import { updateFlatteningParameters } from "../../../slices/AnalysisSlice";
+import { updateFlatteningParameters } from "../../../slices/analysis-slice";
 
 interface IState {
   relevanceAll: string;

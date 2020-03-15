@@ -1,7 +1,8 @@
 import axios from "../axios";
-import { DataSetRowViewModel, DataSetAddViewModel, FileType } from "../types";
-import { createSlice, Dispatch } from "@reduxjs/toolkit";
+import { DataSetRowViewModel, DataSetAddViewModel, FileType, ApiResponse } from "../types";
+import { createSlice, Dispatch, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
+import { notificationDuration } from "../utils";
 
 export type DataSetsState = {
   isOpen: boolean;
@@ -10,6 +11,9 @@ export type DataSetsState = {
   isSaving: boolean;
   items: DataSetRowViewModel[];
   itemToAdd: DataSetAddViewModel;
+  successMessage: string | null;
+  errorMessage: string | null;
+  addErrorMessage: string | null;
 };
 
 const initialState = {
@@ -18,7 +22,10 @@ const initialState = {
   isAdding: false,
   isSaving: false,
   items: [],
-  itemToAdd: {} as DataSetAddViewModel
+  itemToAdd: {} as DataSetAddViewModel,
+  successMessage: null,
+  errorMessage: null,
+  addErrorMessage: null
 } as DataSetsState;
 
 const slice = createSlice({
@@ -38,6 +45,10 @@ const slice = createSlice({
       state.isLoading = false;
       state.items = action.payload;
     },
+    fetchDataSetsListFailure: (state, action) => {
+      state.isLoading = false;
+      state.errorMessage = action.payload;
+    },
     openAddDataSetForm: state => {
       state.isAdding = true;
       state.itemToAdd = {
@@ -55,9 +66,24 @@ const slice = createSlice({
     saveDataSetStart: state => {
       state.isSaving = true;
     },
-    saveDataSetSuccess: (state, action) => {
+    saveDataSetSuccess: (state, action: PayloadAction<ApiResponse<DataSetRowViewModel>>) => {
       state.isSaving = false;
       state.isAdding = false;
+      state.items = [...state.items, action.payload.data];
+      state.successMessage = action.payload.message;
+    },
+    saveDataSetFailure: (state, action: PayloadAction<string>) => {
+      state.isSaving = false;
+      state.addErrorMessage = action.payload;
+    },
+    hideSuccessMessage: state => {
+      state.successMessage = null;
+    },
+    hideErrorMessage: state => {
+      state.errorMessage = null;
+    },
+    hideAddErrorMessage: state => {
+      state.addErrorMessage = null;
     }
   }
 });
@@ -65,13 +91,22 @@ const slice = createSlice({
 export const {
   openDataSetsModal,
   closeDataSetsModal,
+
   fetchDataSetsListStart,
   fetchDataSetsListSuccess,
+  fetchDataSetsListFailure,
+
   openAddDataSetForm,
   updateItemToAdd,
   closeAddDataSetForm,
+
   saveDataSetStart,
-  saveDataSetSuccess
+  saveDataSetSuccess,
+  saveDataSetFailure,
+
+  hideSuccessMessage,
+  hideErrorMessage,
+  hideAddErrorMessage
 } = slice.actions;
 
 export const fetchDataSetsList = () => (dispatch: Dispatch) => {
@@ -83,8 +118,10 @@ export const fetchDataSetsList = () => (dispatch: Dispatch) => {
       dispatch(fetchDataSetsListSuccess(response.data));
     })
     .catch(reason => {
-      console.log(reason);
-      // TODO: react handle error
+      dispatch(fetchDataSetsListFailure(reason.message));
+      setTimeout(() => {
+        dispatch(hideErrorMessage());
+      }, notificationDuration)
     });
 };
 
@@ -102,20 +139,25 @@ export const saveDataSet = (file: File) => (
   dispatch(saveDataSetStart());
 
   axios
-    .post<string>("/api/dataset", formData)
+    .post<ApiResponse<DataSetRowViewModel>>("/api/dataset", formData)
     .then(response => {
-      const data = response.data;
-
       if (response.status == 200) {
-        dispatch(saveDataSetSuccess(data));
-        dispatch(fetchDataSetsList() as any);
+        dispatch(saveDataSetSuccess(response.data));
+        setTimeout(() => {
+          dispatch(hideSuccessMessage());
+        }, notificationDuration)
       } else {
-        dispatch(saveDataSetSuccess(data));
+        dispatch(saveDataSetFailure(response.data.message));
+        setTimeout(() => {
+          dispatch(hideAddErrorMessage());
+        }, notificationDuration)
       }
     })
     .catch(reason => {
-      // TODO: react handle error
-      console.log(reason);
+      dispatch(saveDataSetFailure(reason.message));
+      setTimeout(() => {
+        dispatch(hideAddErrorMessage());
+      }, notificationDuration)
     });
 };
 

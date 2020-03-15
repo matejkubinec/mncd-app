@@ -2,7 +2,7 @@ import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { Stack, TextField } from "office-ui-fabric-react";
 import { RootState } from "../../../store";
-import { updateAnalysisParameters } from "../../../slices/AnalysisSlice";
+import { updateAnalysisParameters } from "../../../slices/analysis-slice";
 
 interface IProps extends ReduxProps { }
 

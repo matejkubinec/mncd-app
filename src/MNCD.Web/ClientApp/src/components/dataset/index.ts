@@ -1,5 +1,5 @@
-import AddDataSet from "./AddDataSet";
-import DataSetsModal from "./DataSetsModal";
-import DataSetsList from "./DataSetsList";
+import AddDataSet from "./add-dataset";
+import DataSetsModal from "./modal-dataset";
+import DataSetsList from "./list-dataset";
 
 export { AddDataSet, DataSetsModal, DataSetsList };

@@ -4,8 +4,8 @@ import { RootState } from "../../../store";
 import { Stack, DefaultButton, Label } from "office-ui-fabric-react";
 import { DataSetsModal } from "../../dataset";
 import { DataSetRowViewModel } from "../../../types";
-import { updateAnalysisDataSet } from "../../../slices/AnalysisSlice";
-import { openDataSetsModal } from "../../../slices/DataSetSlice";
+import { updateAnalysisDataSet } from "../../../slices/analysis-slice";
+import { openDataSetsModal } from "../../../slices/dataset-slice";
 
 class AnalysisDataSetControl extends React.Component<ReduxProps> {
   handleDataSetChosen = (dataSet: DataSetRowViewModel) => {

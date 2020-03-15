@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using AutoMapper;
 using System.Threading.Tasks;
+using MNCD.Web.Models;
 
 namespace MNCD.Web.Controllers
 {
@@ -56,9 +57,13 @@ namespace MNCD.Web.Controllers
             var name = model.Name;
             var content = await ReadFileContent(model.File);
 
-            await _dataSetService.AddDataSet(name, content, model.format);
-
-            return new OkObjectResult("Dataset was saved.");
+            var dataSet = await _dataSetService.AddDataSet(name, content, model.format);
+            var viewModel = _mapper.Map<DataSetRowViewModel>(dataSet);
+            return new JsonResult(new ApiResponse<DataSetRowViewModel>
+            {
+                Data = viewModel,
+                Message = "Dataset was added."
+            });
         }
 
         [HttpPatch]
@@ -74,9 +79,13 @@ namespace MNCD.Web.Controllers
                 return new BadRequestObjectResult("Invalid dataset id.");
             }
 
-            await _dataSetService.UpdateDataSet(model.Id, model.Name);
-
-            return new OkObjectResult("Data was updated.");
+            var dataSet = await _dataSetService.UpdateDataSet(model.Id, model.Name);
+            var viewModel = _mapper.Map<DataSetRowViewModel>(dataSet);
+            return new JsonResult(new ApiResponse<DataSetRowViewModel>
+            {
+                Data = viewModel,
+                Message = "Dataset was updated."
+            });
         }
 
         [HttpDelete]
@@ -89,8 +98,10 @@ namespace MNCD.Web.Controllers
             }
 
             await _dataSetService.DeleteDataSet(id);
-
-            return new OkObjectResult("Dataset was deleted.");
+            return new JsonResult(new ApiResponse<DataSetRowViewModel>
+            {
+                Message = "Dataset was deleted."
+            });
         }
 
         private async Task<string> ReadFileContent(IFormFile file)

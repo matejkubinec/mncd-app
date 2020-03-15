@@ -3,7 +3,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../../store";
 import { Stack, IChoiceGroupOption, ChoiceGroup } from "office-ui-fabric-react";
 import { AnalysisApproach } from "../../../types";
-import { setAnalysisApproach } from "../../../slices/AnalysisSlice";
+import { setAnalysisApproach } from "../../../slices/analysis-slice";
 
 class AnalysisApproachControl extends React.Component<ReduxProps> {
   private options: IChoiceGroupOption[] = [

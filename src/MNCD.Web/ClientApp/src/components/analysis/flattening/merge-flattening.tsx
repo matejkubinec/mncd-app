@@ -2,7 +2,7 @@ import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../../store";
 import { Stack, Toggle, List, Checkbox, VerticalDivider, ScrollablePane } from "office-ui-fabric-react";
-import { updateFlatteningParameters } from "../../../slices/AnalysisSlice";
+import { updateFlatteningParameters } from "../../../slices/analysis-slice";
 
 interface Row {
   name: string;

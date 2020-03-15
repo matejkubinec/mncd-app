@@ -3,7 +3,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../../store";
 import { Stack, IDropdownOption, Dropdown } from "office-ui-fabric-react";
 import { AnalysisAlgorithm } from "../../../types";
-import { setAnalysisAlgorithm } from "../../../slices/AnalysisSlice";
+import { setAnalysisAlgorithm } from "../../../slices/analysis-slice";
 import { FluidC, Louvain, KClique } from "../algorithms";
 
 class AnalysisAlgorithmControl extends React.Component<ReduxProps> {

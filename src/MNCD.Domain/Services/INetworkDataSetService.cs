@@ -10,9 +10,9 @@ namespace MNCD.Domain.Services
 
         Task<NetworkDataSet> GetDataSet(int id);
 
-        Task AddDataSet(string name, string content, FileType fileType);
+        Task<NetworkDataSet> AddDataSet(string name, string content, FileType fileType);
 
-        Task UpdateDataSet(int id, string name);
+        Task<NetworkDataSet> UpdateDataSet(int id, string name);
 
         Task DeleteDataSet(int id);
     }
