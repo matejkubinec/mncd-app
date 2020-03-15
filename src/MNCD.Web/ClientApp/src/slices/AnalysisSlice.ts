@@ -16,6 +16,7 @@ export type AnalysisState = {
   isAnalyzing: boolean;
   isRequestValid: boolean;
   areControlsVisible: boolean;
+  areResultControlsVisible: boolean;
   request: AnalysisRequestViewModel;
   session: AnalysisSessionViewModel | null;
   dataSet: DataSetRowViewModel | null;
@@ -26,6 +27,7 @@ const initialState: AnalysisState = {
   isRequestValid: false,
   isAnalyzing: false,
   areControlsVisible: true,
+  areResultControlsVisible: false,
   session: null,
   request: {
     id: 0,
@@ -180,6 +182,9 @@ const slice = createSlice({
         }
       }
     },
+    toggleResultControls: state => {
+      state.areResultControlsVisible = !state.areResultControlsVisible;
+    },
     toggleControlsVisiblity: state => {
       state.areControlsVisible = !state.areControlsVisible;
     },
@@ -217,10 +222,11 @@ export const {
   updateAnalysisParameters,
   updateAnalysisDataSet,
   updateSelectedLayer,
-  toggleControlsVisiblity,
   analysisStart,
   analysisSuccess,
-  toggleVisibilityStart
+  toggleControlsVisiblity,
+  toggleVisibilityStart,
+  toggleResultControls
 } = slice.actions;
 
 export const fetchAnalysisSession = (guid: string) => (dispatch: Dispatch) => {
