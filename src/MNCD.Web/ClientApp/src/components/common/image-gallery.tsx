@@ -34,11 +34,13 @@ export default class ImageGallery extends React.Component<IProps, IState> {
   render() {
     const showPrev = this.state.currentIdx > 0;
     const showNext = this.state.currentIdx + 1 < this.props.urls.length;
+    const title = this.props.titles[this.state.currentIdx];
+    const src = this.props.urls[this.state.currentIdx];
 
     return (
       <Stack tokens={{ childrenGap: 10 }}>
         <Stack.Item>
-          <h4>{this.props.titles[this.state.currentIdx]}</h4>
+          <span style={{ fontWeight: 600 }}>{title}</span>
         </Stack.Item>
         <Stack
           horizontal
@@ -55,7 +57,7 @@ export default class ImageGallery extends React.Component<IProps, IState> {
             ) : " "}
           </Stack.Item>
           <Stack.Item grow={2} verticalFill>
-            <ImageContainer src={this.props.urls[this.state.currentIdx]} />
+            <ImageContainer src={src} />
           </Stack.Item>
           <Stack.Item styles={{ root: { width: 50 } }}>
             {showNext ? (

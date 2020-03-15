@@ -52,8 +52,13 @@ export interface SessionRowViewModel {
 export interface AnalysisRequestViewModel {
   id: number;
   sessionId: number;
-  datasetId: number;
+
+  dataSetId: number;
+  dataSetName?: string;
+
   selectedLayer: number;
+  selectedLayerName?: string;
+
   approach: AnalysisApproach;
 
   analysisAlgorithm: AnalysisAlgorithm;

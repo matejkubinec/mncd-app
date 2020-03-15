@@ -2,21 +2,19 @@ import React, { Component } from "react";
 import {
   AnalysisRequestViewModel,
   AnalysisApproach,
-  AnalysisAlgorithm,
-  FlattenningAlgorithm
 } from "../../../types";
 import {
   approachToString,
   analysisToString,
   flatteningToString
 } from "../../../utils";
-import { Stack, Text, getTheme } from "office-ui-fabric-react";
-import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
-const theme = getTheme();
+import { Stack, Separator } from "office-ui-fabric-react";
 
 interface AnalysisRequestRow {
   name: string;
   value: string;
+  separator?: boolean;
+  isParam?: boolean;
 }
 
 interface IProps {
@@ -44,30 +42,37 @@ export default class AnalysisRequest extends Component<IProps> {
       { name: "Approach", value: this.approach }
     ] as AnalysisRequestRow[];
 
+    rows.push({ name: "DataSet", value: request.dataSetName || "", separator: true });
+
+    if (request.approach === AnalysisApproach.SingleLayerOnly) {
+      if (this.props.request.selectedLayerName) {
+        const name = this.props.request.selectedLayerName;
+        rows.push({ name: "Selected Layer", value: name });
+      } else {
+        const idx = this.props.request.selectedLayer;
+        rows.push({ name: "Selected Layer", value: idx.toString() });
+      }
+    }
+
     if (request.approach === AnalysisApproach.SingleLayerFlattening) {
-      rows.push({ name: "Flattening", value: this.approach });
+      rows.push({ name: "Flattening", value: this.approach, separator: true });
 
       for (const param in request.flatteningAlgorithmParameters) {
         rows.push({
           name: param,
-          value: request.flatteningAlgorithmParameters[param]
+          value: request.flatteningAlgorithmParameters[param],
+          isParam: true
         });
       }
     }
 
-    if (request.approach === AnalysisApproach.SingleLayerOnly) {
-      const value = this.props.request.selectedLayer.toString();
-      rows.push({ name: "Selected Layer", value: value });
-    }
-
-    rows.push({ name: "Algorithm", value: this.algorithm });
-
-    rows.push({ name: "Algorithm Parameters", value: "" });
+    rows.push({ name: "Algorithm", value: this.algorithm, separator: true });
 
     for (const param in request.analysisAlgorithmParameters) {
       rows.push({
         name: param,
-        value: request.analysisAlgorithmParameters[param]
+        value: request.analysisAlgorithmParameters[param],
+        isParam: true
       });
     }
 
@@ -75,16 +80,27 @@ export default class AnalysisRequest extends Component<IProps> {
   }
 
   renderRows(rows: AnalysisRequestRow[]) {
-    return rows.map((r, i) => (
-      <Stack horizontal horizontalAlign="center" key={i}>
-        <Stack.Item styles={{ root: { width: "50%" } }}>
-          <Text style={{ fontWeight: "bold" }}>{r.name}</Text>
-        </Stack.Item>
-        <Stack.Item styles={{ root: { width: "50%" } }}>
-          <Text>{r.value}</Text>
-        </Stack.Item>
-      </Stack>
-    ));
+    return rows.map((r, i) => {
+      const fontWeight = r.isParam ? 400 : 600;
+
+      return <React.Fragment>
+        {r.separator ?
+          <Stack horizontal horizontalAlign="center" key={i}>
+            <Stack.Item grow={1}>
+              <Separator />
+            </Stack.Item>
+          </Stack> : null
+        }
+        <Stack horizontal horizontalAlign="center" key={i}>
+          <Stack.Item styles={{ root: { width: "50%" } }}>
+            <span style={{ fontWeight }}>{r.name}</span>
+          </Stack.Item>
+          <Stack.Item styles={{ root: { width: "50%" } }}>
+            {r.value}
+          </Stack.Item>
+        </Stack>
+      </React.Fragment>
+    });
   }
 
   render() {

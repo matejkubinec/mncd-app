@@ -12,6 +12,14 @@ namespace MNCD.Web.Mappings
                 .ForMember(
                     dst => dst.DatasetId,
                     opt => opt.MapFrom(src => src.DataSet.Id)
+                )
+                .ForMember(
+                    dst => dst.DataSetName,
+                    opt => opt.MapFrom(src => src.DataSet.Name)
+                )
+                .ForMember(
+                    dst => dst.SelectedLayerName,
+                    opt => opt.MapFrom(src => src.DataSet.Info.LayerNames[src.SelectedLayer])
                 );
             CreateMap<AnalysisRequestViewModel, AnalysisRequest>();
         }

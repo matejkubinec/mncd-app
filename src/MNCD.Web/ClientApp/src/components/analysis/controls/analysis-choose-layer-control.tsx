@@ -2,39 +2,32 @@ import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../../store";
 import { updateSelectedLayer } from "../../../slices/AnalysisSlice";
-import { Stack, TextField } from "office-ui-fabric-react";
+import { Stack, Dropdown, IDropdownOption } from "office-ui-fabric-react";
 import { AnalysisApproach } from "../../../types";
 
 class AnalysisChooseLayerControl extends React.Component<ReduxProps> {
-  handleSelectedLayerChange = (_: any, value?: string) => {
-    if (value !== undefined) {
-      this.props.updateSelectedLayer(Number(value));
+  handleSelectedLayerChange = (_: any, option?: IDropdownOption) => {
+    if (option !== undefined) {
+      this.props.updateSelectedLayer(Number(option.key));
     }
-  };
-
-  handleGetErrorMessage = (value?: string) => {
-    if (this.props.layerCount === null || value === undefined) {
-      return "";
-    }
-
-    const selectedLayer = Number(value);
-
-    if (selectedLayer > this.props.layerCount) {
-      return `Selected layer must be less than number of layers (${this.props.layerCount}).`;
-    }
-
-    if (selectedLayer < 0) {
-      return "Selected layer must be a positive integer.";
-    }
-
-    return "";
   };
 
   getPlaceholder() {
-    if (this.props.layerCount === null) {
+    if (this.props.layerNames === null) {
       return "Select dataset first.";
     }
     return "";
+  }
+
+  getItems = (): IDropdownOption[] => {
+    if (this.props.layerNames === null) {
+      return [];
+    }
+
+    return this.props.layerNames.map((l, i) => ({
+      key: i,
+      text: l
+    } as IDropdownOption));
   }
 
   render() {
@@ -45,18 +38,14 @@ class AnalysisChooseLayerControl extends React.Component<ReduxProps> {
     return (
       <Stack>
         <Stack.Item>
-          <TextField
+          <Dropdown
+            styles={{ dropdown: { width: 250 } }}
             label="Selected Layer"
-            type="number"
-            disabled={this.props.layerCount === null}
             placeholder={this.getPlaceholder()}
-            value={
-              this.props.layerCount
-                ? this.props.selectedLayer.toString()
-                : undefined
-            }
+            options={this.getItems()}
+            selectedKey={this.props.selectedLayer}
             onChange={this.handleSelectedLayerChange}
-            onGetErrorMessage={this.handleGetErrorMessage}
+            disabled={this.props.isDisabled}
           />
         </Stack.Item>
       </Stack>
@@ -70,7 +59,8 @@ const mapProps = (rootState: RootState) => {
   return {
     approach: approach,
     selectedLayer: selectedLayer,
-    layerCount: dataSet ? dataSet.layerCount : null
+    layerNames: dataSet ? dataSet.layerNames : null,
+    isDisabled: dataSet ? false : true
   };
 };
 
