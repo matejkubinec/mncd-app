@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import { RootState } from "../../store";
 import { connect, ConnectedProps } from "react-redux";
-import { Stack, Checkbox, List, VerticalDivider } from "office-ui-fabric-react";
+import { Stack, Checkbox, List, VerticalDivider, IconButton, Separator } from "office-ui-fabric-react";
 import {
   approachToString,
   analysisToString,
   flatteningToString
 } from "../../utils";
-import { AnalysisRequestViewModel } from "../../types";
-import { toggleVisibility } from "../../slices/AnalysisSlice";
+import { AnalysisRequestViewModel, AnalysisApproach } from "../../types";
+import { toggleVisibility, toggleResultControls } from "../../slices/AnalysisSlice";
 
 interface IListItem {
   id: number;
@@ -21,6 +21,10 @@ export class AnalysisResultControls extends Component<ReduxProps> {
     this.props.toggleVisibility(id);
   };
 
+  handleToggleControls = () => {
+    this.props.toggleResultControls();
+  }
+
   handleRenderCell = (item?: IListItem) => {
     if (item) {
       return (
@@ -32,31 +36,35 @@ export class AnalysisResultControls extends Component<ReduxProps> {
               boxShadow: this.props.theme.effects.elevation4,
               marginBottom: 15,
               backgroundColor: this.props.theme.palette.white,
-              borderRadius: this.props.theme.effects.roundedCorner2,
-              cursor: "pointer",
-              userSelect: "none"
+              borderRadius: this.props.theme.effects.roundedCorner2
             }
           }}
-          onClick={() => this.toggleAnalysis(item.id)}
         >
           <Stack.Item align="center">
-            <Checkbox checked={item.isOpen} />
+            <Checkbox
+              checked={item.isOpen}
+              onChange={() => this.toggleAnalysis(item.id)}
+            />
           </Stack.Item>
           <Stack.Item>
             <VerticalDivider />
           </Stack.Item>
           <Stack.Item grow={2}>
             <Stack>
-              <Stack>
-                <Stack.Item>
-                  <b>Analysis {item.id}</b>
-                </Stack.Item>
-              </Stack>
+              <Stack.Item styles={{ root: { marginBottom: 5 } }}>
+                <b>Analysis {item.id}</b>
+              </Stack.Item>
               <Stack horizontal horizontalAlign="space-between">
                 <Stack.Item>{approachToString(item.req.approach)}</Stack.Item>
-                <Stack.Item>
-                  {flatteningToString(item.req.flatteningAlgorithm)}
-                </Stack.Item>
+                {item.req.approach === AnalysisApproach.SingleLayerOnly ?
+                  <Stack.Item>{item.req.selectedLayerName}</Stack.Item> : null
+                }
+                {item.req.approach === AnalysisApproach.SingleLayerFlattening ?
+                  <Stack.Item>{flatteningToString(item.req.flatteningAlgorithm)}</Stack.Item> : null
+                }
+              </Stack>
+              <Stack horizontal horizontalAlign="space-between">
+                <Stack.Item>{item.req.dataSetName}</Stack.Item>
                 <Stack.Item>
                   {analysisToString(item.req.analysisAlgorithm)}
                 </Stack.Item>
@@ -65,6 +73,13 @@ export class AnalysisResultControls extends Component<ReduxProps> {
           </Stack.Item>
         </Stack>
       );
+      // TODO: add delete analysis
+      //<Stack.Item>
+      //  <VerticalDivider />
+      //</Stack.Item>
+      //<Stack.Item align="center">
+      //<IconButton iconProps={{ iconName: "Delete" }} />
+      //</Stack.Item>
     }
     return "";
   };
@@ -75,22 +90,45 @@ export class AnalysisResultControls extends Component<ReduxProps> {
     });
 
     return (
-      <Stack tokens={{ childrenGap: 10 }}>
-        <List items={listItems} onRenderCell={this.handleRenderCell} />
+      <Stack horizontal tokens={{ childrenGap: 5 }} styles={{ root: { minHeight: 250, } }}>
+        <Stack.Item styles={{
+          root: {
+            boxShadow: this.props.theme.effects.elevation4,
+            marginBottom: 15,
+            backgroundColor: this.props.theme.palette.white,
+            borderRadius: this.props.theme.effects.roundedCorner2,
+            cursor: "pointer",
+            userSelect: "none"
+          }
+        }}>
+          <IconButton
+            style={{ height: "100%" }}
+            iconProps={{ iconName: this.props.showControls ? "ChevronLeft" : "ChevronRight" }}
+            onClick={this.handleToggleControls}
+          />
+        </Stack.Item>
+        {this.props.showControls ?
+          <Stack.Item>
+            <Stack tokens={{ childrenGap: 10 }}>
+              <List items={listItems} onRenderCell={this.handleRenderCell} />
+            </Stack>
+          </Stack.Item> : null
+        }
       </Stack>
     );
   }
 }
 
 const mapStateToProps = (state: RootState) => {
-  const { session } = state.analysis;
+  const { session, areResultControlsVisible } = state.analysis;
   return {
+    showControls: areResultControlsVisible,
     items: session ? session.analyses : [],
     theme: state.theme.current
   };
 };
 
-const mapDispatchToProps = { toggleVisibility };
+const mapDispatchToProps = { toggleVisibility, toggleResultControls };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 

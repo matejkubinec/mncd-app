@@ -7,7 +7,7 @@ import {
   analysisToString,
   flatteningToString
 } from "../../../utils";
-import { AnalysisRequestViewModel } from "../../../types";
+import { AnalysisRequestViewModel, AnalysisApproach } from "../../../types";
 import { toggleVisibility } from "../../../slices/AnalysisSlice";
 
 export class AnalysesList extends Component<ReduxProps> {
@@ -43,11 +43,14 @@ export class AnalysesList extends Component<ReduxProps> {
             <Stack>
               <Stack>
                 <Stack.Item>
-                  <b>Analysis {item.id}</b>
+                  <b>Analysis {item.id} 123</b>
                 </Stack.Item>
               </Stack>
               <Stack horizontal horizontalAlign="space-between">
-                <Stack.Item>{approachToString(item.req.approach)}</Stack.Item>
+                {item.req.approach !== AnalysisApproach.SingleLayerFlattening ?
+                  null : //<Stack.Item>{approachToString(item.req.approach)}</Stack.Item> :
+                  <Stack.Item>Single Layer <br /> Flattening</Stack.Item>
+                }
                 <Stack.Item>
                   {flatteningToString(item.req.flatteningAlgorithm)}
                 </Stack.Item>
@@ -57,13 +60,14 @@ export class AnalysesList extends Component<ReduxProps> {
               </Stack>
             </Stack>
           </Stack.Item>
-        </Stack>
+        </Stack >
       );
     }
     return "";
   };
 
   render() {
+    console.log("test");
     return (
       <Stack tokens={{ childrenGap: 10, padding: 10 }}>
         <List

@@ -18,7 +18,7 @@ class AnalysisResult extends React.Component<ReduxProps> {
   render() {
     return (
       <Stack horizontal tokens={{ childrenGap: 20, padding: 20 }}>
-        <Stack.Item styles={{ root: { width: 400 } }} align="start" grow={1}>
+        <Stack.Item styles={{ root: { maxWidth: 600 } }} align="start">
           <AnalysisResultControls />
         </Stack.Item>
         <Stack.Item grow={2}>

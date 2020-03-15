@@ -83,15 +83,15 @@ export default class AnalysisRequest extends Component<IProps> {
     return rows.map((r, i) => {
       const fontWeight = r.isParam ? 400 : 600;
 
-      return <React.Fragment>
+      return <React.Fragment key={i}>
         {r.separator ?
-          <Stack horizontal horizontalAlign="center" key={i}>
+          <Stack horizontal horizontalAlign="center">
             <Stack.Item grow={1}>
               <Separator />
             </Stack.Item>
           </Stack> : null
         }
-        <Stack horizontal horizontalAlign="center" key={i}>
+        <Stack horizontal horizontalAlign="center">
           <Stack.Item styles={{ root: { width: "50%" } }}>
             <span style={{ fontWeight }}>{r.name}</span>
           </Stack.Item>
