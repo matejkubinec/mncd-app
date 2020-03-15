@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import { RootState } from "../../store";
 import { connect, ConnectedProps } from "react-redux";
-import { Stack, Checkbox, List, VerticalDivider, IconButton, Separator } from "office-ui-fabric-react";
+import { Stack, Checkbox, List, VerticalDivider, IconButton } from "office-ui-fabric-react";
 import {
   approachToString,
   analysisToString,
   flatteningToString
 } from "../../utils";
 import { AnalysisRequestViewModel, AnalysisApproach } from "../../types";
-import { toggleVisibility, toggleResultControls } from "../../slices/AnalysisSlice";
+import { toggleVisibility, toggleResultControls } from "../../slices/analysis-slice";
 
 interface IListItem {
   id: number;
@@ -54,7 +54,7 @@ export class AnalysisResultControls extends Component<ReduxProps> {
               <Stack.Item styles={{ root: { marginBottom: 5 } }}>
                 <b>Analysis {item.id}</b>
               </Stack.Item>
-              <Stack horizontal horizontalAlign="space-between">
+              <Stack horizontal horizontalAlign="space-between" tokens={{ childrenGap: 10 }}>
                 <Stack.Item>{approachToString(item.req.approach)}</Stack.Item>
                 {item.req.approach === AnalysisApproach.SingleLayerOnly ?
                   <Stack.Item>{item.req.selectedLayerName}</Stack.Item> : null
@@ -63,7 +63,7 @@ export class AnalysisResultControls extends Component<ReduxProps> {
                   <Stack.Item>{flatteningToString(item.req.flatteningAlgorithm)}</Stack.Item> : null
                 }
               </Stack>
-              <Stack horizontal horizontalAlign="space-between">
+              <Stack horizontal horizontalAlign="space-between" tokens={{ childrenGap: 10 }}>
                 <Stack.Item>{item.req.dataSetName}</Stack.Item>
                 <Stack.Item>
                   {analysisToString(item.req.analysisAlgorithm)}

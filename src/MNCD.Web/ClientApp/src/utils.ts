@@ -40,3 +40,5 @@ export function flatteningToString(algorithm: FlattenningAlgorithm) {
       return "Weighted Flattening";
   }
 }
+
+export const notificationDuration = 5000; // ms

@@ -1,7 +1,7 @@
 import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../../store";
-import { updateSelectedLayer } from "../../../slices/AnalysisSlice";
+import { updateSelectedLayer } from "../../../slices/analysis-slice";
 import { Stack, Dropdown, IDropdownOption } from "office-ui-fabric-react";
 import { AnalysisApproach } from "../../../types";
 

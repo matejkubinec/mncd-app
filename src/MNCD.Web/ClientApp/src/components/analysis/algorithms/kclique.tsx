@@ -1,7 +1,7 @@
 import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../../store";
-import { updateAnalysisParameters } from "../../../slices/AnalysisSlice";
+import { updateAnalysisParameters } from "../../../slices/analysis-slice";
 import { Stack, TextField } from "office-ui-fabric-react";
 
 class KClique extends React.Component<ReduxProps> {

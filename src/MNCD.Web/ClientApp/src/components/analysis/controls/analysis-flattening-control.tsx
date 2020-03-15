@@ -3,7 +3,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../../store";
 import { AnalysisApproach, FlattenningAlgorithm } from "../../../types";
 import { Stack, IDropdownOption, Dropdown } from "office-ui-fabric-react";
-import { setFlatteningAlgorithm } from "../../../slices/AnalysisSlice";
+import { setFlatteningAlgorithm } from "../../../slices/analysis-slice";
 import {
   LocalSimplification,
   BasicFlattening,

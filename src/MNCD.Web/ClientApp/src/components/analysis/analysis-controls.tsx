@@ -18,7 +18,7 @@ import {
 import {
   analyzeDataSet,
   toggleControlsVisiblity
-} from "../../slices/AnalysisSlice";
+} from "../../slices/analysis-slice";
 import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
 import { NeutralColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
 import {

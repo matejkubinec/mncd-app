@@ -12,9 +12,7 @@ interface IProps {
   onChooseDataSet: (item: DataSetRowViewModel) => void;
 }
 
-interface IState {}
-
-class DataSetsList extends React.Component<IProps, IState> {
+class DataSetsList extends React.Component<IProps> {
   private columns: IColumn[] = [
     {
       key: "name",
@@ -49,11 +47,16 @@ class DataSetsList extends React.Component<IProps, IState> {
       name: "",
       minWidth: 90,
       onRender: (item: DataSetRowViewModel) => {
-        const onChooseDataSet = () => this.props.onChooseDataSet(item);
-        return <DefaultButton onClick={onChooseDataSet}>Choose</DefaultButton>;
+        return <DefaultButton onClick={() => this.handleChooseDataSet(item)}>
+          Choose
+        </DefaultButton>;
       }
     }
   ];
+
+  handleChooseDataSet = (item: DataSetRowViewModel) => {
+    this.props.onChooseDataSet(item);
+  }
 
   render() {
     if (this.props.items.length === 0) {
