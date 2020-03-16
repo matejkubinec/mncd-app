@@ -35,7 +35,7 @@ namespace MNCD.Web.Mappings
             var items = new List<AnalysisVisualizationItemViewModel>();
             foreach (var type in types)
             {
-                var visualization = analysis.MultiLayer.FirstOrDefault(v => v.Type == VisualizationType.MultiLayerDiagonal);
+                var visualization = analysis.Visualizations.FirstOrDefault(v => v.Type == type);
                 items.Add(new AnalysisVisualizationItemViewModel
                 {
                     Title = visualization?.Title ?? type.ToTitle(),
@@ -54,7 +54,7 @@ namespace MNCD.Web.Mappings
             var items = new List<AnalysisVisualizationItemViewModel>();
             foreach (var type in types)
             {
-                var visualization = analysis.MultiLayerCommunities.FirstOrDefault(v => v.Type == type);
+                var visualization = analysis.Visualizations.FirstOrDefault(v => v.Type == type);
                 items.Add(new AnalysisVisualizationItemViewModel
                 {
                     Title = visualization?.Title ?? type.ToTitle(),
@@ -75,7 +75,7 @@ namespace MNCD.Web.Mappings
             var items = new List<AnalysisVisualizationItemViewModel>();
             foreach (var type in types)
             {
-                var visualization = analysis.SingleLayer.FirstOrDefault(v => v.Type == type);
+                var visualization = analysis.Visualizations.FirstOrDefault(v => v.Type == type);
                 items.Add(new AnalysisVisualizationItemViewModel
                 {
                     Title = visualization?.Title ?? type.ToTitle(),
@@ -96,7 +96,7 @@ namespace MNCD.Web.Mappings
             var items = new List<AnalysisVisualizationItemViewModel>();
             foreach (var type in types)
             {
-                var visualization = analysis.SingleLayerCommunities.FirstOrDefault(v => v.Type == type);
+                var visualization = analysis.Visualizations.FirstOrDefault(v => v.Type == type);
                 items.Add(new AnalysisVisualizationItemViewModel
                 {
                     Title = visualization?.Title ?? type.ToTitle(),
@@ -109,7 +109,7 @@ namespace MNCD.Web.Mappings
         private AnalysisVisualizationItemViewModel MapBarplot(Analysis analysis)
         {
             var type = VisualizationType.Barplot;
-            var visualization = analysis.CommunitiesBarplot;
+            var visualization = analysis.Visualizations.FirstOrDefault(v => v.Type == type);
             return new AnalysisVisualizationItemViewModel
             {
                 Title = visualization?.Title ?? type.ToTitle(),
@@ -120,7 +120,7 @@ namespace MNCD.Web.Mappings
         private AnalysisVisualizationItemViewModel MapTreemap(Analysis analysis)
         {
             var type = VisualizationType.Treemap;
-            var visualization = analysis.CommunitiesTreemap;
+            var visualization = analysis.Visualizations.FirstOrDefault(v => v.Type == type);
             return new AnalysisVisualizationItemViewModel
             {
                 Title = visualization?.Title ?? type.ToTitle(),

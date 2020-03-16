@@ -67,12 +67,7 @@ namespace MNCD.Services.Impl
                 .Include(a => a.Request)
                 .ThenInclude(r => r.DataSet)
                 .Include(a => a.Result)
-                .Include(a => a.MultiLayer)
-                .Include(a => a.MultiLayerCommunities)
-                .Include(a => a.SingleLayer)
-                .Include(a => a.SingleLayerCommunities)
-                .Include(a => a.CommunitiesBarplot)
-                .Include(a => a.CommunitiesTreemap)
+                .Include(a => a.Visualizations)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (analysis is null)
