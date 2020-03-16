@@ -5,16 +5,6 @@ import { AnalysisResultItem, AnalysisResultControls } from "./index";
 import { Stack } from "office-ui-fabric-react";
 
 class AnalysisResult extends React.Component<ReduxProps> {
-  renderAnalyses = () => {
-    return this.props.items
-      .filter(i => i.isOpen)
-      .map((item, i) => (
-        <Stack.Item key={i} grow={1}>
-          <AnalysisResultItem analysis={item} />
-        </Stack.Item>
-      ));
-  };
-
   render() {
     return (
       <Stack horizontal tokens={{ childrenGap: 20, padding: 20 }}>
@@ -27,7 +17,11 @@ class AnalysisResult extends React.Component<ReduxProps> {
             horizontalAlign="space-evenly"
             tokens={{ childrenGap: 20 }}
           >
-            {this.renderAnalyses()}
+            {this.props.items.map(item => (
+              <Stack.Item key={item.id} grow={1}>
+                <AnalysisResultItem analysis={item} />
+              </Stack.Item>
+            ))}
           </Stack>
         </Stack.Item>
       </Stack>
@@ -38,7 +32,7 @@ class AnalysisResult extends React.Component<ReduxProps> {
 const mapProps = (rootState: RootState) => {
   const { session } = rootState.analysis;
   return {
-    items: session ? session.analyses : [],
+    items: session ? session.analyses.filter(i => i.isOpen) : []
   };
 };
 

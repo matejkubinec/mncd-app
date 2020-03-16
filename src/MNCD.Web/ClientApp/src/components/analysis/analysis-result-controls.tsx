@@ -1,14 +1,24 @@
 import React, { Component } from "react";
 import { RootState } from "../../store";
 import { connect, ConnectedProps } from "react-redux";
-import { Stack, Checkbox, List, VerticalDivider, IconButton } from "office-ui-fabric-react";
+import {
+  Stack,
+  Checkbox,
+  List,
+  VerticalDivider,
+  IconButton
+} from "office-ui-fabric-react";
 import {
   approachToString,
   analysisToString,
   flatteningToString
 } from "../../utils";
 import { AnalysisRequestViewModel, AnalysisApproach } from "../../types";
-import { toggleVisibility, toggleResultControls } from "../../slices/analysis-slice";
+import {
+  toggleVisibility,
+  toggleResultControls,
+  openDeleteModal
+} from "../../slices/analysis-slice";
 
 interface IListItem {
   id: number;
@@ -23,7 +33,11 @@ export class AnalysisResultControls extends Component<ReduxProps> {
 
   handleToggleControls = () => {
     this.props.toggleResultControls();
-  }
+  };
+
+  handleOpenDeleteModal = (id: number) => {
+    this.props.openDeleteModal(id);
+  };
 
   handleRenderCell = (item?: IListItem) => {
     if (item) {
@@ -54,16 +68,27 @@ export class AnalysisResultControls extends Component<ReduxProps> {
               <Stack.Item styles={{ root: { marginBottom: 5 } }}>
                 <b>Analysis {item.id}</b>
               </Stack.Item>
-              <Stack horizontal horizontalAlign="space-between" tokens={{ childrenGap: 10 }}>
+              <Stack
+                horizontal
+                horizontalAlign="space-between"
+                tokens={{ childrenGap: 10 }}
+              >
                 <Stack.Item>{approachToString(item.req.approach)}</Stack.Item>
-                {item.req.approach === AnalysisApproach.SingleLayerOnly ?
-                  <Stack.Item>{item.req.selectedLayerName}</Stack.Item> : null
-                }
-                {item.req.approach === AnalysisApproach.SingleLayerFlattening ?
-                  <Stack.Item>{flatteningToString(item.req.flatteningAlgorithm)}</Stack.Item> : null
-                }
+                {item.req.approach === AnalysisApproach.SingleLayerOnly ? (
+                  <Stack.Item>{item.req.selectedLayerName}</Stack.Item>
+                ) : null}
+                {item.req.approach ===
+                AnalysisApproach.SingleLayerFlattening ? (
+                  <Stack.Item>
+                    {flatteningToString(item.req.flatteningAlgorithm)}
+                  </Stack.Item>
+                ) : null}
               </Stack>
-              <Stack horizontal horizontalAlign="space-between" tokens={{ childrenGap: 10 }}>
+              <Stack
+                horizontal
+                horizontalAlign="space-between"
+                tokens={{ childrenGap: 10 }}
+              >
                 <Stack.Item>{item.req.dataSetName}</Stack.Item>
                 <Stack.Item>
                   {analysisToString(item.req.analysisAlgorithm)}
@@ -71,15 +96,17 @@ export class AnalysisResultControls extends Component<ReduxProps> {
               </Stack>
             </Stack>
           </Stack.Item>
+          <Stack.Item>
+            <VerticalDivider />
+          </Stack.Item>
+          <Stack.Item align="center">
+            <IconButton
+              iconProps={{ iconName: "Delete" }}
+              onClick={() => this.handleOpenDeleteModal(item.id)}
+            />
+          </Stack.Item>
         </Stack>
       );
-      // TODO: add delete analysis
-      //<Stack.Item>
-      //  <VerticalDivider />
-      //</Stack.Item>
-      //<Stack.Item align="center">
-      //<IconButton iconProps={{ iconName: "Delete" }} />
-      //</Stack.Item>
     }
     return "";
   };
@@ -90,30 +117,38 @@ export class AnalysisResultControls extends Component<ReduxProps> {
     });
 
     return (
-      <Stack horizontal tokens={{ childrenGap: 5 }} styles={{ root: { minHeight: 250, } }}>
-        <Stack.Item styles={{
-          root: {
-            boxShadow: this.props.theme.effects.elevation4,
-            marginBottom: 15,
-            backgroundColor: this.props.theme.palette.white,
-            borderRadius: this.props.theme.effects.roundedCorner2,
-            cursor: "pointer",
-            userSelect: "none"
-          }
-        }}>
+      <Stack
+        horizontal
+        tokens={{ childrenGap: 5 }}
+        styles={{ root: { minHeight: 250 } }}
+      >
+        <Stack.Item
+          styles={{
+            root: {
+              boxShadow: this.props.theme.effects.elevation4,
+              marginBottom: 15,
+              backgroundColor: this.props.theme.palette.white,
+              borderRadius: this.props.theme.effects.roundedCorner2,
+              cursor: "pointer",
+              userSelect: "none"
+            }
+          }}
+        >
           <IconButton
             style={{ height: "100%" }}
-            iconProps={{ iconName: this.props.showControls ? "ChevronLeft" : "ChevronRight" }}
+            iconProps={{
+              iconName: this.props.showControls ? "ChevronLeft" : "ChevronRight"
+            }}
             onClick={this.handleToggleControls}
           />
         </Stack.Item>
-        {this.props.showControls ?
+        {this.props.showControls ? (
           <Stack.Item>
             <Stack tokens={{ childrenGap: 10 }}>
               <List items={listItems} onRenderCell={this.handleRenderCell} />
             </Stack>
-          </Stack.Item> : null
-        }
+          </Stack.Item>
+        ) : null}
       </Stack>
     );
   }
@@ -128,7 +163,11 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const mapDispatchToProps = { toggleVisibility, toggleResultControls };
+const mapDispatchToProps = {
+  toggleVisibility,
+  toggleResultControls,
+  openDeleteModal
+};
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 

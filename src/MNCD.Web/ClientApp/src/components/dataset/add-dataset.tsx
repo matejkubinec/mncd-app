@@ -8,49 +8,59 @@ import {
   PrimaryButton,
   Spinner,
   SpinnerSize,
-  TextField,  MessageBar,
+  TextField,
+  MessageBar,
   MessageBarType
 } from "office-ui-fabric-react";
 import { FileType } from "../../types";
 import { ConnectedProps, connect } from "react-redux";
 import { RootState } from "../../store";
-import { updateItemToAdd, closeAddDataSetForm, saveDataSet } from "../../slices/dataset-slice";
+import {
+  updateItemToAdd,
+  closeAddDataSetForm,
+  saveDataSet
+} from "../../slices/dataset-slice";
 
-class AddDataSet extends React.Component<ReduxProps, File> {
+interface IState {
+  file: File;
+}
+
+class AddDataSet extends React.Component<ReduxProps, IState> {
   private options: IDropdownOption[] = [
     { key: FileType.MPX, text: "MPX", selected: true },
     { key: FileType.EdgeList, text: "Edge List" }
   ];
 
   handleFileChange = (file: File) => {
+    console.log(file);
     if (file) {
-      this.setState(file);
+      this.setState({ file });
       this.props.updateItemToAdd({ file: file.name });
 
       if (!this.props.item.name) {
-        this.props.updateItemToAdd({ name: file.name })
+        this.props.updateItemToAdd({ name: file.name });
       }
     }
-  }
+  };
 
   handleFormatChange = (_: any, option: IDropdownOption | undefined) => {
     if (option) {
       this.props.updateItemToAdd({ format: String(option.key) });
     }
-  }
+  };
 
   handleNameChange = (_: any, newValue: string | undefined) => {
     if (newValue !== undefined) {
       this.props.updateItemToAdd({ name: String(newValue) });
     }
-  }
+  };
 
   handleNameGetErrorMessage = (value: string | undefined) => {
     if (!value) {
       return "Name is required.";
     }
     return "";
-  }
+  };
 
   isValid = (): boolean => {
     const { file, name } = this.props.item;
@@ -58,15 +68,15 @@ class AddDataSet extends React.Component<ReduxProps, File> {
       return false;
     }
     return true;
-  }
+  };
 
   handleCancel = () => {
     this.props.closeAddDataSetForm();
-  }
+  };
 
   handleSubmit = (e: React.FormEvent | React.MouseEvent<any>) => {
     if (this.isValid()) {
-      this.props.saveDataSet(this.state);
+      this.props.saveDataSet(this.state.file);
     }
     e.preventDefault();
   };
@@ -79,13 +89,11 @@ class AddDataSet extends React.Component<ReduxProps, File> {
             <h2>Add Dataset</h2>
           </Stack.Item>
           <Stack.Item>Supported formats</Stack.Item>
-          {this.props.error ?
+          {this.props.error ? (
             <MessageBar messageBarType={MessageBarType.error}>
               {this.props.error}
             </MessageBar>
-            :
-            null
-          }
+          ) : null}
           <Stack.Item>
             <TextField
               label="Name"

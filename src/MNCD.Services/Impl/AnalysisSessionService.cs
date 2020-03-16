@@ -48,17 +48,7 @@ namespace MNCD.Services.Impl
                 .Include(a => a.Analyses)
                 .ThenInclude(a => a.Result)
                 .Include(a => a.Analyses)
-                .ThenInclude(a => a.MultiLayer)
-                .Include(a => a.Analyses)
-                .ThenInclude(a => a.MultiLayerCommunities)
-                .Include(a => a.Analyses)
-                .ThenInclude(a => a.SingleLayer)
-                .Include(a => a.Analyses)
-                .ThenInclude(a => a.SingleLayerCommunities)
-                .Include(a => a.Analyses)
-                .ThenInclude(a => a.CommunitiesBarplot)
-                .Include(a => a.Analyses)
-                .ThenInclude(a => a.CommunitiesTreemap)
+                .ThenInclude(a => a.Visualizations)
                 .FirstOrDefaultAsync(a => a.Guid == guid);
 
 

@@ -6,10 +6,12 @@ import {
   FlattenningAlgorithm,
   DataSetRowViewModel,
   AnalysisSessionViewModel,
-  AnalysisViewModel
+  AnalysisViewModel,
+  ApiResponse
 } from "../types";
 import { createSlice, PayloadAction, Dispatch } from "@reduxjs/toolkit";
 import { RootState } from "../store";
+import { notificationDuration } from "../utils";
 
 export type AnalysisState = {
   isSessionLoading: boolean;
@@ -20,6 +22,12 @@ export type AnalysisState = {
   request: AnalysisRequestViewModel;
   session: AnalysisSessionViewModel | null;
   dataSet: DataSetRowViewModel | null;
+  deleteModal: {
+    isOpen: boolean;
+    isDeleting: boolean;
+    analysisId: number;
+    error: string | null;
+  };
 };
 
 const initialState: AnalysisState = {
@@ -45,7 +53,13 @@ const initialState: AnalysisState = {
       weightEdges: "true"
     }
   },
-  dataSet: null
+  dataSet: null,
+  deleteModal: {
+    isOpen: false,
+    isDeleting: false,
+    analysisId: 0,
+    error: null
+  }
 };
 
 const slice = createSlice({
@@ -65,21 +79,6 @@ const slice = createSlice({
     },
     updateSelectedLayer: (state, action: PayloadAction<number>) => {
       state.request.selectedLayer = action.payload;
-    },
-    updateAnalysisRequest: (state, action) => {
-      if (state.request === action.payload["approach"]) {
-        return;
-      }
-
-      if (action.payload["flatteningAlgorithm"]) {
-        state.request.flatteningAlgorithmParameters = {};
-      }
-
-      if (action.payload["analysisAlgorithm"]) {
-        state.request.analysisAlgorithmParameters = {};
-      }
-
-      state.request = { ...state.request, ...action.payload };
     },
     setFlatteningAlgorithm: (
       state,
@@ -109,7 +108,6 @@ const slice = createSlice({
           const layerIndices = dataSet
             ? new Array(dataSet.layerCount).fill(0).map((_, i) => i)
             : [];
-          console.log(layerIndices);
           state.request.flatteningAlgorithmParameters = {
             includeWeights: "true",
             layerIndices: JSON.stringify(layerIndices)
@@ -129,16 +127,19 @@ const slice = createSlice({
       // Set default parameters
       switch (action.payload) {
         case AnalysisAlgorithm.Louvain:
-          state.request.analysisAlgorithmParameters = {}
+          state.request.analysisAlgorithmParameters = {};
+          break;
         case AnalysisAlgorithm.FluidC:
           state.request.analysisAlgorithmParameters = {
             k: "2",
             maxIterations: "100"
           };
+          break;
         case AnalysisAlgorithm.KClique:
           state.request.analysisAlgorithmParameters = {
             k: "2"
           };
+          break;
       }
     },
     updateAnalysisParameters: (state, action: PayloadAction<object>) => {
@@ -173,7 +174,6 @@ const slice = createSlice({
             const layerIndices = dataSet
               ? new Array(dataSet.layerCount).fill(0).map((_, i) => i)
               : [];
-            console.log(layerIndices);
             state.request.flatteningAlgorithmParameters = {
               ...state.request.flatteningAlgorithmParameters,
               layerIndices: JSON.stringify(layerIndices)
@@ -207,6 +207,36 @@ const slice = createSlice({
           analysis.isOpen = !analysis.isOpen;
         }
       }
+    },
+    openDeleteModal: (state, action: PayloadAction<number>) => {
+      state.deleteModal.isOpen = true;
+      state.deleteModal.analysisId = action.payload;
+    },
+    closeDeleteModal: state => {
+      state.deleteModal.isOpen = false;
+    },
+    deleteAnalysisStart: state => {
+      state.deleteModal.isDeleting = true;
+    },
+    deleteAnalysisSuccess: (
+      state,
+      action: PayloadAction<ApiResponse<number>>
+    ) => {
+      state.deleteModal.isDeleting = false;
+      state.deleteModal.isOpen = false;
+      if (state.session) {
+        state.session.analyses = state.session.analyses.filter(
+          a => a.id !== action.payload.data
+        );
+      }
+      // TODO: success message
+    },
+    deleteAnalysisFailure: (state, action: PayloadAction<string>) => {
+      state.deleteModal.isDeleting = false;
+      state.deleteModal.error = action.payload;
+    },
+    hideDeleteModalError: state => {
+      state.deleteModal.error = null;
     }
   }
 });
@@ -218,7 +248,6 @@ export const {
   setFlatteningAlgorithm,
   updateFlatteningParameters,
   setAnalysisAlgorithm,
-  updateAnalysisRequest,
   updateAnalysisParameters,
   updateAnalysisDataSet,
   updateSelectedLayer,
@@ -226,7 +255,16 @@ export const {
   analysisSuccess,
   toggleControlsVisiblity,
   toggleVisibilityStart,
-  toggleResultControls
+  toggleResultControls,
+
+  openDeleteModal,
+  closeDeleteModal,
+
+  deleteAnalysisStart,
+  deleteAnalysisSuccess,
+  deleteAnalysisFailure,
+
+  hideDeleteModalError
 } = slice.actions;
 
 export const fetchAnalysisSession = (guid: string) => (dispatch: Dispatch) => {
@@ -254,7 +292,7 @@ export const analyzeDataSet = () => (
     .post("/api/analysis", request)
     .then(response => {
       const data = response.data;
-      if (response.status == 200) {
+      if (response.status === 200) {
         dispatch(analysisSuccess(data));
       } else {
       }
@@ -278,6 +316,25 @@ export const toggleVisibility = (id: number) => (dispatch: Dispatch) => {
     .catch(reason => {
       // TODO: handle error
       console.log(reason);
+    });
+};
+
+export const deleteAnalysis = (id: number) => (dispatch: Dispatch) => {
+  dispatch(deleteAnalysisStart());
+  axios
+    .delete<ApiResponse<number>>(`api/analysis/${id}`)
+    .then(response => {
+      if (response.status === 200) {
+        dispatch(deleteAnalysisSuccess(response.data));
+        setTimeout(() => {
+          dispatch(hideDeleteModalError());
+        }, notificationDuration);
+      } else {
+        dispatch(deleteAnalysisFailure(response.statusText));
+      }
+    })
+    .catch(reason => {
+      dispatch(deleteAnalysisFailure(reason.message));
     });
 };
 

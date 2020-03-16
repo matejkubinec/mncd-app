@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using MNCD.Domain.Entities;
 using MNCD.Domain.Services;
+using MNCD.Web.Models;
 using MNCD.Web.Models.Analysis;
 
 namespace MNCD.Web.Controllers
@@ -52,6 +53,24 @@ namespace MNCD.Web.Controllers
         {
             await _analysisService.ToggleVisibility(id);
             return new OkResult();
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (id <= 0)
+            {
+                return new BadRequestObjectResult("Invalid id, id must be greater than zero.");
+            }
+
+            await _analysisService.Remove(id);
+
+            return new JsonResult(new ApiResponse<int>
+            {
+                Data = id,
+                Message = "Analysis was deleted."
+            });
         }
     }
 }

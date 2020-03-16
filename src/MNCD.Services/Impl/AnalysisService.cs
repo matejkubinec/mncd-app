@@ -67,12 +67,7 @@ namespace MNCD.Services.Impl
                 .Include(a => a.Request)
                 .ThenInclude(r => r.DataSet)
                 .Include(a => a.Result)
-                .Include(a => a.MultiLayer)
-                .Include(a => a.MultiLayerCommunities)
-                .Include(a => a.SingleLayer)
-                .Include(a => a.SingleLayerCommunities)
-                .Include(a => a.CommunitiesBarplot)
-                .Include(a => a.CommunitiesTreemap)
+                .Include(a => a.Visualizations)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (analysis is null)
@@ -139,6 +134,25 @@ namespace MNCD.Services.Impl
 
             await _ctx.SaveChangesAsync();
         }
+
+        public async Task Remove(int id)
+        {
+            var analysis = await GetAnalysis(id);
+
+            _ctx.Visualizations.RemoveRange(analysis.Visualizations);
+
+            _ctx.AnalysisResult.Remove(analysis.Result);
+
+            _ctx.AnalysisRequests.Remove(analysis.Request);
+
+            foreach (var session in _ctx.AnalysisSessions.Where(a => a.Analyses.Contains(analysis)))
+            {
+                session.Analyses.Remove(analysis);
+            }
+
+            await _ctx.SaveChangesAsync();
+        }
+
 
         private Network GetNetworkToAnalyze(AnalysisRequest request)
         {

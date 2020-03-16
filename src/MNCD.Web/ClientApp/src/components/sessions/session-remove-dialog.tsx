@@ -17,6 +17,7 @@ import {
   closeRemoveDialog,
   clearRemoveDialogError
 } from "../../slices/session-slice";
+import { DeleteButton } from "../common";
 
 class SessionListRemoveDialog extends React.Component<ReduxProps> {
   onSubmit = (ev: React.FormEvent | React.MouseEvent<any>) => {
@@ -61,26 +62,16 @@ class SessionListRemoveDialog extends React.Component<ReduxProps> {
           </Text>
           <DialogFooter>
             <DefaultButton onClick={this.onDismiss}>Cancel</DefaultButton>
-            <DefaultButton
-              styles={{
-                root: {
-                  backgroundColor: this.props.theme.palette.red,
-                  color: this.props.theme.palette.white
-                },
-                rootHovered: {
-                  backgroundColor: this.props.theme.palette.redDark,
-                  color: this.props.theme.palette.white
-                }
-              }}
-              onClick={this.onSubmit}
-            >
-              {this.props.isRemoving ? (
-                <Stack padding={5}>
-                  <Spinner size={SpinnerSize.xSmall} />
-                </Stack>
-              ) : null}
-              Remove
-            </DefaultButton>
+            <DeleteButton buttonProps={{ onClick: this.onSubmit }}>
+              <Text>
+                {this.props.isRemoving ? (
+                  <Stack padding={5}>
+                    <Spinner size={SpinnerSize.xSmall} />
+                  </Stack>
+                ) : null}
+                Remove
+              </Text>
+            </DeleteButton>
           </DialogFooter>
         </form>
       </Dialog>

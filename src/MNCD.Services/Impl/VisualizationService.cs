@@ -212,25 +212,18 @@ namespace MNCD.Services.Impl
 
         private async Task<Visualization> GetVisualizationFromAnalysis(Analysis analysis, VisualizationType type)
         {
-            if (type.IsMultiLayer())
+            var viz = analysis.Visualizations.FirstOrDefault(a => a.Type == type);
+            if (viz == null)
             {
-                var viz = analysis.MultiLayer.FirstOrDefault(a => a.Type == type);
-                if (viz == null)
+                if (type.IsMultiLayer())
                 {
                     viz = await VisualizeMultilayer(new MultilayerRequest
                     {
                         EdgeList = analysis.Request.DataSet.EdgeList,
                         Type = type
                     });
-                    analysis.MultiLayer.Add(viz);
-                    await _ctx.SaveChangesAsync();
                 }
-                return viz;
-            }
-            else if (type.IsMultiLayerCommunities())
-            {
-                var viz = analysis.MultiLayerCommunities.FirstOrDefault(a => a.Type == type);
-                if (viz == null)
+                else if (type.IsMultiLayerCommunities())
                 {
                     viz = await VisualizeMultilayerCommunities(new MultilayerCommunitiesRequest
                     {
@@ -238,30 +231,16 @@ namespace MNCD.Services.Impl
                         CommunityList = analysis.Result.CommunityList,
                         Type = type
                     });
-                    analysis.MultiLayerCommunities.Add(viz);
-                    await _ctx.SaveChangesAsync();
                 }
-                return viz;
-            }
-            else if (type.IsSingleLayer())
-            {
-                var viz = analysis.SingleLayer.FirstOrDefault(a => a.Type == type);
-                if (viz == null)
+                else if (type.IsSingleLayer())
                 {
                     viz = await VisualizeSingleLayer(new SingleLayerRequest
                     {
                         EdgeList = analysis.Result.AnalyzedNetworkEdgeList,
                         Type = type
                     });
-                    analysis.SingleLayer.Add(viz);
-                    await _ctx.SaveChangesAsync();
                 }
-                return viz;
-            }
-            else if (type.IsSingleLayerCommunities())
-            {
-                var viz = analysis.SingleLayerCommunities.FirstOrDefault(a => a.Type == type);
-                if (viz == null)
+                else if (type.IsSingleLayerCommunities())
                 {
                     viz = await VisualizeSingleLayerCommunity(new SingleLayerCommunityRequest
                     {
@@ -269,15 +248,8 @@ namespace MNCD.Services.Impl
                         CommunityList = analysis.Result.CommunityList,
                         Type = type
                     });
-                    analysis.SingleLayerCommunities.Add(viz);
-                    await _ctx.SaveChangesAsync();
                 }
-                return viz;
-            }
-            else if (type == VisualizationType.Barplot)
-            {
-                var viz = analysis.CommunitiesBarplot;
-                if (viz == null)
+                else if (type == VisualizationType.Barplot)
                 {
                     var communities = analysis.Result.ActorToCommunity.Values.Distinct().OrderByDescending(c => c);
                     var communitiesCount = communities.Select(c => analysis.Result.ActorToCommunity.Where(a => a.Value == c).Count());
@@ -293,15 +265,8 @@ namespace MNCD.Services.Impl
                             ColorCommunities = true
                         }
                     });
-                    analysis.CommunitiesBarplot = viz;
-                    await _ctx.SaveChangesAsync();
                 }
-                return viz;
-            }
-            else if (type == VisualizationType.Treemap)
-            {
-                var viz = analysis.CommunitiesTreemap;
-                if (viz == null)
+                else if (type == VisualizationType.Treemap)
                 {
                     var communities = analysis.Result.ActorToCommunity.Values.Distinct().OrderByDescending(c => c);
                     var communitiesCount = communities.Select(c => analysis.Result.ActorToCommunity.Where(a => a.Value == c).Count());
@@ -311,12 +276,12 @@ namespace MNCD.Services.Impl
                         Sizes = communitiesCount,
                         Type = type
                     });
-                    analysis.CommunitiesTreemap = viz;
-                    await _ctx.SaveChangesAsync();
                 }
-                return viz;
+
+                analysis.Visualizations.Add(viz);
+                await _ctx.SaveChangesAsync();
             }
-            return null;
+            return viz;
         }
 
         private class ErrorResponse
