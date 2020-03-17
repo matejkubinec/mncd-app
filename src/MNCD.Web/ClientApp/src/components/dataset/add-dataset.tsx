@@ -8,7 +8,8 @@ import {
   PrimaryButton,
   Spinner,
   SpinnerSize,
-  TextField,  MessageBar,
+  TextField,
+  MessageBar,
   MessageBarType
 } from "office-ui-fabric-react";
 import { FileType } from "../../types";
@@ -18,8 +19,8 @@ import { updateItemToAdd, closeAddDataSetForm, saveDataSet } from "../../slices/
 
 class AddDataSet extends React.Component<ReduxProps, File> {
   private options: IDropdownOption[] = [
-    { key: FileType.MPX, text: "MPX", selected: true },
-    { key: FileType.EdgeList, text: "Edge List" }
+    { key: FileType.MPX.toString(), text: "MPX", selected: true },
+    { key: FileType.EdgeList.toString(), text: "Edge List" }
   ];
 
   handleFileChange = (file: File) => {
@@ -32,7 +33,7 @@ class AddDataSet extends React.Component<ReduxProps, File> {
       }
     }
   }
-
+    
   handleFormatChange = (_: any, option: IDropdownOption | undefined) => {
     if (option) {
       this.props.updateItemToAdd({ format: String(option.key) });
@@ -100,7 +101,7 @@ class AddDataSet extends React.Component<ReduxProps, File> {
           <Stack.Item>
             <Dropdown
               label="Format"
-              selectedKey={this.props.item.format}
+              selectedKey={this.props.item.format.toString()}
               options={this.options}
               onChange={this.handleFormatChange}
             />
