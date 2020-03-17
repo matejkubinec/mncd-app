@@ -5,7 +5,8 @@ import {
   saveDataSet,
   updateItemToAdd,
   openAddDataSetForm,
-  closeAddDataSetForm
+  closeAddDataSetForm,
+  selectDataSet
 } from "../../slices/dataset-slice";
 import { RootState } from "../../store";
 import { connect, ConnectedProps } from "react-redux";
@@ -15,12 +16,13 @@ import {
   ProgressIndicator,
   PrimaryButton,
   StackItem,
-  Modal,
+  Modal,
   MessageBar,
-  MessageBarType
+  MessageBarType,
+  DefaultButton
 } from "office-ui-fabric-react";
 import DataSetsList from "./list-dataset";
-import { AddDataSet } from ".";
+import { AddDataSet, RemoveDataSet, EditDataSet } from ".";
 import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
 import {
   MotionAnimations,
@@ -32,56 +34,41 @@ interface IProps extends ReduxProps {
   onDataSetChosen: (dataSet: DataSetRowViewModel) => void;
 }
 
-interface IState {
-  file: File | null;
-}
-
-class DataSetsModal extends React.Component<IProps, IState> {
-  constructor(props: IProps) {
-    super(props);
-
-    this.state = {
-      file: null
-    };
-
-    this.onAddNetwork = this.onAddNetwork.bind(this);
-    this.onAddNetworkFormCancel = this.onAddNetworkFormCancel.bind(this);
-    this.onAddNetworkFormSave = this.onAddNetworkFormSave.bind(this);
-    this.onDismiss = this.onDismiss.bind(this);
-    this.onChooseDataSet = this.onChooseDataSet.bind(this);
-  }
-
+class DataSetsModal extends React.Component<IProps> {
   componentDidMount() {
     this.props.fetchDataSetsList();
   }
 
-  onDismiss() {
+  onDismiss = () => {
     this.props.closeDataSetsModal();
-  }
+  };
 
-  onAddNetwork() {
+  onAddNetwork = () => {
     this.props.openAddDataSetForm();
-  }
+  };
 
-  onItemToAddChange(value: object) {
-    const item = { ...this.props.itemToAdd, ...value };
-    this.props.updateItemToAdd(item);
-  }
+  handleSelectDataSet = (dataSet: DataSetRowViewModel) => {
+    this.props.selectDataSet(dataSet);
+  };
 
-  onAddNetworkFormCancel() {
-    this.props.closeAddDataSetForm();
-  }
-
-  onAddNetworkFormSave() {
-    if (this.state.file) {
-      this.props.saveDataSet(this.state.file);
+  handleChooseDataSet = () => {
+    if (this.props.dataSet) {
+      this.props.closeDataSetsModal();
+      this.props.onDataSetChosen(this.props.dataSet);
     }
-  }
+  };
 
-  onChooseDataSet(dataSet: DataSetRowViewModel) {
-    this.props.closeDataSetsModal();
-    this.props.onDataSetChosen(dataSet);
-  }
+  renderSidebar = () => {
+    if (this.props.add.isOpen) {
+      return <AddDataSet />;
+    }
+
+    if (this.props.edit.isOpen) {
+      return <EditDataSet />;
+    }
+
+    return <RemoveDataSet />;
+  };
 
   render() {
     return (
@@ -93,40 +80,51 @@ class DataSetsModal extends React.Component<IProps, IState> {
       >
         <Stack horizontal>
           <Stack tokens={{ padding: "50px 20px" }}>
-            <h2>Datasets</h2>
+            <Stack horizontal verticalAlign="end">
+              <Stack.Item align="start" grow={5}>
+                <h2>Datasets</h2>
+              </Stack.Item>
+              <Stack.Item align="end">
+                <DefaultButton
+                  size={5}
+                  iconProps={{ iconName: "Add" }}
+                  onClick={this.onAddNetwork}
+                >
+                  Add
+                </DefaultButton>
+              </Stack.Item>
+            </Stack>
             <Separator></Separator>
-            {this.props.successMessage ?
+            {this.props.successMessage ? (
               <MessageBar messageBarType={MessageBarType.success}>
                 {this.props.successMessage}
               </MessageBar>
-              : null
-            }
-            {this.props.errorMessage ?
+            ) : null}
+            {this.props.errorMessage ? (
               <MessageBar messageBarType={MessageBarType.error}>
                 {this.props.errorMessage}
               </MessageBar>
-              : null
-            }
+            ) : null}
             <Stack>
               <Stack styles={{ root: { minWidth: 640 } }}>
                 <StackItem align="stretch">
                   {this.props.isLoading ? (
                     <ProgressIndicator />
                   ) : (
-                      <DataSetsList
-                        items={this.props.items}
-                        onChooseDataSet={this.onChooseDataSet}
-                      />
-                    )}
+                    <DataSetsList />
+                  )}
                 </StackItem>
               </Stack>
               <Separator />
-              <Stack horizontalAlign="end">
-                <StackItem>
-                  <PrimaryButton onClick={this.onAddNetwork}>
-                    Add network
+              <Stack horizontal horizontalAlign="end">
+                <Stack.Item>
+                  <PrimaryButton
+                    disabled={this.props.dataSet === null}
+                    onClick={this.handleChooseDataSet}
+                  >
+                    Choose
                   </PrimaryButton>
-                </StackItem>
+                </Stack.Item>
               </Stack>
             </Stack>
           </Stack>
@@ -138,14 +136,14 @@ class DataSetsModal extends React.Component<IProps, IState> {
                 width: 250,
                 height: "100%",
                 position: "absolute",
-                right: this.props.isAdding ? 0 : -250,
+                right: this.props.isSidebarOpen ? 0 : -250,
                 boxShadow: Depths.depth8,
                 transitionDuration: MotionDurations.duration2,
                 transition: "all " + MotionAnimations.slideRightIn
               }
             }}
           >
-            <AddDataSet />
+            {this.renderSidebar()}
           </Stack>
         </Stack>
       </Modal>
@@ -153,10 +151,15 @@ class DataSetsModal extends React.Component<IProps, IState> {
   }
 }
 
-const mapState = (state: RootState) => ({
-  ...state.dataset,
-  theme: state.theme.current
-});
+const mapState = (state: RootState) => {
+  const { dataset } = state;
+  const { add, edit, remove } = dataset;
+  return {
+    ...dataset,
+    isSidebarOpen: add.isOpen || edit.isOpen || remove.isOpen,
+    theme: state.theme.current
+  };
+};
 
 const mapDispatch = {
   closeDataSetsModal,
@@ -164,7 +167,8 @@ const mapDispatch = {
   saveDataSet,
   updateItemToAdd,
   openAddDataSetForm,
-  closeAddDataSetForm
+  closeAddDataSetForm,
+  selectDataSet
 };
 
 const connector = connect(mapState, mapDispatch);
