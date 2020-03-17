@@ -121,3 +121,8 @@ export interface ApiResponse<T> {
   message: string;
   data: T;
 }
+
+export interface DataSetEditViewModel {
+  id: number;
+  name: string;
+}

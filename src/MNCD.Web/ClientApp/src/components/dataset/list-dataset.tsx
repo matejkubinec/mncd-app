@@ -1,18 +1,21 @@
 import React from "react";
 import { DataSetRowViewModel } from "../../types";
 import {
-  DefaultButton,
   IColumn,
   DetailsList,
-  SelectionMode
+  SelectionMode,
+  Stack,
+  IconButton
 } from "office-ui-fabric-react";
+import {
+  openEditDataSetForm,
+  openRemoveDataSetForm,
+  selectDataSet
+} from "../../slices/dataset-slice";
+import { ConnectedProps, connect } from "react-redux";
+import { RootState } from "../../store";
 
-interface IProps {
-  items: DataSetRowViewModel[];
-  onChooseDataSet: (item: DataSetRowViewModel) => void;
-}
-
-class DataSetsList extends React.Component<IProps> {
+class DataSetsList extends React.Component<ReduxProps> {
   private columns: IColumn[] = [
     {
       key: "name",
@@ -47,16 +50,43 @@ class DataSetsList extends React.Component<IProps> {
       name: "",
       minWidth: 90,
       onRender: (item: DataSetRowViewModel) => {
-        return <DefaultButton onClick={() => this.handleChooseDataSet(item)}>
-          Choose
-        </DefaultButton>;
+        return (
+          <Stack horizontal>
+            <IconButton
+              iconProps={{ iconName: "Edit" }}
+              onClick={e => this.handleEditDataSet(e, item)}
+            />
+            <IconButton
+              iconProps={{ iconName: "Remove" }}
+              onClick={e => this.handleRemoveDataSet(e, item)}
+            />
+          </Stack>
+        );
       }
     }
   ];
 
+  handleEditDataSet = (
+    ev: React.MouseEvent<any>,
+    item: DataSetRowViewModel
+  ) => {
+    this.props.openEditDataSetForm(item);
+    ev.preventDefault();
+    ev.stopPropagation();
+  };
+
+  handleRemoveDataSet = (
+    ev: React.MouseEvent<any>,
+    item: DataSetRowViewModel
+  ) => {
+    this.props.openRemoveDataSetForm(item);
+    ev.preventDefault();
+    ev.stopPropagation();
+  };
+
   handleChooseDataSet = (item: DataSetRowViewModel) => {
-    this.props.onChooseDataSet(item);
-  }
+    this.props.selectDataSet(item);
+  };
 
   render() {
     if (this.props.items.length === 0) {
@@ -67,11 +97,29 @@ class DataSetsList extends React.Component<IProps> {
       <DetailsList
         items={this.props.items}
         columns={this.columns}
-        selectionMode={SelectionMode.none}
+        selectionMode={SelectionMode.single}
+        onActiveItemChanged={this.handleChooseDataSet}
         isHeaderVisible={true}
       />
     );
   }
 }
 
-export default DataSetsList;
+const mapProps = (state: RootState) => {
+  const { items } = state.dataset;
+  return {
+    items
+  };
+};
+
+const mapDispatch = {
+  openEditDataSetForm,
+  openRemoveDataSetForm,
+  selectDataSet
+};
+
+const connector = connect(mapProps, mapDispatch);
+
+type ReduxProps = ConnectedProps<typeof connector>;
+
+export default connector(DataSetsList);

@@ -11,6 +11,7 @@ using MNCD.Web.Models;
 namespace MNCD.Web.Controllers
 {
     [Route("api/dataset")]
+    [ApiController]
     public class DataSetController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -42,7 +43,7 @@ namespace MNCD.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Insert(DataSetAddViewModel model)
+        public async Task<IActionResult> Insert([FromForm]DataSetAddViewModel model)
         {
             if (string.IsNullOrWhiteSpace(model.Name))
             {
@@ -98,8 +99,10 @@ namespace MNCD.Web.Controllers
             }
 
             await _dataSetService.DeleteDataSet(id);
-            return new JsonResult(new ApiResponse<DataSetRowViewModel>
+
+            return new JsonResult(new ApiResponse<int>
             {
+                Data = id,
                 Message = "Dataset was deleted."
             });
         }

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MNCD.Data;
 using MNCD.Domain.Entities;
 using MNCD.Domain.Services;
+using System.Linq;
 
 namespace MNCD.Services.Impl
 {
@@ -105,6 +106,7 @@ namespace MNCD.Services.Impl
             return await _ctx
                 .DataSets
                 .Include(d => d.Info)
+                .Where(d => !d.Deleted)
                 .ToListAsync();
         }
 
