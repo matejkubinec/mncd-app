@@ -1,4 +1,6 @@
-﻿namespace MNCD.Web.Models.Analysis
+﻿using System.Collections.Generic;
+
+namespace MNCD.Web.Models.Analysis
 {
     public class AnalysisViewModel
     {

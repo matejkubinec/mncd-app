@@ -5,7 +5,12 @@ import {
   AnalysisVisualizationItemViewModel
 } from "../../types";
 import { Stack } from "office-ui-fabric-react";
-import { Evaluation, Request, Visualization } from "./result";
+import {
+  Evaluation,
+  Request,
+  Visualization,
+  CommunitiesDetails
+} from "./result";
 import { RootState } from "../../store";
 
 interface IProps {
@@ -35,13 +40,7 @@ class AnalysisResultItem extends Component<IProps & ReduxProps> {
     const urls = viz
       ? [viz.communitiesBarplot.url, viz.communitiesTreemap.url]
       : [];
-    return (
-      <Visualization
-        header={header}
-        titles={titles}
-        urls={urls}
-      />
-    );
+    return <Visualization header={header} titles={titles} urls={urls} />;
   }
 
   render() {
@@ -93,6 +92,9 @@ class AnalysisResultItem extends Component<IProps & ReduxProps> {
           <Evaluation result={analysis.result} />
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
+          <CommunitiesDetails result={analysis.result} />
+        </Stack.Item>
+        <Stack.Item styles={itemStyles}>
           <Visualization
             header="Multi Layer Visualization"
             titles={multiLayerViz.map(v => v.title)}
@@ -123,7 +125,7 @@ class AnalysisResultItem extends Component<IProps & ReduxProps> {
 
 const mapProps = (rootState: RootState) => {
   return {
-    theme: rootState.theme.current,
+    theme: rootState.theme.current
   };
 };
 

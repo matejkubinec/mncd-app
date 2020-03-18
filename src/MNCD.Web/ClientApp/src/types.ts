@@ -83,6 +83,8 @@ export interface AnalysisResultViewModel {
   coverage: number | null;
   performance: number | null;
   modularity: number | null;
+
+  communityDetails: AnalysisCommunityDetailViewModel[];
 }
 
 export interface AnalysisVisualizationItemViewModel {
@@ -124,5 +126,16 @@ export interface ApiResponse<T> {
 
 export interface DataSetEditViewModel {
   id: number;
+  name: string;
+}
+
+export interface AnalysisCommunityDetailViewModel {
+  name: string;
+  actorCount: number;
+  actors: ActorItem[];
+}
+
+export interface ActorItem {
+  idx: number;
   name: string;
 }
