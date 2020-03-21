@@ -115,6 +115,24 @@ const slice = createSlice({
             layerIndices: JSON.stringify(layerIndices)
           };
           break;
+        case FlattenningAlgorithm.WeightedFlattening:
+          if (!dataSet) {
+            state.request.flatteningAlgorithmParameters = {
+              weights: JSON.stringify([])
+            };
+          } else {
+            const weights: number[][] = [];
+            for (let i = 0; i < dataSet.layerCount; i++) {
+              weights.push([]);
+              for (let j = 0; j < dataSet.layerCount; j++) {
+                weights[i].push(1.0);
+              }
+            }
+            state.request.flatteningAlgorithmParameters = {
+              weights: JSON.stringify(weights)
+            };
+          }
+          break;
       }
     },
     updateFlatteningParameters: (state, action) => {
@@ -129,7 +147,7 @@ const slice = createSlice({
       // Set default parameters
       switch (action.payload) {
         case AnalysisAlgorithm.Louvain:
-          state.request.analysisAlgorithmParameters = {}
+          state.request.analysisAlgorithmParameters = {};
         case AnalysisAlgorithm.FluidC:
           state.request.analysisAlgorithmParameters = {
             k: "2",
@@ -177,6 +195,18 @@ const slice = createSlice({
             state.request.flatteningAlgorithmParameters = {
               ...state.request.flatteningAlgorithmParameters,
               layerIndices: JSON.stringify(layerIndices)
+            };
+            break;
+          case FlattenningAlgorithm.WeightedFlattening:
+            const weights: number[][] = [];
+            for (let i = 0; i < dataSet.layerCount; i++) {
+              weights.push([]);
+              for (let j = 0; j < dataSet.layerCount; j++) {
+                weights[i].push(1.0);
+              }
+            }
+            state.request.flatteningAlgorithmParameters = {
+              weights: JSON.stringify(weights)
             };
             break;
         }

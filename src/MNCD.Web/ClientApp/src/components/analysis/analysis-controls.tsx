@@ -19,12 +19,6 @@ import {
   analyzeDataSet,
   toggleControlsVisiblity
 } from "../../slices/analysis-slice";
-import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
-import { NeutralColors } from "@uifabric/fluent-theme/lib/fluent/FluentColors";
-import {
-  MotionDurations,
-  MotionAnimations
-} from "@uifabric/fluent-theme/lib/fluent/FluentMotion";
 
 class AnalysisControls extends React.Component<ReduxProps> {
   toggleControlsVisiblity = () => {
@@ -37,19 +31,13 @@ class AnalysisControls extends React.Component<ReduxProps> {
 
   render() {
     return (
-      <Stack.Item
-        styles={{
-          root: { height: this.props.areControlsVisible ? "100%" : "50px" }
-        }}
-      >
+      <Stack.Item>
         <Stack
           horizontal
           styles={{
             root: {
-              position: "relative",
               backgroundColor: this.props.theme.palette.white,
-              boxShadow: this.props.theme.effects.elevation4,
-              zIndex: 10
+              boxShadow: this.props.theme.effects.elevation4
             }
           }}
           horizontalAlign="center"
@@ -68,11 +56,7 @@ class AnalysisControls extends React.Component<ReduxProps> {
           tokens={{ padding: 10 }}
           styles={{
             root: {
-              position: "relative",
-              width: "100%",
-              top: this.props.areControlsVisible ? 0 : -550,
-              transitionDuration: MotionDurations.duration2,
-              transition: "all " + MotionAnimations.slideRightIn,
+              display: this.props.areControlsVisible ? "flex" : "none",
               boxShadow: this.props.theme.effects.elevation4,
               backgroundColor: this.props.theme.palette.white
             }
