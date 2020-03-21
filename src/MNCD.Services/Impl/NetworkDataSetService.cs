@@ -112,7 +112,9 @@ namespace MNCD.Services.Impl
 
         private async Task<NetworkDataSet> GetNetworkDataSetByHash(string hash)
         {
-            return await _ctx.DataSets.FirstOrDefaultAsync(d => d.Hash == hash);
+            return await _ctx.DataSets
+                .Include(d => d.Info)
+                .FirstOrDefaultAsync(d => d.Hash == hash);
         }
 
         private NetworkInfo GetNetworkInfo(string content, FileType fileType) => fileType switch
