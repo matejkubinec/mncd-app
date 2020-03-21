@@ -16,6 +16,10 @@ class AnalysisResult extends React.Component<ReduxProps> {
   };
 
   render() {
+    if (this.props.items.length === 0) {
+      return null;
+    }
+
     return (
       <Stack horizontal tokens={{ childrenGap: 20, padding: 20 }}>
         <Stack.Item styles={{ root: { maxWidth: 600 } }} align="start">
@@ -38,7 +42,7 @@ class AnalysisResult extends React.Component<ReduxProps> {
 const mapProps = (rootState: RootState) => {
   const { session } = rootState.analysis;
   return {
-    items: session ? session.analyses : [],
+    items: session ? session.analyses : []
   };
 };
 

@@ -184,6 +184,7 @@ const slice = createSlice({
     ) => {
       state.remove.isRemoving = false;
       state.items = state.items.filter(i => i.id !== action.payload.data);
+      state.dataSet = null;
       state.successMessage = action.payload.message;
     },
     removeDataSetFailure: (state, action: PayloadAction<string>) => {

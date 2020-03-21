@@ -37,7 +37,8 @@ class AnalysisControls extends React.Component<ReduxProps> {
           styles={{
             root: {
               backgroundColor: this.props.theme.palette.white,
-              boxShadow: this.props.theme.effects.elevation4
+              boxShadow: this.props.theme.effects.elevation4,
+              borderBottom: "1px solid " + this.props.theme.palette.neutralLight
             }
           }}
           horizontalAlign="center"
