@@ -24,6 +24,7 @@ class KClique extends React.Component<ReduxProps> {
           <TextField
             label="K"
             type="number"
+            description="Size of smallest clique"
             value={this.props.k}
             onGetErrorMessage={this.handleGetErrorMessage}
             onChange={this.handleKChange}

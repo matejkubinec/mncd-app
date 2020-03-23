@@ -107,8 +107,6 @@ const mapProps = (state: RootState) => {
   const { dataSet } = state.analysis;
   const { flatteningAlgorithmParameters } = state.analysis.request;
   const { weights } = flatteningAlgorithmParameters;
-  console.log(weights);
-  console.log(JSON.parse(weights));
   return {
     layerNames: dataSet ? dataSet.layerNames : [],
     weights: (weights ? JSON.parse(weights) : []) as number[][]
