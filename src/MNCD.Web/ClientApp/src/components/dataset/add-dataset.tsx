@@ -20,6 +20,7 @@ import {
   closeAddDataSetForm,
   saveDataSet
 } from "../../slices/dataset-slice";
+import { Link } from "react-router-dom";
 
 interface IProps {
   file: File;
@@ -94,7 +95,11 @@ class AddDataSet extends React.Component<ReduxProps, IProps> {
           <Stack.Item>
             <h2>Add Dataset</h2>
           </Stack.Item>
-          <Stack.Item>Supported formats</Stack.Item>
+          <Stack.Item>
+            <Link to="/formats" target="_blank">
+              Supported formats
+            </Link>
+          </Stack.Item>
           {this.props.error ? (
             <MessageBar messageBarType={MessageBarType.error}>
               {this.props.error}
