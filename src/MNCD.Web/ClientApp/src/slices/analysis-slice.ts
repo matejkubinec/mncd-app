@@ -109,7 +109,6 @@ const slice = createSlice({
           const layerIndices = dataSet
             ? new Array(dataSet.layerCount).fill(0).map((_, i) => i)
             : [];
-          console.log(layerIndices);
           state.request.flatteningAlgorithmParameters = {
             includeWeights: "true",
             layerIndices: JSON.stringify(layerIndices)
@@ -148,15 +147,18 @@ const slice = createSlice({
       switch (action.payload) {
         case AnalysisAlgorithm.Louvain:
           state.request.analysisAlgorithmParameters = {};
+          break;
         case AnalysisAlgorithm.FluidC:
           state.request.analysisAlgorithmParameters = {
             k: "2",
             maxIterations: "100"
           };
+          break;
         case AnalysisAlgorithm.KClique:
           state.request.analysisAlgorithmParameters = {
             k: "2"
           };
+          break;
       }
     },
     updateAnalysisParameters: (state, action: PayloadAction<object>) => {
@@ -191,7 +193,6 @@ const slice = createSlice({
             const layerIndices = dataSet
               ? new Array(dataSet.layerCount).fill(0).map((_, i) => i)
               : [];
-            console.log(layerIndices);
             state.request.flatteningAlgorithmParameters = {
               ...state.request.flatteningAlgorithmParameters,
               layerIndices: JSON.stringify(layerIndices)
@@ -291,24 +292,12 @@ export const analyzeDataSet = () => (
     })
     .catch(reason => {
       // TODO: react handle error
-      console.log(reason);
     });
 };
 
 export const toggleVisibility = (id: number) => (dispatch: Dispatch) => {
   dispatch(toggleVisibilityStart(id));
-  axios
-    .post(`api/analysis/${id}/toggle-visibility`)
-    .then(response => {
-      if (response.status !== 200) {
-        // TODO: handle error
-        console.log(response);
-      }
-    })
-    .catch(reason => {
-      // TODO: handle error
-      console.log(reason);
-    });
+  axios.post(`api/analysis/${id}/toggle-visibility`);
 };
 
 export default slice.reducer;

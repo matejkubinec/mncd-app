@@ -152,7 +152,6 @@ const slice = createSlice({
       } else {
         state.list.items = [...state.list.items, data];
       }
-      console.log(state);
       state.list.success = message;
     },
     saveSessionError: (state, action: PayloadAction<string>) => {
