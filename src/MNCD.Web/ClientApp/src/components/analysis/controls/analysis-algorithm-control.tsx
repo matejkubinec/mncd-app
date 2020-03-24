@@ -2,15 +2,19 @@ import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../../store";
 import { Stack, IDropdownOption, Dropdown } from "office-ui-fabric-react";
-import { AnalysisAlgorithm } from "../../../types";
+import { AnalysisAlgorithm, AnalysisApproach } from "../../../types";
 import { setAnalysisAlgorithm } from "../../../slices/analysis-slice";
-import { FluidC, Louvain, KClique } from "../algorithms";
+import { FluidC, Louvain, KClique, CLECC } from "../algorithms";
 
 class AnalysisAlgorithmControl extends React.Component<ReduxProps> {
   private singleLayer: IDropdownOption[] = [
     { key: AnalysisAlgorithm.FluidC, text: "FluidC" },
     { key: AnalysisAlgorithm.Louvain, text: "Louvain" },
     { key: AnalysisAlgorithm.KClique, text: "KClique" }
+  ];
+
+  private multiLayer: IDropdownOption[] = [
+    { key: AnalysisAlgorithm.CLECC, text: "CLECC Community Detection" }
   ];
 
   handleAlgorithmChange = (_: any, option?: IDropdownOption) => {
@@ -28,25 +32,34 @@ class AnalysisAlgorithmControl extends React.Component<ReduxProps> {
         return <Louvain />;
       case AnalysisAlgorithm.KClique:
         return <KClique />;
+      case AnalysisAlgorithm.CLECC:
+        return <CLECC />;
     }
   };
 
-  render() {
-    return (
-      <Stack tokens={{ childrenGap: 10 }}>
-        <Stack.Item>
-          <Dropdown
-            label="Analysis Algorithm"
-            styles={{ dropdown: { minWidth: 315 } }}
-            options={this.singleLayer}
-            selectedKey={this.props.algorithm}
-            onChange={this.handleAlgorithmChange}
-          />
-        </Stack.Item>
-        <Stack.Item>{this.renderBody()}</Stack.Item>
-      </Stack>
-    );
-  }
+  getOptions = (): IDropdownOption[] => {
+    if (this.props.aproach === AnalysisApproach.MultiLayer) {
+      return this.multiLayer;
+    } else {
+      return this.singleLayer;
+    }
+  };
+
+  render = () => (
+    <Stack tokens={{ childrenGap: 10 }}>
+      <Stack.Item>
+        {}
+        <Dropdown
+          label="Analysis Algorithm"
+          styles={{ dropdown: { minWidth: 315 } }}
+          options={this.getOptions()}
+          selectedKey={this.props.algorithm}
+          onChange={this.handleAlgorithmChange}
+        />
+      </Stack.Item>
+      <Stack.Item>{this.renderBody()}</Stack.Item>
+    </Stack>
+  );
 }
 
 const mapProps = (rootState: RootState) => ({
