@@ -101,6 +101,9 @@ export interface AnalysisVisualizationViewModel {
 
   communitiesBarplot: AnalysisVisualizationItemViewModel;
   communitiesTreemap: AnalysisVisualizationItemViewModel;
+
+  slices: AnalysisVisualizationItemViewModel;
+  slicesCommunities: AnalysisVisualizationItemViewModel;
 }
 
 export interface AnalysisViewModel {

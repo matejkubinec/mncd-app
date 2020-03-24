@@ -17,5 +17,8 @@ namespace MNCD.Domain.Services
 
         Task<Visualization> VisualizeBarplot<R, T>(BarplotRequest<R, T> request);
         Task<Visualization> VisualizeTreemap<T>(TreemapRequest<T> request);
+
+        Task<Visualization> VisualizeSlices(SlicesRequest request);
+        Task<Visualization> VisualizeSlicesCommunities(SlicesCommunitiesRequest request);
     }
 }

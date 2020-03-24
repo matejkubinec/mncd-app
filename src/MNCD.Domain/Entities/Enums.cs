@@ -39,6 +39,8 @@ namespace MNCD.Domain.Entities
         SingleLayerCommunitiesCircular = 6,
         SingleLayerCommunitiesSpiral = 7,
         Barplot = 8,
-        Treemap = 9
+        Treemap = 9,
+        MultiLayerSlices = 10,
+        MultiLayerSlicesCommunities = 11
     }
 }

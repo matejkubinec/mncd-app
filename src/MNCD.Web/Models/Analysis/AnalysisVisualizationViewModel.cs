@@ -12,6 +12,9 @@ namespace MNCD.Web.Models.Analysis
 
         public AnalysisVisualizationItemViewModel CommunitiesBarplot { get; set; }
         public AnalysisVisualizationItemViewModel CommunitiesTreemap { get; set; }
+
+        public AnalysisVisualizationItemViewModel Slices { get; set; }
+        public AnalysisVisualizationItemViewModel SlicesCommunities { get; set; }
     }
 
     public class AnalysisVisualizationItemViewModel

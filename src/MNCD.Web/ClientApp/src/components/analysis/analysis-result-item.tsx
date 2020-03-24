@@ -48,6 +48,8 @@ class AnalysisResultItem extends Component<IProps & ReduxProps> {
     const multiLayerViz = this.getMultiLayerViz();
     const singleLayerViz = this.getSingleLayerViz();
     const singleLayerCommunitiesViz = this.getSingleLayerCommuntiesViz();
+    const slices = [analysis.visualization.slices];
+    const slicesCommunities = [analysis.visualization.slicesCommunities];
 
     const itemStyles = {
       root: {
@@ -99,6 +101,20 @@ class AnalysisResultItem extends Component<IProps & ReduxProps> {
             header="Multi Layer Visualization"
             titles={multiLayerViz.map(v => v.title)}
             urls={multiLayerViz.map(v => v.url)}
+          />
+        </Stack.Item>
+        <Stack.Item styles={itemStyles}>
+          <Visualization
+            header="Layers"
+            titles={slices.map(v => v.title)}
+            urls={slices.map(v => v.url)}
+          />
+        </Stack.Item>
+        <Stack.Item styles={itemStyles}>
+          <Visualization
+            header="Communities in layers"
+            titles={slicesCommunities.map(v => v.title)}
+            urls={slicesCommunities.map(v => v.url)}
           />
         </Stack.Item>
         <Stack.Item styles={itemStyles}>

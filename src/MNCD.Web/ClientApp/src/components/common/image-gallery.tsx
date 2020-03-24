@@ -1,5 +1,13 @@
 import React from "react";
-import { Stack, Image, IconButton, ImageFit, ImageLoadState, Spinner, SpinnerSize } from "office-ui-fabric-react";
+import {
+  Stack,
+  Image,
+  IconButton,
+  ImageFit,
+  ImageLoadState,
+  Spinner,
+  SpinnerSize
+} from "office-ui-fabric-react";
 
 interface IProps {
   titles: string[];
@@ -45,7 +53,7 @@ export default class ImageGallery extends React.Component<IProps, IState> {
         <Stack
           horizontal
           horizontalAlign="space-between"
-          style={{ height: 500 }}
+          style={{ height: 750 }}
         >
           <Stack.Item styles={{ root: { width: 50 } }}>
             {showPrev ? (
@@ -54,7 +62,9 @@ export default class ImageGallery extends React.Component<IProps, IState> {
                 iconProps={{ iconName: "ChevronLeft" }}
                 onClick={this.prev}
               />
-            ) : " "}
+            ) : (
+              " "
+            )}
           </Stack.Item>
           <Stack.Item grow={2} verticalFill>
             <ImageContainer src={src} />
@@ -66,7 +76,9 @@ export default class ImageGallery extends React.Component<IProps, IState> {
                 iconProps={{ iconName: "ChevronRight" }}
                 onClick={this.next}
               />
-            ) : " "}
+            ) : (
+              " "
+            )}
           </Stack.Item>
         </Stack>
       </Stack>
@@ -79,7 +91,7 @@ interface ICProps {
 }
 
 interface ICState {
-  isLoading: boolean
+  isLoading: boolean;
 }
 
 class ImageContainer extends React.Component<ICProps, ICState> {
@@ -87,7 +99,7 @@ class ImageContainer extends React.Component<ICProps, ICState> {
     super(props);
     this.state = {
       isLoading: true
-    }
+    };
   }
 
   handleLoadingStateChange = (loadState: ImageLoadState) => {
@@ -96,25 +108,23 @@ class ImageContainer extends React.Component<ICProps, ICState> {
     }
 
     if (loadState === ImageLoadState.loaded) {
-      this.setState({ isLoading: false })
+      this.setState({ isLoading: false });
     }
-  }
+  };
 
   render() {
     const display = this.state.isLoading ? "none" : "unset";
 
-    return <Stack verticalFill verticalAlign="center">
-      {this.state.isLoading ?
-        <Spinner size={SpinnerSize.large} />
-        :
-        null
-      }
-      <Image
-        styles={{ root: { height: "100%", borderRadius: 4, display } }}
-        imageFit={ImageFit.centerContain}
-        src={this.props.src}
-        onLoadingStateChange={this.handleLoadingStateChange}
-      />
-    </Stack>;
+    return (
+      <Stack verticalFill verticalAlign="center">
+        {this.state.isLoading ? <Spinner size={SpinnerSize.large} /> : null}
+        <Image
+          styles={{ root: { height: "100%", borderRadius: 4, display } }}
+          imageFit={ImageFit.centerContain}
+          src={this.props.src}
+          onLoadingStateChange={this.handleLoadingStateChange}
+        />
+      </Stack>
+    );
   }
 }
