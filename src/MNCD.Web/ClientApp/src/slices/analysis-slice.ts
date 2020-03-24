@@ -35,11 +35,8 @@ const initialState: AnalysisState = {
     dataSetId: 0,
     selectedLayer: 0,
     approach: AnalysisApproach.SingleLayerFlattening,
-    analysisAlgorithm: AnalysisAlgorithm.FluidC,
-    analysisAlgorithmParameters: {
-      k: "2",
-      maxIterations: "100"
-    },
+    analysisAlgorithm: AnalysisAlgorithm.Louvain,
+    analysisAlgorithmParameters: {},
     flatteningAlgorithm: FlattenningAlgorithm.BasicFlattening,
     flatteningAlgorithmParameters: {
       weightEdges: "true"
@@ -60,7 +57,7 @@ const slice = createSlice({
       state.request.sessionId = action.payload.id;
       state.session = action.payload;
     },
-    setAnalysisApproach: (state, action: PayloadAction<AnalysisApproach>) => {
+    setApproach: (state, action: PayloadAction<AnalysisApproach>) => {
       state.request.approach = action.payload;
     },
     updateSelectedLayer: (state, action: PayloadAction<number>) => {
@@ -159,6 +156,12 @@ const slice = createSlice({
             k: "2"
           };
           break;
+        case AnalysisAlgorithm.CLECC:
+          state.request.analysisAlgorithmParameters = {
+            k: "2",
+            alpha: "1"
+          };
+          break;
       }
     },
     updateAnalysisParameters: (state, action: PayloadAction<object>) => {
@@ -245,7 +248,7 @@ const slice = createSlice({
 export const {
   fetchAnalysisSessionStart,
   fetchAnalysisSessionSuccess,
-  setAnalysisApproach,
+  setApproach,
   setFlatteningAlgorithm,
   updateFlatteningParameters,
   setAnalysisAlgorithm,
@@ -259,6 +262,27 @@ export const {
   toggleVisibilityStart,
   toggleResultControls
 } = slice.actions;
+
+export const setAnalysisApproach = (approach: AnalysisApproach) => (
+  dispatch: Dispatch,
+  getState: () => RootState
+) => {
+  const state = getState();
+  const previousApproach = state.analysis.request.approach;
+
+  dispatch(setApproach(approach));
+  if (approach !== previousApproach) {
+    switch (approach) {
+      case AnalysisApproach.MultiLayer:
+        dispatch(setAnalysisAlgorithm(AnalysisAlgorithm.CLECC));
+        break;
+      case AnalysisApproach.SingleLayerFlattening:
+      case AnalysisApproach.SingleLayerOnly:
+        dispatch(setAnalysisAlgorithm(AnalysisAlgorithm.Louvain));
+        break;
+    }
+  }
+};
 
 export const fetchAnalysisSession = (guid: string) => (dispatch: Dispatch) => {
   dispatch(fetchAnalysisSessionStart());

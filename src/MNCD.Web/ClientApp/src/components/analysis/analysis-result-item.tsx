@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import {
   AnalysisViewModel,
-  AnalysisVisualizationItemViewModel
+  AnalysisVisualizationItemViewModel,
+  AnalysisApproach
 } from "../../types";
 import { Stack } from "office-ui-fabric-react";
 import {
@@ -45,6 +46,7 @@ class AnalysisResultItem extends Component<IProps & ReduxProps> {
 
   render() {
     const analysis = this.props.analysis;
+    const { approach } = analysis.request;
     const multiLayerViz = this.getMultiLayerViz();
     const singleLayerViz = this.getSingleLayerViz();
     const singleLayerCommunitiesViz = this.getSingleLayerCommuntiesViz();
@@ -117,20 +119,24 @@ class AnalysisResultItem extends Component<IProps & ReduxProps> {
             urls={slicesCommunities.map(v => v.url)}
           />
         </Stack.Item>
-        <Stack.Item styles={itemStyles}>
-          <Visualization
-            header="Single Layer Visualization"
-            titles={singleLayerViz.map(v => v.title)}
-            urls={singleLayerViz.map(v => v.url)}
-          />
-        </Stack.Item>
-        <Stack.Item styles={itemStyles}>
-          <Visualization
-            header="Single Layer Communities Visualization"
-            titles={singleLayerCommunitiesViz.map(v => v.title)}
-            urls={singleLayerCommunitiesViz.map(v => v.url)}
-          />
-        </Stack.Item>
+        {approach !== AnalysisApproach.MultiLayer ? (
+          <React.Fragment>
+            <Stack.Item styles={itemStyles}>
+              <Visualization
+                header="Single Layer Visualization"
+                titles={singleLayerViz.map(v => v.title)}
+                urls={singleLayerViz.map(v => v.url)}
+              />
+            </Stack.Item>
+            <Stack.Item styles={itemStyles}>
+              <Visualization
+                header="Single Layer Communities Visualization"
+                titles={singleLayerCommunitiesViz.map(v => v.title)}
+                urls={singleLayerCommunitiesViz.map(v => v.url)}
+              />
+            </Stack.Item>
+          </React.Fragment>
+        ) : null}
         <Stack.Item styles={itemStyles}>
           {this.renderCommunitySizesVisualization()}
         </Stack.Item>
