@@ -11,7 +11,8 @@ export enum AnalysisApproach {
 export enum AnalysisAlgorithm {
   FluidC = 0,
   Louvain = 1,
-  KClique = 2
+  KClique = 2,
+  CLECC = 3
 }
 
 export enum FlattenningAlgorithm {

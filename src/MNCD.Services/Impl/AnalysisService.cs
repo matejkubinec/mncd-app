@@ -33,7 +33,8 @@ namespace MNCD.Services.Impl
         {
             { AnalysisAlgorithm.FluidC, new FluidCAnalysis() },
             { AnalysisAlgorithm.Louvain, new LouvainAnalysis() },
-            { AnalysisAlgorithm.KClique, new KCliqueAnalysis() }
+            { AnalysisAlgorithm.KClique, new KCliqueAnalysis() },
+            { AnalysisAlgorithm.CLECC, new CLECCAnalysis() }
         };
 
         public AnalysisService(
@@ -161,14 +162,8 @@ namespace MNCD.Services.Impl
 
         private AnalysisResult AnalyzeNetwork(AnalysisRequest request, Network network)
         {
-            if (request.Approach == AnalysisApproach.MultiLayer)
-            {
-                // TODO: multi layer analysis
-            }
-
             return Analysis[request.AnalysisAlgorithm].Analyze(network, request.AnalysisAlgorithmParameters);
         }
-
 
         private List<string> ValidateSingleLayerAnalysis(AnalysisRequest request, Network network)
         {
