@@ -21,7 +21,9 @@ namespace MNCD.Web.Mappings
                         SingleLayer = MapSingleLayer(src),
                         SingleLayerCommunities = MapSingleLayerCommunities(src),
                         CommunitiesBarplot = MapBarplot(src),
-                        CommunitiesTreemap = MapTreemap(src)
+                        CommunitiesTreemap = MapTreemap(src),
+                        Slices = MapSlices(src),
+                        SlicesCommunities = MapSlicesCommunities(src),
                     })
                 );
         }
@@ -120,6 +122,28 @@ namespace MNCD.Web.Mappings
         private AnalysisVisualizationItemViewModel MapTreemap(Analysis analysis)
         {
             var type = VisualizationType.Treemap;
+            var visualization = analysis.Visualizations.FirstOrDefault(v => v.Type == type);
+            return new AnalysisVisualizationItemViewModel
+            {
+                Title = visualization?.Title ?? type.ToTitle(),
+                Url = GetUrl(analysis, type)
+            };
+        }
+
+        private AnalysisVisualizationItemViewModel MapSlices(Analysis analysis)
+        {
+            var type = VisualizationType.MultiLayerSlices;
+            var visualization = analysis.Visualizations.FirstOrDefault(v => v.Type == type);
+            return new AnalysisVisualizationItemViewModel
+            {
+                Title = visualization?.Title ?? type.ToTitle(),
+                Url = GetUrl(analysis, type)
+            };
+        }
+
+        private AnalysisVisualizationItemViewModel MapSlicesCommunities(Analysis analysis)
+        {
+            var type = VisualizationType.MultiLayerSlicesCommunities;
             var visualization = analysis.Visualizations.FirstOrDefault(v => v.Type == type);
             return new AnalysisVisualizationItemViewModel
             {

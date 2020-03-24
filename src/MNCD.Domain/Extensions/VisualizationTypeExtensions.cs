@@ -44,6 +44,8 @@ namespace MNCD.Domain.Extensions
             VisualizationType.SingleLayerCommunitiesSpiral => "Spiral Layout",
             VisualizationType.Barplot => "Barplot",
             VisualizationType.Treemap => "Treemap",
+            VisualizationType.MultiLayerSlices => "Layers",
+            VisualizationType.MultiLayerSlicesCommunities => "Communities in Layers",
             _ => ""
         };
 

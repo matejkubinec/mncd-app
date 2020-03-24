@@ -48,7 +48,7 @@ namespace MNCD.Services.Impl
 
         public async Task<Visualization> VisualizeMultilayer(MultilayerRequest request)
         {
-            var client = new HttpClient();
+            var client = GetClient();
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var uri = _baseUrl + "/api/multi-layer/diagonal";
@@ -73,7 +73,7 @@ namespace MNCD.Services.Impl
 
         public async Task<Visualization> VisualizeMultilayerCommunities(MultilayerCommunitiesRequest request)
         {
-            var client = new HttpClient();
+            var client = GetClient();
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var uri = _baseUrl + "/api/multi-layer/hairball";
@@ -98,7 +98,7 @@ namespace MNCD.Services.Impl
 
         public async Task<Visualization> VisualizeSingleLayer(SingleLayerRequest request)
         {
-            var client = new HttpClient();
+            var client = GetClient();
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var uri = _baseUrl + "/api/single-layer/network";
@@ -123,7 +123,7 @@ namespace MNCD.Services.Impl
 
         public async Task<Visualization> VisualizeSingleLayerCommunity(SingleLayerCommunityRequest request)
         {
-            var client = new HttpClient();
+            var client = GetClient();
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var uri = _baseUrl + "/api/single-layer/community";
@@ -148,7 +148,7 @@ namespace MNCD.Services.Impl
 
         public async Task<Visualization> VisualizeBarplot<R, T>(BarplotRequest<R, T> request)
         {
-            var client = new HttpClient();
+            var client = GetClient();
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var uri = _baseUrl + "/api/common-charts/barplot";
@@ -172,7 +172,7 @@ namespace MNCD.Services.Impl
 
         public async Task<Visualization> VisualizeTreemap<T>(TreemapRequest<T> request)
         {
-            var client = new HttpClient();
+            var client = GetClient();
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var uri = _baseUrl + "/api/common-charts/treemap";
@@ -184,6 +184,54 @@ namespace MNCD.Services.Impl
                 return new Visualization
                 {
                     Type = VisualizationType.Treemap,
+                    SvgImage = svg
+                };
+            }
+            else
+            {
+                var message = await HandleError(response);
+                throw new ArgumentException(message);
+            }
+        }
+
+        public async Task<Visualization> VisualizeSlices(SlicesRequest request)
+        {
+            var client = GetClient();
+            var json = JsonConvert.SerializeObject(request);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var uri = _baseUrl + "/api/multi-layer/slices";
+            var response = await client.PostAsync(uri, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var svg = await response.Content.ReadAsStringAsync();
+                return new Visualization
+                {
+                    Type = VisualizationType.MultiLayerSlices,
+                    SvgImage = svg
+                };
+            }
+            else
+            {
+                var message = await HandleError(response);
+                throw new ArgumentException(message);
+            }
+        }
+
+        public async Task<Visualization> VisualizeSlicesCommunities(SlicesCommunitiesRequest request)
+        {
+            var client = GetClient();
+            var json = JsonConvert.SerializeObject(request);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var uri = _baseUrl + "/api/multi-layer/slices-communities";
+            var response = await client.PostAsync(uri, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var svg = await response.Content.ReadAsStringAsync();
+                return new Visualization
+                {
+                    Type = VisualizationType.MultiLayerSlicesCommunities,
                     SvgImage = svg
                 };
             }
@@ -277,11 +325,36 @@ namespace MNCD.Services.Impl
                         Type = type
                     });
                 }
+                else if (type == VisualizationType.MultiLayerSlices)
+                {
+                    viz = await VisualizeSlices(new SlicesRequest
+                    {
+                        EdgeList = analysis.Request.DataSet.EdgeList,
+                        Type = type
+                    });
+                }
+                else if (type == VisualizationType.MultiLayerSlicesCommunities)
+                {
+                    viz = await VisualizeSlicesCommunities(new SlicesCommunitiesRequest
+                    {
+                        EdgeList = analysis.Request.DataSet.EdgeList,
+                        CommunityList = analysis.Result.CommunityList,
+                        Type = type
+                    });
+                }
 
                 analysis.Visualizations.Add(viz);
                 await _ctx.SaveChangesAsync();
             }
             return viz;
+        }
+
+        private HttpClient GetClient()
+        {
+            return new HttpClient
+            {
+                Timeout = TimeSpan.FromMinutes(5)
+            };
         }
 
         private class ErrorResponse
