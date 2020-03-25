@@ -54,7 +54,7 @@ namespace MNCD.Data
                 .Property(e => e.Varieties)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<List<double?>>(v)
+                    v => JsonConvert.DeserializeObject<List<double>>(v)
                 );
 
             builder
@@ -62,7 +62,7 @@ namespace MNCD.Data
                 .Property(e => e.Exclusivities)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<List<double?>>(v)
+                    v => JsonConvert.DeserializeObject<List<double>>(v)
                 );
 
             builder
@@ -70,8 +70,32 @@ namespace MNCD.Data
                 .Property(e => e.Homogenities)
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<List<double?>>(v)
+                    v => JsonConvert.DeserializeObject<List<double>>(v)
                 );
+
+            builder
+            .Entity<AnalysisResult>()
+            .Property(e => e.Performances)
+            .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<List<double>>(v)
+            );
+
+            builder
+            .Entity<AnalysisResult>()
+            .Property(e => e.Coverages)
+            .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<List<double>>(v)
+            );
+
+            builder
+            .Entity<AnalysisResult>()
+            .Property(e => e.Modularities)
+            .HasConversion(
+                v => JsonConvert.SerializeObject(v),
+                v => JsonConvert.DeserializeObject<List<double>>(v)
+            );
 
             builder
                 .Entity<NetworkInfo>()

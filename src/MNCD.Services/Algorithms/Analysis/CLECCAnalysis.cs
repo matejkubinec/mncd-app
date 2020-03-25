@@ -30,6 +30,12 @@ namespace MNCD.Services.Algorithms.Analysis
                 ActorToCommunity = AnalysisHelper.ActorToCommunity(network.Actors, communities),
                 AnalyzedNetworkEdgeList = AnalysisHelper.EdgeList(network),
                 CommunityList = AnalysisHelper.CommunityList(network.Actors, communities),
+                Exclusivities = AnalysisHelper.Exclusivities(network, communities),
+                Homogenities = AnalysisHelper.Homogenities(network, communities),
+                Varieties = AnalysisHelper.Varieties(network, communities),
+                Performances = AnalysisHelper.Performances(network, communities),
+                Coverages = AnalysisHelper.Coverages(network, communities),
+                Modularities = AnalysisHelper.Modularities(network, communities)
             };
         }
 

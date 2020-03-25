@@ -76,9 +76,7 @@ export default class ImageGallery extends React.Component<IProps, IState> {
                 iconProps={{ iconName: "ChevronRight" }}
                 onClick={this.next}
               />
-            ) : (
-              " "
-            )}
+            ) : null}
           </Stack.Item>
         </Stack>
       </Stack>

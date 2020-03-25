@@ -50,7 +50,7 @@ const dark = createTheme({
     neutralPrimary: "#ffffff",
     neutralDark: "#f4f4f4",
     black: "#f8f8f8",
-    white: "#292929",
+    white: "#292929"
   }
 });
 

@@ -6,7 +6,7 @@ interface IRow {
   name: string;
   tooltipId: string;
   tooltip: string;
-  value: string;
+  value: string | JSX.Element;
 }
 
 interface IProps {
@@ -14,6 +14,28 @@ interface IProps {
 }
 
 export default class Evaluation extends Component<IProps> {
+  formatArray = (data: number[], prefix: string) => (
+    <table>
+      <thead>
+        <tr>
+          {data.map((_, i) => (
+            <td>
+              {prefix}
+              {i}
+            </td>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {data.map(d => (
+            <td>{d.toFixed(2)}</td>
+          ))}
+        </tr>
+      </tbody>
+    </table>
+  );
+
   getRows(): IRow[] {
     const res = this.props.result;
     const rows = new Array<IRow>();
@@ -29,6 +51,25 @@ export default class Evaluation extends Component<IProps> {
       });
     }
 
+    if (res.averageCoverage) {
+      rows.push({
+        name: "Average Coverage",
+        tooltipId: `${id}-coverage-tooltip`,
+        tooltip:
+          "The coverage of a partition is the ratio of the number of intra-community edges to the total number of edges in the graph.",
+        value: res.averageCoverage.toFixed(2)
+      });
+    }
+
+    if (res.coverages) {
+      rows.push({
+        name: "Coverages",
+        tooltipId: `${id}-coverage-tooltip`,
+        tooltip: "Coverage of communities in each layer.",
+        value: this.formatArray(res.coverages, "L")
+      });
+    }
+
     if (res.performance) {
       rows.push({
         name: "Performance",
@@ -39,6 +80,25 @@ export default class Evaluation extends Component<IProps> {
       });
     }
 
+    if (res.averagePerformance) {
+      rows.push({
+        name: "Average Performance",
+        tooltipId: `${id}-performance-tooltip`,
+        tooltip:
+          "The performance of a partition is the ratio of the number of intra-community edges plus inter-community non-edges with the total number of potential edges.",
+        value: res.averagePerformance.toFixed(2)
+      });
+    }
+
+    if (res.performances) {
+      rows.push({
+        name: "Performances",
+        tooltipId: `${id}-performance-tooltip`,
+        tooltip: "Performances of communities individual layers.",
+        value: this.formatArray(res.performances, "L")
+      });
+    }
+
     if (res.modularity) {
       rows.push({
         name: "Modularity",
@@ -46,6 +106,44 @@ export default class Evaluation extends Component<IProps> {
         tooltip:
           "Modularity is the fraction of the edges that fall within the given groups minus the expected fraction if edges were distributed at random.",
         value: res.modularity.toFixed(2)
+      });
+    }
+
+    if (res.averageModularity) {
+      rows.push({
+        name: "Average Modularity",
+        tooltipId: `${id}-modularity-tooltip`,
+        tooltip:
+          "Modularity is the fraction of the edges that fall within the given groups minus the expected fraction if edges were distributed at random.",
+        value: res.averageModularity.toFixed(2)
+      });
+    }
+
+    if (res.modularities) {
+      rows.push({
+        name: "Modularities",
+        tooltipId: `${id}-modularity-tooltip`,
+        tooltip: "Modularity of communities in each layer.",
+        value: this.formatArray(res.modularities, "L")
+      });
+    }
+
+    if (res.averageExclusivity) {
+      rows.push({
+        name: "Average Exclusivity",
+        tooltipId: `${id}-modularity-tooltip`,
+        tooltip:
+          "Modularity is the fraction of the edges that fall within the given groups minus the expected fraction if edges were distributed at random.",
+        value: res.averageModularity.toFixed(2)
+      });
+    }
+
+    if (res.modularities) {
+      rows.push({
+        name: "Modularities",
+        tooltipId: `${id}-modularity-tooltip`,
+        tooltip: "Modularity of communities in each layer.",
+        value: this.formatArray(res.modularities, "L")
       });
     }
 
