@@ -6,7 +6,9 @@ import {
   PrimaryButton,
   ProgressIndicator,
   Separator,
-  IconButton
+  IconButton,
+  MessageBar,
+  MessageBarType
 } from "office-ui-fabric-react";
 import {
   AnalysisDataSetControl,
@@ -17,7 +19,9 @@ import {
 } from "./controls";
 import {
   analyzeDataSet,
-  toggleControlsVisiblity
+  toggleControlsVisiblity,
+  hideSuccessMessage,
+  hideErrorMessage
 } from "../../slices/analysis-slice";
 
 class AnalysisControls extends React.Component<ReduxProps> {
@@ -63,6 +67,28 @@ class AnalysisControls extends React.Component<ReduxProps> {
             }
           }}
         >
+          {this.props.success || this.props.error ? (
+            <Stack style={{ paddingBottom: 15 }}>
+              <Stack.Item>
+                {this.props.success ? (
+                  <MessageBar
+                    messageBarType={MessageBarType.success}
+                    onDismiss={this.props.hideSuccessMessage}
+                  >
+                    {this.props.success}
+                  </MessageBar>
+                ) : null}
+                {this.props.error ? (
+                  <MessageBar
+                    messageBarType={MessageBarType.error}
+                    onDismiss={this.props.hideErrorMessage}
+                  >
+                    {this.props.error}
+                  </MessageBar>
+                ) : null}
+              </Stack.Item>
+            </Stack>
+          ) : null}
           <Stack
             horizontal
             horizontalAlign="space-evenly"
@@ -106,13 +132,20 @@ class AnalysisControls extends React.Component<ReduxProps> {
 }
 
 const mapProps = (rootState: RootState) => ({
+  success: rootState.analysis.success,
+  error: rootState.analysis.error,
   theme: rootState.theme.current,
   isAnalyzing: rootState.analysis.isAnalyzing,
   isRequestValid: rootState.analysis.isRequestValid,
   areControlsVisible: rootState.analysis.areControlsVisible
 });
 
-const mapDispatch = { analyzeDataSet, toggleControlsVisiblity };
+const mapDispatch = {
+  analyzeDataSet,
+  toggleControlsVisiblity,
+  hideSuccessMessage,
+  hideErrorMessage
+};
 
 const connector = connect(mapProps, mapDispatch);
 

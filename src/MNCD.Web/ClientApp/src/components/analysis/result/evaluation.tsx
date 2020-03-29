@@ -19,17 +19,17 @@ export default class Evaluation extends Component<IProps> {
       <thead>
         <tr>
           {data.map((_, i) => (
-            <td>
+            <th align="center" style={{ fontWeight: 600 }}>
               {prefix}
               {i}
-            </td>
+            </th>
           ))}
         </tr>
       </thead>
       <tbody>
         <tr>
           {data.map(d => (
-            <td>{d.toFixed(2)}</td>
+            <td align="left">{d.toFixed(2)}</td>
           ))}
         </tr>
       </tbody>
@@ -61,7 +61,7 @@ export default class Evaluation extends Component<IProps> {
       });
     }
 
-    if (res.coverages) {
+    if (res.coverages && res.coverages.length > 0) {
       rows.push({
         name: "Coverages",
         tooltipId: `${id}-coverage-tooltip`,
@@ -90,7 +90,7 @@ export default class Evaluation extends Component<IProps> {
       });
     }
 
-    if (res.performances) {
+    if (res.performances && res.performances.length > 0) {
       rows.push({
         name: "Performances",
         tooltipId: `${id}-performance-tooltip`,
@@ -119,26 +119,7 @@ export default class Evaluation extends Component<IProps> {
       });
     }
 
-    if (res.modularities) {
-      rows.push({
-        name: "Modularities",
-        tooltipId: `${id}-modularity-tooltip`,
-        tooltip: "Modularity of communities in each layer.",
-        value: this.formatArray(res.modularities, "L")
-      });
-    }
-
-    if (res.averageExclusivity) {
-      rows.push({
-        name: "Average Exclusivity",
-        tooltipId: `${id}-modularity-tooltip`,
-        tooltip:
-          "Modularity is the fraction of the edges that fall within the given groups minus the expected fraction if edges were distributed at random.",
-        value: res.averageModularity.toFixed(2)
-      });
-    }
-
-    if (res.modularities) {
+    if (res.modularities && res.modularities.length > 0) {
       rows.push({
         name: "Modularities",
         tooltipId: `${id}-modularity-tooltip`,

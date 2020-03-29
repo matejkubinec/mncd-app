@@ -63,6 +63,7 @@ namespace MNCD.Web.Mappings
             }
 
             return communities
+            .OrderBy(c => c.Key)
             .Select((c, i) => new AnalysisCommunityDetailViewModel
             {
                 ActorCount = c.Value.Count,

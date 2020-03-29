@@ -6,7 +6,8 @@ import {
   FlattenningAlgorithm,
   DataSetRowViewModel,
   AnalysisSessionViewModel,
-  AnalysisViewModel
+  AnalysisViewModel,
+  ApiResponse
 } from "../types";
 import { createSlice, PayloadAction, Dispatch } from "@reduxjs/toolkit";
 import { RootState } from "../store";
@@ -20,6 +21,8 @@ export type AnalysisState = {
   request: AnalysisRequestViewModel;
   session: AnalysisSessionViewModel | null;
   dataSet: DataSetRowViewModel | null;
+  success: string | null;
+  error: string | null;
 };
 
 const initialState: AnalysisState = {
@@ -42,7 +45,9 @@ const initialState: AnalysisState = {
       weightEdges: "true"
     }
   },
-  dataSet: null
+  dataSet: null,
+  success: null,
+  error: null
 };
 
 const slice = createSlice({
@@ -162,6 +167,13 @@ const slice = createSlice({
             alpha: "1"
           };
           break;
+        case AnalysisAlgorithm.ABACUS:
+          state.request.analysisAlgorithmParameters = {
+            treshold: "2",
+            algorithm: String(Number(AnalysisAlgorithm.Louvain)),
+            parameters: "{}"
+          };
+          break;
       }
     },
     updateAnalysisParameters: (state, action: PayloadAction<object>) => {
@@ -231,6 +243,10 @@ const slice = createSlice({
         state.session.analyses.push(action.payload);
       }
     },
+    analysisError: (state, action: PayloadAction<string>) => {
+      state.isAnalyzing = false;
+      state.error = action.payload;
+    },
     toggleVisibilityStart: (state, action: PayloadAction<number>) => {
       const id = action.payload;
 
@@ -241,6 +257,18 @@ const slice = createSlice({
           analysis.isOpen = !analysis.isOpen;
         }
       }
+    },
+    showSuccessMessage: (state, action: PayloadAction<string>) => {
+      state.success = action.payload;
+    },
+    hideSuccessMessage: state => {
+      state.success = null;
+    },
+    showErrorMessage: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+    },
+    hideErrorMessage: state => {
+      state.error = null;
     }
   }
 });
@@ -258,9 +286,14 @@ export const {
   updateSelectedLayer,
   analysisStart,
   analysisSuccess,
+  analysisError,
   toggleControlsVisiblity,
   toggleVisibilityStart,
-  toggleResultControls
+  toggleResultControls,
+  showSuccessMessage,
+  hideSuccessMessage,
+  showErrorMessage,
+  hideErrorMessage
 } = slice.actions;
 
 export const setAnalysisApproach = (approach: AnalysisApproach) => (
@@ -306,16 +339,18 @@ export const analyzeDataSet = () => (
   dispatch(analysisStart());
 
   axios
-    .post("/api/analysis", request)
+    .post<ApiResponse<AnalysisViewModel>>("/api/analysis", request)
     .then(response => {
-      const data = response.data;
+      console.log(response.data);
+      const { data, message } = response.data;
       if (response.status == 200) {
         dispatch(analysisSuccess(data));
       } else {
+        dispatch(analysisError(message));
       }
     })
     .catch(reason => {
-      // TODO: react handle error
+      dispatch(analysisError(reason.message));
     });
 };
 

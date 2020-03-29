@@ -27,6 +27,8 @@ export function analysisToString(algorithm: AnalysisAlgorithm) {
       return "KClique";
     case AnalysisAlgorithm.CLECC:
       return "CLECC Community Detection";
+    case AnalysisAlgorithm.ABACUS:
+      return "ABACUS";
   }
 }
 

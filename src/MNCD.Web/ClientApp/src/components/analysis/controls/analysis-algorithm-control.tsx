@@ -15,6 +15,7 @@ class AnalysisAlgorithmControl extends React.Component<ReduxProps> {
 
   private multiLayer: IDropdownOption[] = [
     { key: AnalysisAlgorithm.CLECC, text: "CLECC Community Detection" }
+    // { key: AnalysisAlgorithm.ABACUS, text: "ABACUS" }
   ];
 
   handleAlgorithmChange = (_: any, option?: IDropdownOption) => {

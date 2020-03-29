@@ -8,6 +8,7 @@ namespace MNCD.Services.Helpers
     public static class AnalysisHelper
     {
         private readonly static EdgeListWriter EdgeListWriter = new EdgeListWriter();
+        private readonly static ActorCommunityListWriter ActorCommunityListWriter = new ActorCommunityListWriter();
 
         public static double Coverage(Network network, List<Community> communities)
         {
@@ -134,7 +135,7 @@ namespace MNCD.Services.Helpers
 
         public static string CommunityList(List<Actor> actors, List<Community> communities)
         {
-            return new EdgeListWriter().ToString(actors, communities, true);
+            return ActorCommunityListWriter.ToString(actors, communities, true);
         }
 
         public static string EdgeList(Network network)
