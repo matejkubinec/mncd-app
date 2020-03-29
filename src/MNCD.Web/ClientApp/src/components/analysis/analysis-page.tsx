@@ -10,7 +10,7 @@ interface MatchParams {
   guid: string;
 }
 
-interface IProps extends RouteComponentProps<MatchParams>, ReduxProps { }
+interface IProps extends RouteComponentProps<MatchParams>, ReduxProps {}
 
 class AnalysisPage extends React.Component<IProps> {
   componentDidMount() {
@@ -24,26 +24,30 @@ class AnalysisPage extends React.Component<IProps> {
         <Stack.Item>
           <AnalysisPageHeader />
         </Stack.Item>
-        {this.props.isLoading ?
+        {this.props.isLoading ? (
           <ProgressIndicator />
-          :
+        ) : (
           <React.Fragment>
             <AnalysisControls />
             <Stack.Item>
               <AnalysisResult />
             </Stack.Item>
           </React.Fragment>
-        }
+        )}
       </Stack>
     );
   }
 }
 
 const mapProps = (state: RootState) => ({
+  success: state.analysis.success,
+  error: state.analysis.error,
   isLoading: state.analysis.isSessionLoading
 });
 
-const mapDispatch = { fetchAnalysisSession };
+const mapDispatch = {
+  fetchAnalysisSession
+};
 
 const connector = connect(mapProps, mapDispatch);
 

@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using MNCD.Domain.Entities;
 using MNCD.Domain.Services;
+using MNCD.Web.Models;
 using MNCD.Web.Models.Analysis;
 
 namespace MNCD.Web.Controllers
@@ -43,7 +44,11 @@ namespace MNCD.Web.Controllers
             var request = _mapper.Map<AnalysisRequest>(model);
             var analysis = await _analysisService.Analyze(model.SessionId, model.DatasetId, request);
             var response = _mapper.Map<AnalysisViewModel>(analysis);
-            return new JsonResult(response);
+            return new JsonResult(new ApiResponse<AnalysisViewModel>
+            {
+                Data = response,
+                Message = "Request was analyzed."
+            });
         }
 
         [HttpPost]

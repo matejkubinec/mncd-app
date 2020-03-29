@@ -299,8 +299,11 @@ namespace MNCD.Services.Impl
                 }
                 else if (type == VisualizationType.Barplot)
                 {
-                    var communities = analysis.Result.ActorToCommunity.Values.Distinct().OrderByDescending(c => c);
-                    var communitiesCount = communities.Select(c => analysis.Result.ActorToCommunity.Where(a => a.Value == c).Count());
+                    var communities = analysis.Result.ActorToCommunity.Values
+                        .Distinct()
+                        .OrderBy(c => c);
+                    var communitiesCount = communities
+                        .Select(c => analysis.Result.ActorToCommunity.Where(a => a.Value == c).Count());
                     viz = await VisualizeBarplot(new BarplotRequest<int, int>
                     {
                         X = communities,

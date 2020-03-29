@@ -12,7 +12,8 @@ export enum AnalysisAlgorithm {
   FluidC = 0,
   Louvain = 1,
   KClique = 2,
-  CLECC = 3
+  CLECC = 3,
+  ABACUS = 4
 }
 
 export enum FlattenningAlgorithm {
@@ -80,6 +81,15 @@ export interface AnalysisResultViewModel {
 
   averageHomogenity: number | null;
   homogenities: number[];
+
+  averageCoverage: number | null;
+  coverages: number[] | null;
+
+  averagePerformance: number | null;
+  performances: number[] | null;
+
+  averageModularity: number | null;
+  modularities: number[] | null;
 
   coverage: number | null;
   performance: number | null;

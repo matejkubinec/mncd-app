@@ -78,6 +78,7 @@ namespace MNCD.Services.Impl
         {
             return await _ctx
                 .DataSets
+                .Include(d => d.Info)
                 .FirstOrDefaultAsync(d => d.Id == id);
         }
 

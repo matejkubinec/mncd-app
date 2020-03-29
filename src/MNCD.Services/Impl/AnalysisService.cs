@@ -34,7 +34,8 @@ namespace MNCD.Services.Impl
             { AnalysisAlgorithm.FluidC, new FluidCAnalysis() },
             { AnalysisAlgorithm.Louvain, new LouvainAnalysis() },
             { AnalysisAlgorithm.KClique, new KCliqueAnalysis() },
-            { AnalysisAlgorithm.CLECC, new CLECCAnalysis() }
+            { AnalysisAlgorithm.CLECC, new CLECCAnalysis() },
+            { AnalysisAlgorithm.ABACUS, new ABACUSAnalysis() },
         };
 
         public AnalysisService(

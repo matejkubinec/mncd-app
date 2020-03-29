@@ -24,6 +24,18 @@ namespace MNCD.Web.Mappings
                     opt => opt.MapFrom(src => src.Homogenities.Average())
                 )
                 .ForMember(
+                    dst => dst.AverageCoverage,
+                    opt => opt.MapFrom(src => src.Coverages.Average())
+                )
+                .ForMember(
+                    dst => dst.AveragePerformance,
+                    opt => opt.MapFrom(src => src.Performances.Average())
+                )
+                .ForMember(
+                    dst => dst.AverageModularity,
+                    opt => opt.MapFrom(src => src.Modularities.Average())
+                )
+                .ForMember(
                     dst => dst.CommunityDetails,
                     src => src.MapFrom(src => MapCommunityDetails(src))
                 );
@@ -51,6 +63,7 @@ namespace MNCD.Web.Mappings
             }
 
             return communities
+            .OrderBy(c => c.Key)
             .Select((c, i) => new AnalysisCommunityDetailViewModel
             {
                 ActorCount = c.Value.Count,

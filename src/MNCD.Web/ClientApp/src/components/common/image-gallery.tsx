@@ -6,7 +6,8 @@ import {
   ImageFit,
   ImageLoadState,
   Spinner,
-  SpinnerSize
+  SpinnerSize,
+  Text
 } from "office-ui-fabric-react";
 
 interface IProps {
@@ -76,9 +77,7 @@ export default class ImageGallery extends React.Component<IProps, IState> {
                 iconProps={{ iconName: "ChevronRight" }}
                 onClick={this.next}
               />
-            ) : (
-              " "
-            )}
+            ) : null}
           </Stack.Item>
         </Stack>
       </Stack>
@@ -92,13 +91,15 @@ interface ICProps {
 
 interface ICState {
   isLoading: boolean;
+  isError: boolean;
 }
 
 class ImageContainer extends React.Component<ICProps, ICState> {
   constructor(props: ICProps) {
     super(props);
     this.state = {
-      isLoading: true
+      isLoading: false,
+      isError: false
     };
   }
 
@@ -107,9 +108,22 @@ class ImageContainer extends React.Component<ICProps, ICState> {
       this.setState({ isLoading: true });
     }
 
+    if (loadState === ImageLoadState.error) {
+      this.setState({ isLoading: false, isError: true });
+    }
+
     if (loadState === ImageLoadState.loaded) {
       this.setState({ isLoading: false });
     }
+  };
+
+  renderError = () => {
+    return (
+      <Stack verticalFill verticalAlign="center" horizontalAlign="center">
+        <Text variant="xLargePlus">❌</Text>
+        <Text>There was an error loading the image.</Text>
+      </Stack>
+    );
   };
 
   render() {
@@ -117,6 +131,7 @@ class ImageContainer extends React.Component<ICProps, ICState> {
 
     return (
       <Stack verticalFill verticalAlign="center">
+        {this.state.isError ? this.renderError() : null}
         {this.state.isLoading ? <Spinner size={SpinnerSize.large} /> : null}
         <Image
           styles={{ root: { height: "100%", borderRadius: 4, display } }}
