@@ -343,7 +343,7 @@ export const analyzeDataSet = () => (
     .then(response => {
       console.log(response.data);
       const { data, message } = response.data;
-      if (response.status == 200) {
+      if (response.status === 200) {
         dispatch(analysisSuccess(data));
       } else {
         dispatch(analysisError(message));

@@ -274,7 +274,7 @@ export const saveDataSet = (file: File) => (
   axios
     .post<ApiResponse<DataSetRowViewModel>>("/api/dataset", formData)
     .then(response => {
-      if (response.status == 200) {
+      if (response.status === 200) {
         dispatch(saveDataSetSuccess(response.data));
         dispatch(closeAddDataSetForm());
         setTimeout(() => {

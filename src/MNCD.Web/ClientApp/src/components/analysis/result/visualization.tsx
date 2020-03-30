@@ -1,5 +1,5 @@
 import React from "react";
-import { Stack, Spinner } from "office-ui-fabric-react";
+import { Stack } from "office-ui-fabric-react";
 import ImageGallery from "../../common/image-gallery";
 
 interface IProps {

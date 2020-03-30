@@ -98,7 +98,7 @@ class ImageContainer extends React.Component<ICProps, ICState> {
   constructor(props: ICProps) {
     super(props);
     this.state = {
-      isLoading: false,
+      isLoading: true,
       isError: false
     };
   }
@@ -120,19 +120,33 @@ class ImageContainer extends React.Component<ICProps, ICState> {
   renderError = () => {
     return (
       <Stack verticalFill verticalAlign="center" horizontalAlign="center">
-        <Text variant="xLargePlus">❌</Text>
+        <Text variant="xLargePlus">
+          <span role="img" aria-labelledby="Error loading image">
+            ❌
+          </span>
+        </Text>
         <Text>There was an error loading the image.</Text>
       </Stack>
     );
   };
 
+  renderLoading = () => {
+    return (
+      <Stack verticalFill verticalAlign="center" horizontalAlign="center">
+        <Spinner size={SpinnerSize.large} />
+        <Text>Loading ...</Text>
+      </Stack>
+    );
+  };
+
   render() {
-    const display = this.state.isLoading ? "none" : "unset";
+    const { isLoading, isError } = this.state;
+    const display = isLoading || isError ? "none" : "unset";
 
     return (
       <Stack verticalFill verticalAlign="center">
-        {this.state.isError ? this.renderError() : null}
-        {this.state.isLoading ? <Spinner size={SpinnerSize.large} /> : null}
+        {isError ? this.renderError() : null}
+        {isLoading ? this.renderLoading() : null}
         <Image
           styles={{ root: { height: "100%", borderRadius: 4, display } }}
           imageFit={ImageFit.centerContain}

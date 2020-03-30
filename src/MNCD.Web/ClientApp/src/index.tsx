@@ -1,9 +1,4 @@
-import {
-  Fabric,
-  initializeIcons,
-  Customizations,
-  loadTheme
-} from "office-ui-fabric-react";
+import { Fabric, initializeIcons } from "office-ui-fabric-react";
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";

@@ -143,7 +143,7 @@ const slice = createSlice({
       state.addEditDialog.isSaving = false;
       state.addEditDialog.isOpen = false;
 
-      const idx = state.list.items.findIndex(i => i.id == data.id);
+      const idx = state.list.items.findIndex(i => i.id === data.id);
 
       if (idx !== -1) {
         const items = [...state.list.items];
