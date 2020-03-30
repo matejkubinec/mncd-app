@@ -4,7 +4,6 @@ import {
   editSession,
   updateAddEditDialogName,
   closeAddEditDialog,
-  SessionAddEditDialog,
   clearAddEditEdialogError
 } from "../../slices/session-slice";
 import { connect, ConnectedProps } from "react-redux";
