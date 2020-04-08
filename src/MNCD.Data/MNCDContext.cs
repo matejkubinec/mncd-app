@@ -1,18 +1,23 @@
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using MNCD.Data.Converters;
 using MNCD.Domain.Entities;
-using Newtonsoft.Json;
 
 namespace MNCD.Data
 {
     public class MNCDContext : DbContext
     {
         public DbSet<AnalysisSession> AnalysisSessions { get; set; }
+
         public DbSet<AnalysisRequest> AnalysisRequests { get; set; }
+
         public DbSet<AnalysisResult> AnalysisResult { get; set; }
+
         public DbSet<Analysis> Analyses { get; set; }
+
         public DbSet<NetworkDataSet> DataSets { get; set; }
+
         public DbSet<NetworkInfo> NetworkInfos { get; set; }
+
         public DbSet<Visualization> Visualizations { get; set; }
 
         public MNCDContext()
@@ -25,85 +30,65 @@ namespace MNCD.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            var dictStringConverter = new DictionaryJsonConverter<string, string>();
+            var dictIntConverter = new DictionaryJsonConverter<int, int>();
+            var listDoubleConverter = new ListJsonConverter<double>();
+            var listStringConverter = new ListJsonConverter<string>();
+
             builder
                 .Entity<AnalysisRequest>()
                 .Property(e => e.AnalysisAlgorithmParameters)
-                .HasConversion(
-                    v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<Dictionary<string, string>>(v)
-                );
+                .HasConversion(dictStringConverter);
 
             builder
                 .Entity<AnalysisRequest>()
                 .Property(e => e.FlatteningAlgorithmParameters)
-                .HasConversion(
-                    v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<Dictionary<string, string>>(v)
-                );
+                .HasConversion(dictStringConverter);
 
             builder
                 .Entity<AnalysisResult>()
                 .Property(e => e.ActorToCommunity)
-                .HasConversion(
-                    v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<Dictionary<int, int>>(v)
-                );
+                .HasConversion(dictIntConverter);
 
             builder
                 .Entity<AnalysisResult>()
                 .Property(e => e.Varieties)
-                .HasConversion(
-                    v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<List<double>>(v)
-                );
+                .HasConversion(listDoubleConverter);
 
             builder
                 .Entity<AnalysisResult>()
                 .Property(e => e.Exclusivities)
-                .HasConversion(
-                    v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<List<double>>(v)
-                );
+                .HasConversion(listDoubleConverter);
 
             builder
                 .Entity<AnalysisResult>()
                 .Property(e => e.Homogenities)
-                .HasConversion(
-                    v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<List<double>>(v)
-                );
+                .HasConversion(listDoubleConverter);
 
             builder
-            .Entity<AnalysisResult>()
-            .Property(e => e.Performances)
-            .HasConversion(
-                v => JsonConvert.SerializeObject(v),
-                v => JsonConvert.DeserializeObject<List<double>>(v)
-            );
+                .Entity<AnalysisResult>()
+                .Property(e => e.Performances)
+                .HasConversion(listDoubleConverter);
 
             builder
-            .Entity<AnalysisResult>()
-            .Property(e => e.Coverages)
-            .HasConversion(
-                v => JsonConvert.SerializeObject(v),
-                v => JsonConvert.DeserializeObject<List<double>>(v)
-            );
+                .Entity<AnalysisResult>()
+                .Property(e => e.Coverages)
+                .HasConversion(listDoubleConverter);
 
             builder
-            .Entity<AnalysisResult>()
-            .Property(e => e.Modularities)
-            .HasConversion(
-                v => JsonConvert.SerializeObject(v),
-                v => JsonConvert.DeserializeObject<List<double>>(v)
-            );
+                .Entity<AnalysisResult>()
+                .Property(e => e.Modularities)
+                .HasConversion(listDoubleConverter);
 
             builder
                 .Entity<NetworkInfo>()
                 .Property(e => e.LayerNames)
-                .HasConversion(
-                    v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<List<string>>(v)
-                );
+                .HasConversion(listStringConverter);
+
+            builder
+                .Entity<NetworkInfo>()
+                .Property(e => e.ActorNames)
+                .HasConversion(listStringConverter);
         }
     }
 }

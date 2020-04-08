@@ -6,11 +6,18 @@ using MNCD.Data;
 using MNCD.Domain.Entities;
 using MNCD.Domain.Services;
 using System.Linq;
+using MNCD.Core;
+using MNCD.Readers;
+using MNCD.Writers;
 
 namespace MNCD.Services.Impl
 {
     public class NetworkDataSetService : INetworkDataSetService
     {
+        private static readonly MpxReader _mpxReader = new MpxReader();
+        private static readonly EdgeListReader _edgeListReader = new EdgeListReader();
+        private static readonly EdgeListWriter _edgeListWriter = new EdgeListWriter();
+
         private readonly MNCDContext _ctx;
         private readonly IReaderService _readerService;
         private readonly IHashService _hashService;
@@ -28,22 +35,15 @@ namespace MNCD.Services.Impl
         public async Task<NetworkDataSet> AddDataSet(string name, string content, FileType fileType)
         {
             var hash = _hashService.GetHashFor(content);
-            var existing = await GetNetworkDataSetByHash(hash);
 
-            if (existing != null)
+            if (await ExistsDataSet(hash))
             {
-                if (existing.Deleted)
-                {
-                    existing.Deleted = false;
-                    await _ctx.SaveChangesAsync();
-                    return existing;
-                }
-
-                throw new ArgumentException($"DataSet already exists in the system with name {existing.Name}.");
+                throw new ArgumentException($"DataSet already exists in the system.");
             }
 
-            var info = GetNetworkInfo(content, fileType);
-            var edgeList = GetEdgeList(content, fileType);
+            var network = ReadNetwork(content, fileType);
+            var info = GetInfo(network);
+            var edgeList = GetEdgeList(network);
 
             var dataSet = new NetworkDataSet
             {
@@ -91,8 +91,7 @@ namespace MNCD.Services.Impl
 
             if (dataSet is null)
             {
-                // TODO: custom exception
-                throw new ArgumentException("Network was not found.");
+                throw new ArgumentException($"DataSet with id '{id}' was not found.");
             }
 
             dataSet.Name = name;
@@ -111,25 +110,36 @@ namespace MNCD.Services.Impl
                 .ToListAsync();
         }
 
-        private async Task<NetworkDataSet> GetNetworkDataSetByHash(string hash)
+        private async Task<bool> ExistsDataSet(string hash)
         {
-            return await _ctx.DataSets
-                .Include(d => d.Info)
-                .FirstOrDefaultAsync(d => d.Hash == hash);
+            return await _ctx.DataSets.AnyAsync(d => d.Hash == hash && !d.Deleted);
         }
 
-        private NetworkInfo GetNetworkInfo(string content, FileType fileType) => fileType switch
+        private string GetEdgeList(Network network)
         {
-            FileType.MPX => _readerService.ReadMPX(content),
-            FileType.EdgeList => _readerService.ReadEdgeList(content),
-            _ => throw new ArgumentException("File type is not supported."),// TODO: custom exception
-        };
+            return _edgeListWriter.ToString(network, true);
+        }
 
-        private string GetEdgeList(string content, FileType fileType) => fileType switch
+        private NetworkInfo GetInfo(Network network)
         {
-            FileType.MPX => _readerService.ReadMPXToEdgeList(content),
-            FileType.EdgeList => _readerService.ReadEdgeListToString(content),
-            _ => throw new ArgumentException("File type is not supported."),// TODO: custom exception
-        };
+            return new NetworkInfo
+            {
+                NodeCount = network.ActorCount,
+                EdgeCount = network.Layers.Sum(l => l.Edges.Count) + network.InterLayerEdges.Count,
+                LayerCount = network.LayerCount,
+                ActorNames = network.Actors.Select(a => a.Name).ToList(),
+                LayerNames = network.Layers.Select(l => l.Name).ToList()
+            };
+        }
+
+        private Network ReadNetwork(string content, FileType fileType)
+        {
+            return fileType switch
+            {
+                FileType.MPX => _mpxReader.FromString(content),
+                FileType.EdgeList => _edgeListReader.FromString(content),
+                _ => throw new ArgumentException($"File type '{fileType}' is not supported.")
+            };
+        }
     }
 }
