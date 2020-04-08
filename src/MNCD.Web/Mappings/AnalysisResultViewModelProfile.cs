@@ -13,27 +13,27 @@ namespace MNCD.Web.Mappings
             CreateMap<AnalysisResult, AnalysisResultViewModel>()
                 .ForMember(
                     dst => dst.AverageVariety,
-                    opt => opt.MapFrom(src => src.Varieties.Average())
+                    opt => opt.MapFrom(src => src.Varieties.DefaultIfEmpty().Average())
                 )
                 .ForMember(
                     dst => dst.AverageExclusivity,
-                    opt => opt.MapFrom(src => src.Exclusivities.Average())
+                    opt => opt.MapFrom(src => src.Exclusivities.DefaultIfEmpty().Average())
                 )
                 .ForMember(
                     dst => dst.AverageHomogenity,
-                    opt => opt.MapFrom(src => src.Homogenities.Average())
+                    opt => opt.MapFrom(src => src.Homogenities.DefaultIfEmpty().Average())
                 )
                 .ForMember(
                     dst => dst.AverageCoverage,
-                    opt => opt.MapFrom(src => src.Coverages.Average())
+                    opt => opt.MapFrom(src => src.Coverages.DefaultIfEmpty().Average())
                 )
                 .ForMember(
                     dst => dst.AveragePerformance,
-                    opt => opt.MapFrom(src => src.Performances.Average())
+                    opt => opt.MapFrom(src => src.Performances.DefaultIfEmpty().Average())
                 )
                 .ForMember(
                     dst => dst.AverageModularity,
-                    opt => opt.MapFrom(src => src.Modularities.Average())
+                    opt => opt.MapFrom(src => src.Modularities.DefaultIfEmpty().Average())
                 )
                 .ForMember(
                     dst => dst.CommunityDetails,

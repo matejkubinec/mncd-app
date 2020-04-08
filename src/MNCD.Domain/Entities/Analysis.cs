@@ -10,13 +10,8 @@ namespace MNCD.Domain.Entities
 
         public AnalysisResult Result { get; set; }
 
-        public List<Visualization> Visualizations { get; set; }
+        public List<Visualization> Visualizations { get; set; } = new List<Visualization>();
 
         public bool IsOpen { get; set; }
-
-        public Analysis()
-        {
-            Visualizations = new List<Visualization>();
-        }
     }
 }
