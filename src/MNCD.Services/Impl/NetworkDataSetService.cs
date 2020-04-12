@@ -52,7 +52,7 @@ namespace MNCD.Services.Impl
                 EdgeList = edgeList,
                 FileType = fileType,
                 Hash = hash,
-                Info = info,
+                NetworkInfo = info,
             };
 
             await _ctx.DataSets.AddAsync(dataSet);
@@ -78,7 +78,7 @@ namespace MNCD.Services.Impl
         {
             return await _ctx
                 .DataSets
-                .Include(d => d.Info)
+                .Include(d => d.NetworkInfo)
                 .FirstOrDefaultAsync(d => d.Id == id);
         }
 
@@ -86,7 +86,7 @@ namespace MNCD.Services.Impl
         {
             var dataSet = await _ctx
                 .DataSets
-                .Include(d => d.Info)
+                .Include(d => d.NetworkInfo)
                 .FirstOrDefaultAsync(d => d.Id == id);
 
             if (dataSet is null)
@@ -105,7 +105,7 @@ namespace MNCD.Services.Impl
         {
             return await _ctx
                 .DataSets
-                .Include(d => d.Info)
+                .Include(d => d.NetworkInfo)
                 .Where(d => !d.Deleted)
                 .ToListAsync();
         }

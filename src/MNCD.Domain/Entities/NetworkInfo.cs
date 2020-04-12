@@ -6,6 +6,10 @@ namespace MNCD.Domain.Entities
     {
         public int Id { get; set; }
 
+        public int NetworkDataSetId { get; set; }
+
+        public NetworkDataSet NetworkDataSet { get; set; }
+
         public int NodeCount { get; set; }
 
         public int EdgeCount { get; set; }

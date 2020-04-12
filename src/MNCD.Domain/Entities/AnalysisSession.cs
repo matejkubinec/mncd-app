@@ -11,8 +11,8 @@ namespace MNCD.Domain.Entities
 
         public string Name { get; set; }
 
-        public List<Analysis> Analyses { get; set; } = new List<Analysis>();
-
         public DateTime CreateDate { get; set; }
+
+        public List<Analysis> Analyses { get; set; } = new List<Analysis>();
     }
 }

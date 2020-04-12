@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MNCD.Data;
 using MNCD.Domain.Entities;
+using MNCD.Domain.Services;
 using MNCD.Services.Impl;
 using MNCD.Tests.Helpers;
 using System;
@@ -12,6 +13,8 @@ namespace MNCD.Tests.Services
 {
     public class AnalysisServiceTests
     {
+        private static IAnalysisService _service = null;
+
         public AnalysisServiceTests()
         {
         }
@@ -19,15 +22,15 @@ namespace MNCD.Tests.Services
         [Fact]
         public async Task GetAnalysisFound()
         {
-            var analysis = await InitService("GetAnalysisFound").GetAnalysis(1);
-
-            Assert.NotNull(analysis);
+            var service = SetupService();
+            Assert.NotNull(await service.GetAnalysis(1));
         }
 
         [Fact]
         public async Task GetAnalysisNotFound()
         {
-            await Assert.ThrowsAsync<ArgumentException>(async () => await InitService("GetAnalysisNotFound").GetAnalysis(2));
+            var service = SetupService();
+            await Assert.ThrowsAsync<ArgumentException>(async () => await service.GetAnalysis(404));
         }
 
         [Fact]
@@ -48,21 +51,28 @@ namespace MNCD.Tests.Services
                 FlatteningAlgorithm = FlatteningAlgorithm.BasicFlattening,
                 FlatteningAlgorithmParameters = new Dictionary<string, string>(),
             };
-            var analysis = await InitService("ApplyFluidC").Analyze(1, 1, request);
+            var service = SetupService();
+            var analysis = await service.Analyze(1, 1, request);
+
             Assert.NotNull(analysis);
             Assert.NotNull(analysis.Result);
             Assert.NotNull(analysis.Request);
         }
 
-        private AnalysisService InitService(string dbName)
+        private static IAnalysisService SetupService()
         {
-            var ctx = SetupDB(dbName);
-            var data = new NetworkDataSetService(ctx, new HashService(), new ReaderService());
-            var session = new AnalysisSessionService(ctx);
-            return new AnalysisService(ctx, data, session);
+            if (_service is null)
+            {
+                var ctx = SetupDB(nameof(AnalysisServiceTests));
+                var data = new NetworkDataSetService(ctx, new HashService(), new ReaderService());
+                var session = new AnalysisSessionService(ctx);
+                _service = new AnalysisService(ctx, data, session);
+            }
+
+            return _service;
         }
 
-        private MNCDContext SetupDB(string databaseName)
+        private static MNCDContext SetupDB(string dbName)
         {
             var datasets = new List<NetworkDataSet>
             {
@@ -99,7 +109,7 @@ namespace MNCD.Tests.Services
             };
 
             var options = new DbContextOptionsBuilder<MNCDContext>()
-                .UseInMemoryDatabase(databaseName)
+                .UseInMemoryDatabase(databaseName: dbName)
                 .Options;
 
             var ctx = new MNCDContext(options);

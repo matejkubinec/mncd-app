@@ -7,7 +7,13 @@ namespace MNCD.Domain.Entities
     {
         public int Id { get; set; }
 
+        public int AnalysisId { get; set; }
+
+        public Analysis Analysis { get; set; }
+
         public DateTime CreateDate { get; set; }
+
+        public int DataSetId { get; set; }
 
         public NetworkDataSet DataSet { get; set; }
 

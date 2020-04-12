@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace MNCD.Domain.Entities
 {
     public class NetworkDataSet
@@ -16,6 +18,8 @@ namespace MNCD.Domain.Entities
 
         public FileType FileType { get; set; }
 
-        public NetworkInfo Info { get; set; }
+        public NetworkInfo NetworkInfo { get; set; }
+
+        public List<AnalysisRequest> Requests { get; set; }
     }
 }
