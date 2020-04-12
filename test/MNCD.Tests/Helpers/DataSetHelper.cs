@@ -9,7 +9,7 @@ namespace MNCD.Tests.Helpers
         {
             Name = "Florentine",
             FileType = FileType.MPX,
-            Info = new NetworkInfo
+            NetworkInfo = new NetworkInfo
             {
                 EdgeCount = 35,
                 NodeCount = 16,
@@ -22,7 +22,7 @@ namespace MNCD.Tests.Helpers
         {
             Name = "Louvain",
             FileType = FileType.MPX,
-            Info = new NetworkInfo
+            NetworkInfo = new NetworkInfo
             {
                 EdgeCount = 5,
                 NodeCount = 6,

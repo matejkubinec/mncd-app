@@ -122,7 +122,7 @@ namespace MNCD.Services.Impl
                 .Include(a => a.Analyses)
                 .ThenInclude(a => a.Request)
                 .ThenInclude(r => r.DataSet)
-                .ThenInclude(r => r.Info)
+                .ThenInclude(r => r.NetworkInfo)
                 .Include(a => a.Analyses)
                 .ThenInclude(a => a.Result)
                 .Include(a => a.Analyses)

@@ -11,19 +11,20 @@ namespace MNCD.Data.Configurations
             builder
                 .HasOne(a => a.AnalysisSession)
                 .WithMany(s => s.Analyses)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasForeignKey(s => s.AnalysisSessionId);
 
             builder
                 .HasOne(a => a.Result)
                 .WithOne(r => r.Analysis)
-                .HasForeignKey<Analysis>(a => a.ResultId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasForeignKey<AnalysisResult>(r => r.AnalysisId);
 
             builder
                 .HasOne(a => a.Request)
                 .WithOne(r => r.Analysis)
-                .HasForeignKey<AnalysisRequest>(r => r.AnalysisId)
-                .HasForeignKey<Analysis>(a => a.RequestId);
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasForeignKey<AnalysisRequest>(r => r.AnalysisId);
 
             builder
                 .HasMany(a => a.Visualizations);
