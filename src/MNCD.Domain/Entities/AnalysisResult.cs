@@ -6,6 +6,10 @@ namespace MNCD.Domain.Entities
     {
         public int Id { get; set; }
 
+        public int AnalysisId { get; set; }
+
+        public Analysis Analysis { get; set; }
+
         public Dictionary<int, int> ActorToCommunity { get; set; } = new Dictionary<int, int>();
 
         public string CommunityList { get; set; }
