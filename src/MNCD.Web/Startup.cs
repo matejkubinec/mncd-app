@@ -122,10 +122,7 @@ namespace MNCD.Web
 
             var vizUrl = Configuration.GetValue<string>("VisualizationApiUrl");
             services.AddTransient<IVisualizationService, VisualizationService>(x =>
-                new VisualizationService(
-                    x.GetService<MNCDContext>(),
-                    x.GetService<IAnalysisService>(),
-                    vizUrl));
+                new VisualizationService(x.GetService<MNCDContext>(), vizUrl));
         }
     }
 }

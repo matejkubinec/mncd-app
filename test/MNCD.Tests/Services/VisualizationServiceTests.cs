@@ -10,7 +10,7 @@ namespace MNCD.Tests.Services
     public class VisualizationServiceTests
     {
         private static string Url => "https://mncd-viz.azurewebsites.net/";
-        private readonly VisualizationService _service = new VisualizationService(null, null, Url);
+        private readonly VisualizationService _service = new VisualizationService(null, Url);
 
         [Fact]
         public async Task VisualizeMultilayer()

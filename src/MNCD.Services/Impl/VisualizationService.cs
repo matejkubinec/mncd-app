@@ -17,13 +17,11 @@ namespace MNCD.Services.Impl
     public class VisualizationService : IVisualizationService
     {
         private readonly MNCDContext _ctx;
-        private readonly IAnalysisService _analysisService;
         private readonly string _baseUrl;
 
-        public VisualizationService(MNCDContext ctx, IAnalysisService analysisService, string baseUrl)
+        public VisualizationService(MNCDContext ctx, string baseUrl)
         {
             _ctx = ctx;
-            _analysisService = analysisService;
             _baseUrl = baseUrl;
         }
 
@@ -40,9 +38,8 @@ namespace MNCD.Services.Impl
             return visualization;
         }
 
-        public async Task<Visualization> GetVisualization(int analysisId, VisualizationType type)
+        public async Task<Visualization> GetVisualization(Analysis analysis, VisualizationType type)
         {
-            var analysis = await _analysisService.GetAnalysis(analysisId);
             return await GetVisualizationFromAnalysis(analysis, type);
         }
 

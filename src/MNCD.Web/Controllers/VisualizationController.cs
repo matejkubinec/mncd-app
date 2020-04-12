@@ -2,8 +2,6 @@
 using MNCD.Domain.Entities;
 using MNCD.Domain.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace MNCD.Web.Controllers
@@ -12,10 +10,12 @@ namespace MNCD.Web.Controllers
     public class VisualizationController : ControllerBase
     {
         private readonly IVisualizationService _visualizationService;
+        private readonly IAnalysisService _analysisService;
 
-        public VisualizationController(IVisualizationService visualizationService)
+        public VisualizationController(IVisualizationService visualizationService, IAnalysisService analysisService)
         {
             _visualizationService = visualizationService;
+            _analysisService = analysisService;
         }
 
         [HttpGet]
@@ -24,7 +24,8 @@ namespace MNCD.Web.Controllers
         {
             try
             {
-                var visualization = await _visualizationService.GetVisualization(analysisId, type);
+                var analysis = await _analysisService.GetAnalysis(analysisId);
+                var visualization = await _visualizationService.GetVisualization(analysis, type);
                 return new ContentResult()
                 {
                     Content = visualization.SvgImage,

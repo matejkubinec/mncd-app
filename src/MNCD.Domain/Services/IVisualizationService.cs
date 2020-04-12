@@ -7,7 +7,7 @@ namespace MNCD.Domain.Services
     public interface IVisualizationService
     {
         Task<Visualization> GetVisualization(int id);
-        Task<Visualization> GetVisualization(int analysisId, VisualizationType type);
+        Task<Visualization> GetVisualization(Analysis analysis, VisualizationType type);
 
         Task<Visualization> VisualizeMultilayer(MultilayerRequest request);
         Task<Visualization> VisualizeMultilayerCommunities(MultilayerCommunitiesRequest request);
