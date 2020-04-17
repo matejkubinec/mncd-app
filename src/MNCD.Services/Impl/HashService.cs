@@ -8,11 +8,13 @@ namespace MNCD.Services.Impl
     {
         public string GetHashFor(string input)
         {
-            string hash = "";
+            string hash = string.Empty;
+
             using (var md5Hash = MD5.Create())
             {
                 hash = ComputeHash(md5Hash, input);
             }
+
             return hash;
         }
 
@@ -20,10 +22,12 @@ namespace MNCD.Services.Impl
         {
             var data = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
             var builder = new StringBuilder();
+
             for (int i = 0; i < data.Length; i++)
             {
                 builder.Append(data[i].ToString("x2"));
             }
+
             return builder.ToString();
         }
     }

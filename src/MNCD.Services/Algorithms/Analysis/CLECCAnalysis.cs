@@ -24,7 +24,7 @@ namespace MNCD.Services.Algorithms.Analysis
             var k = int.Parse(parameters["k"]);
             var alpha = int.Parse(parameters["alpha"]);
             var communities = Algorithm.Apply(network, alpha, k);
-            // TODO: multi layer network evaluation
+
             return new AnalysisResult
             {
                 ActorToCommunity = AnalysisHelper.ActorToCommunity(network.Actors, communities),
