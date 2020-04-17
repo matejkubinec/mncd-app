@@ -12,13 +12,13 @@ namespace MNCD.Tests.Services
     public class AnalysisSessionServiceTests
     {
         [Fact]
-        public void GetAnalysisSession_InvalidId()
+        public async Task GetAnalysisSession_InvalidId()
         {
             using (var ctx = InitCtx(nameof(GetAnalysisSession_InvalidId)))
             {
                 var service = new AnalysisSessionService(ctx);
-                Assert.ThrowsAsync<ArgumentException>(() => service.GetAnalysisSession(0));
-                Assert.ThrowsAsync<ArgumentException>(() => service.GetAnalysisSession(-1));
+                await Assert.ThrowsAsync<ArgumentException>(() => service.GetAnalysisSession(0));
+                await Assert.ThrowsAsync<ArgumentException>(() => service.GetAnalysisSession(-1));
             }
         }
 
@@ -35,52 +35,52 @@ namespace MNCD.Tests.Services
         }
 
         [Fact]
-        public void GetAnalysisSession_InvalidGuid()
+        public async Task GetAnalysisSession_InvalidGuid()
         {
             using (var ctx = InitCtx(nameof(GetAnalysisSession_InvalidGuid)))
             {
                 var service = new AnalysisSessionService(ctx);
-                Assert.ThrowsAsync<ArgumentException>(() => service.GetAnalysisSession("this-is-not-guid"));
+                await Assert.ThrowsAsync<ArgumentException>(() => service.GetAnalysisSession("this-is-not-guid"));
             }
         }
 
         [Fact]
-        public void GetAnalysisSession_NotFoundGuid()
+        public async Task GetAnalysisSession_NotFoundGuid()
         {
             using (var ctx = InitCtx(nameof(GetAnalysisSession_NotFoundGuid)))
             {
                 var service = new AnalysisSessionService(ctx);
-                Assert.ThrowsAsync<AnalysisSessionNotFoundException>(() => service.GetAnalysisSession(new Guid().ToString()));
+                await Assert.ThrowsAsync<AnalysisSessionNotFoundException>(() => service.GetAnalysisSession(new Guid().ToString()));
             }
         }
 
         [Fact]
-        public void GetAnalysisSession_Found()
+        public async Task GetAnalysisSession_Found()
         {
             using (var ctx = InitCtx(nameof(GetAnalysisSession_Found)))
             {
                 var service = new AnalysisSessionService(ctx);
-                Assert.ThrowsAsync<AnalysisSessionNotFoundException>(() => service.GetAnalysisSession(404));
+                await Assert.ThrowsAsync<AnalysisSessionNotFoundException>(() => service.GetAnalysisSession(404));
             }
         }
 
         [Fact]
-        public void AddAnalysisSession_EmptyName()
+        public async Task AddAnalysisSession_EmptyName()
         {
             using (var ctx = InitCtx(nameof(AddAnalysisSession_EmptyName)))
             {
                 var service = new AnalysisSessionService(ctx);
-                Assert.ThrowsAsync<ArgumentException>(() => service.AddAnalysisSession(string.Empty));
+                await Assert.ThrowsAsync<ArgumentException>(() => service.AddAnalysisSession(string.Empty));
             }
         }
 
         [Fact]
-        public void AddAnalysisSession_NameNull()
+        public async Task AddAnalysisSession_NameNull()
         {
             using (var ctx = InitCtx(nameof(AddAnalysisSession_NameNull)))
             {
                 var service = new AnalysisSessionService(ctx);
-                Assert.ThrowsAsync<ArgumentException>(() => service.AddAnalysisSession(null));
+                await Assert.ThrowsAsync<ArgumentException>(() => service.AddAnalysisSession(null));
             }
         }
 
@@ -104,43 +104,43 @@ namespace MNCD.Tests.Services
         }
 
         [Fact]
-        public void UpdateAnalysisSession_InvalidId()
+        public async Task UpdateAnalysisSession_InvalidId()
         {
             using (var ctx = InitCtx(nameof(UpdateAnalysisSession_InvalidId)))
             {
                 var service = new AnalysisSessionService(ctx);
-                Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAnalysisSession(0, "Session With New Name"));
-                Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAnalysisSession(-1, "Session With New Name"));
+                await Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAnalysisSession(0, "Session With New Name"));
+                await Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAnalysisSession(-1, "Session With New Name"));
             }
         }
 
         [Fact]
-        public void UpdateAnalysisSession_NameEmpty()
+        public async Task UpdateAnalysisSession_NameEmpty()
         {
             using (var ctx = InitCtx(nameof(UpdateAnalysisSession_NameEmpty)))
             {
                 var service = new AnalysisSessionService(ctx);
-                Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAnalysisSession(1, string.Empty));
+                await Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAnalysisSession(1, string.Empty));
             }
         }
 
         [Fact]
-        public void UpdateAnalysisSession_NameNull()
+        public async Task UpdateAnalysisSession_NameNull()
         {
             using (var ctx = InitCtx(nameof(UpdateAnalysisSession_NameNull)))
             {
                 var service = new AnalysisSessionService(ctx);
-                Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAnalysisSession(1, null));
+                await Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAnalysisSession(1, null));
             }
         }
 
         [Fact]
-        public void UpdateAnalysisSession_NotFound()
+        public async Task UpdateAnalysisSession_NotFound()
         {
             using (var ctx = InitCtx(nameof(UpdateAnalysisSession_NotFound)))
             {
                 var service = new AnalysisSessionService(ctx);
-                Assert.ThrowsAsync<AnalysisSessionNotFoundException>(() => service.UpdateAnalysisSession(404, "Session With New Name"));
+                await Assert.ThrowsAsync<AnalysisSessionNotFoundException>(() => service.UpdateAnalysisSession(404, "Session With New Name"));
             }
         }
 
@@ -157,23 +157,23 @@ namespace MNCD.Tests.Services
         }
 
         [Fact]
-        public void RemoveAnalysisSession_InvalidId()
+        public async Task RemoveAnalysisSession_InvalidId()
         {
             using (var ctx = InitCtx(nameof(RemoveAnalysisSession_InvalidId)))
             {
                 var service = new AnalysisSessionService(ctx);
-                Assert.ThrowsAsync<ArgumentException>(() => service.RemoveAnalysisSession(0));
-                Assert.ThrowsAsync<ArgumentException>(() => service.RemoveAnalysisSession(-1));
+                await Assert.ThrowsAsync<ArgumentException>(() => service.RemoveAnalysisSession(0));
+                await Assert.ThrowsAsync<ArgumentException>(() => service.RemoveAnalysisSession(-1));
             }
         }
 
         [Fact]
-        public void RemoveAnalysisSession_NotFound()
+        public async Task RemoveAnalysisSession_NotFound()
         {
             using (var ctx = InitCtx(nameof(RemoveAnalysisSession_NotFound)))
             {
                 var service = new AnalysisSessionService(ctx);
-                Assert.ThrowsAsync<AnalysisSessionNotFoundException>(() => service.RemoveAnalysisSession(404));
+                await Assert.ThrowsAsync<AnalysisSessionNotFoundException>(() => service.RemoveAnalysisSession(404));
             }
         }
 
