@@ -27,8 +27,10 @@ namespace MNCD.Web.Controllers
         public async Task<IActionResult> GetAllSessions()
         {
             var sessions = await _analysisSessionService.GetAnalysisSessions();
-            var response = _mapper.Map<List<SessionRowViewModel>>(sessions);
-            return new JsonResult(response);
+            var data = _mapper.Map<List<SessionRowViewModel>>(sessions);
+            var response = new ApiResponse<List<SessionRowViewModel>>("Session list returned.", data);
+
+            return new OkObjectResult(response);
         }
 
         [HttpPost]
@@ -36,16 +38,14 @@ namespace MNCD.Web.Controllers
         {
             if (string.IsNullOrWhiteSpace(model.Name))
             {
-                return new BadRequestObjectResult("Name must not be empty.");
+                return new BadRequestObjectResult(new Response("Name must not be empty."));
             }
 
             var session = await _analysisSessionService.AddAnalysisSession(model.Name);
             var data = _mapper.Map<SessionRowViewModel>(session);
-            return new JsonResult(new ApiResponse<SessionRowViewModel>
-            {
-                Message = $"Session was created.",
-                Data = data
-            });
+            var response = new ApiResponse<SessionRowViewModel>("Session was created.", data);
+
+            return new OkObjectResult(response);
         }
 
         [HttpPatch]
@@ -53,21 +53,19 @@ namespace MNCD.Web.Controllers
         {
             if (string.IsNullOrWhiteSpace(model.Name))
             {
-                return new BadRequestObjectResult("Name must not be empty.");
+                return new BadRequestObjectResult(new Response("Name must not be empty."));
             }
 
             if (model.Id <= 0)
             {
-                return new BadRequestObjectResult("Invalid session id.");
+                return new BadRequestObjectResult(new Response("Id must be greater than zero."));
             }
 
             var session = await _analysisSessionService.UpdateAnalysisSession(model.Id, model.Name);
             var data = _mapper.Map<SessionRowViewModel>(session);
-            return new JsonResult(new ApiResponse<SessionRowViewModel>
-            {
-                Message = $"Session was updated.",
-                Data = data
-            });
+            var response = new ApiResponse<SessionRowViewModel>("Session was updated.", data);
+
+            return new OkObjectResult(response);
         }
 
         [HttpDelete]
@@ -76,16 +74,13 @@ namespace MNCD.Web.Controllers
         {
             if (id <= 0)
             {
-                return new BadRequestObjectResult("Invalid session id.");
+                return new BadRequestObjectResult(new Response("Id must be greater than zero."));
             }
 
             await _analysisSessionService.RemoveAnalysisSession(id);
+            var response = new ApiResponse<int>("Session was deleted.", id);
 
-            return new JsonResult(new ApiResponse<int>
-            {
-                Message = $"Session was deleted.",
-                Data = id
-            });
+            return new OkObjectResult(response);
         }
     }
 }

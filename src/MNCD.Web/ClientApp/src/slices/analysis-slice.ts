@@ -7,7 +7,8 @@ import {
   DataSetRowViewModel,
   AnalysisSessionViewModel,
   AnalysisViewModel,
-  ApiResponse
+  ApiResponse,
+  Response,
 } from "../types";
 import { createSlice, PayloadAction, Dispatch } from "@reduxjs/toolkit";
 import { RootState } from "../store";
@@ -42,25 +43,35 @@ const initialState: AnalysisState = {
     analysisAlgorithmParameters: {},
     flatteningAlgorithm: FlattenningAlgorithm.BasicFlattening,
     flatteningAlgorithmParameters: {
-      weightEdges: "true"
-    }
+      weightEdges: "true",
+    },
   },
   dataSet: null,
   success: null,
-  error: null
+  error: null,
 };
 
 const slice = createSlice({
   name: "analysis-state",
   initialState: initialState,
   reducers: {
-    fetchAnalysisSessionStart: state => {
+    fetchAnalysisSessionStart: (state) => {
       state.isSessionLoading = true;
     },
-    fetchAnalysisSessionSuccess: (state, action) => {
+    fetchAnalysisSessionSuccess: (
+      state,
+      action: PayloadAction<ApiResponse<AnalysisSessionViewModel>>
+    ) => {
+      const { data } = action.payload;
+      console.log(data);
       state.isSessionLoading = false;
-      state.request.sessionId = action.payload.id;
-      state.session = action.payload;
+      state.request.sessionId = data.id;
+      state.session = data;
+      state.error = null;
+    },
+    fetchAnalysisSessionError: (state, action: PayloadAction<Response>) => {
+      state.session = null;
+      state.error = action.payload.message;
     },
     setApproach: (state, action: PayloadAction<AnalysisApproach>) => {
       state.request.approach = action.payload;
@@ -94,7 +105,7 @@ const slice = createSlice({
       switch (action.payload) {
         case FlattenningAlgorithm.BasicFlattening:
           state.request.flatteningAlgorithmParameters = {
-            weightEdges: "false"
+            weightEdges: "false",
           };
           break;
         case FlattenningAlgorithm.LocalSimplification:
@@ -104,7 +115,7 @@ const slice = createSlice({
           state.request.flatteningAlgorithmParameters = {
             treshold: "1.0",
             weightEdges: "true",
-            relevances: JSON.stringify(relevances)
+            relevances: JSON.stringify(relevances),
           };
           break;
         case FlattenningAlgorithm.MergeFlattening:
@@ -113,13 +124,13 @@ const slice = createSlice({
             : [];
           state.request.flatteningAlgorithmParameters = {
             includeWeights: "true",
-            layerIndices: JSON.stringify(layerIndices)
+            layerIndices: JSON.stringify(layerIndices),
           };
           break;
         case FlattenningAlgorithm.WeightedFlattening:
           if (!dataSet) {
             state.request.flatteningAlgorithmParameters = {
-              weights: JSON.stringify([])
+              weights: JSON.stringify([]),
             };
           } else {
             const weights: number[][] = [];
@@ -130,7 +141,7 @@ const slice = createSlice({
               }
             }
             state.request.flatteningAlgorithmParameters = {
-              weights: JSON.stringify(weights)
+              weights: JSON.stringify(weights),
             };
           }
           break;
@@ -139,7 +150,7 @@ const slice = createSlice({
     updateFlatteningParameters: (state, action) => {
       state.request.flatteningAlgorithmParameters = {
         ...state.request.flatteningAlgorithmParameters,
-        ...action.payload
+        ...action.payload,
       };
     },
     setAnalysisAlgorithm: (state, action: PayloadAction<AnalysisAlgorithm>) => {
@@ -153,25 +164,25 @@ const slice = createSlice({
         case AnalysisAlgorithm.FluidC:
           state.request.analysisAlgorithmParameters = {
             k: "2",
-            maxIterations: "100"
+            maxIterations: "100",
           };
           break;
         case AnalysisAlgorithm.KClique:
           state.request.analysisAlgorithmParameters = {
-            k: "2"
+            k: "2",
           };
           break;
         case AnalysisAlgorithm.CLECC:
           state.request.analysisAlgorithmParameters = {
             k: "2",
-            alpha: "1"
+            alpha: "1",
           };
           break;
         case AnalysisAlgorithm.ABACUS:
           state.request.analysisAlgorithmParameters = {
             treshold: "2",
             algorithm: String(Number(AnalysisAlgorithm.Louvain)),
-            parameters: "{}"
+            parameters: "{}",
           };
           break;
       }
@@ -179,7 +190,7 @@ const slice = createSlice({
     updateAnalysisParameters: (state, action: PayloadAction<object>) => {
       state.request.analysisAlgorithmParameters = {
         ...state.request.analysisAlgorithmParameters,
-        ...action.payload
+        ...action.payload,
       };
     },
     updateAnalysisDataSet: (
@@ -201,7 +212,7 @@ const slice = createSlice({
               : [];
             state.request.flatteningAlgorithmParameters = {
               ...state.request.flatteningAlgorithmParameters,
-              relevances: JSON.stringify(relevances)
+              relevances: JSON.stringify(relevances),
             };
             break;
           case FlattenningAlgorithm.MergeFlattening:
@@ -210,7 +221,7 @@ const slice = createSlice({
               : [];
             state.request.flatteningAlgorithmParameters = {
               ...state.request.flatteningAlgorithmParameters,
-              layerIndices: JSON.stringify(layerIndices)
+              layerIndices: JSON.stringify(layerIndices),
             };
             break;
           case FlattenningAlgorithm.WeightedFlattening:
@@ -222,36 +233,39 @@ const slice = createSlice({
               }
             }
             state.request.flatteningAlgorithmParameters = {
-              weights: JSON.stringify(weights)
+              weights: JSON.stringify(weights),
             };
             break;
         }
       }
     },
-    toggleResultControls: state => {
+    toggleResultControls: (state) => {
       state.areResultControlsVisible = !state.areResultControlsVisible;
     },
-    toggleControlsVisiblity: state => {
+    toggleControlsVisiblity: (state) => {
       state.areControlsVisible = !state.areControlsVisible;
     },
-    analysisStart: state => {
+    analysisStart: (state) => {
       state.isAnalyzing = true;
     },
-    analysisSuccess: (state, action: PayloadAction<AnalysisViewModel>) => {
+    analysisSuccess: (
+      state,
+      action: PayloadAction<ApiResponse<AnalysisViewModel>>
+    ) => {
       state.isAnalyzing = false;
       if (state.session) {
-        state.session.analyses.push(action.payload);
+        state.session.analyses.push(action.payload.data);
       }
     },
-    analysisError: (state, action: PayloadAction<string>) => {
+    analysisError: (state, action: PayloadAction<Response>) => {
       state.isAnalyzing = false;
-      state.error = action.payload;
+      state.error = action.payload.message;
     },
     toggleVisibilityStart: (state, action: PayloadAction<number>) => {
       const id = action.payload;
 
       if (state.session) {
-        const analysis = state.session.analyses.find(a => a.id === id);
+        const analysis = state.session.analyses.find((a) => a.id === id);
 
         if (analysis) {
           analysis.isOpen = !analysis.isOpen;
@@ -261,21 +275,22 @@ const slice = createSlice({
     showSuccessMessage: (state, action: PayloadAction<string>) => {
       state.success = action.payload;
     },
-    hideSuccessMessage: state => {
+    hideSuccessMessage: (state) => {
       state.success = null;
     },
     showErrorMessage: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
     },
-    hideErrorMessage: state => {
+    hideErrorMessage: (state) => {
       state.error = null;
-    }
-  }
+    },
+  },
 });
 
 export const {
   fetchAnalysisSessionStart,
   fetchAnalysisSessionSuccess,
+  fetchAnalysisSessionError,
   setApproach,
   setFlatteningAlgorithm,
   updateFlatteningParameters,
@@ -293,7 +308,7 @@ export const {
   showSuccessMessage,
   hideSuccessMessage,
   showErrorMessage,
-  hideErrorMessage
+  hideErrorMessage,
 } = slice.actions;
 
 export const setAnalysisApproach = (approach: AnalysisApproach) => (
@@ -321,10 +336,21 @@ export const fetchAnalysisSession = (guid: string) => (dispatch: Dispatch) => {
   dispatch(fetchAnalysisSessionStart());
 
   axios
-    .get<AnalysisSessionViewModel>("/api/analysis/" + guid)
-    .then(response => {
-      if (response.status === 200) {
-        dispatch(fetchAnalysisSessionSuccess(response.data));
+    .get<ApiResponse<AnalysisSessionViewModel>>("/api/analysis/" + guid)
+    .then(({ data }) => {
+      dispatch(fetchAnalysisSessionSuccess(data));
+    })
+    .catch(({ response, message }) => {
+      if (response) {
+        const { data, status } = response;
+
+        if (status !== 500) {
+          dispatch(fetchAnalysisSessionError(data));
+        } else {
+          dispatch(fetchAnalysisSessionError({ message }));
+        }
+      } else {
+        dispatch(fetchAnalysisSessionError({ message }));
       }
     });
 };
@@ -340,17 +366,21 @@ export const analyzeDataSet = () => (
 
   axios
     .post<ApiResponse<AnalysisViewModel>>("/api/analysis", request)
-    .then(response => {
-      console.log(response.data);
-      const { data, message } = response.data;
-      if (response.status === 200) {
-        dispatch(analysisSuccess(data));
-      } else {
-        dispatch(analysisError(message));
-      }
+    .then(({ data }) => {
+      dispatch(analysisSuccess(data));
     })
-    .catch(reason => {
-      dispatch(analysisError(reason.message));
+    .catch(({ response, message }) => {
+      if (response) {
+        const { data, status } = response;
+
+        if (status !== 500) {
+          dispatch(analysisError(data));
+        } else {
+          dispatch(analysisError({ message }));
+        }
+      } else {
+        dispatch(analysisError({ message }));
+      }
     });
 };
 

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using MNCD.Data;
 using MNCD.Domain.Services;
 using MNCD.Services.Impl;
+using MNCD.Web.Filters;
 using MNCD.Web.Mappings;
 
 namespace MNCD.Web
@@ -31,7 +32,10 @@ namespace MNCD.Web
 
             services.AddApplicationInsightsTelemetry();
 
-            services.AddControllersWithViews();
+            services.AddControllersWithViews(config =>
+            {
+                config.Filters.Add<ExceptionFilter>();
+            });
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
