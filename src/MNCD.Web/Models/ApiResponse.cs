@@ -1,8 +1,13 @@
 ﻿namespace MNCD.Web.Models
 {
-    public class ApiResponse<T>
+    public class ApiResponse<T> : Response
     {
-        public string Message { get; set; }
         public T Data { get; set; }
+
+        public ApiResponse(string message, T data) : base(message)
+        {
+            Message = message;
+            Data = data;
+        }
     }
 }

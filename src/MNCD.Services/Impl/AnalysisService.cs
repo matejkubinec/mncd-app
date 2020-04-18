@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using MNCD.Core;
 using MNCD.Data;
 using MNCD.Domain.Entities;
+using MNCD.Domain.Exceptions;
 using MNCD.Domain.Extensions;
 using MNCD.Domain.Services;
 using MNCD.Services.Algorithms;
@@ -50,6 +51,11 @@ namespace MNCD.Services.Impl
 
         public async Task<List<Analysis>> GetAnalysesForSession(int sessionId)
         {
+            if (sessionId <= 0)
+            {
+                throw new ArgumentException("Session id must be greater than zero.", nameof(sessionId));
+            }
+
             var session = await _ctx
                 .AnalysisSessions
                 .Include(a => a.Analyses)
@@ -57,7 +63,7 @@ namespace MNCD.Services.Impl
 
             if (session is null)
             {
-                throw new ArgumentException($"Session with id '{sessionId}' was not found.");
+                throw new AnalysisSessionNotFoundException($"Session with id '{sessionId}' was not found.");
             }
 
             return session.Analyses?.ToList() ?? new List<Analysis>();
@@ -65,6 +71,11 @@ namespace MNCD.Services.Impl
 
         public async Task<Analysis> GetAnalysis(int id)
         {
+            if (id <= 0)
+            {
+                throw new ArgumentException("Id must be greater than zero.", nameof(id));
+            }
+
             var analysis = await _ctx.Analyses
                 .Include(a => a.Request)
                 .ThenInclude(r => r.DataSet)
@@ -74,7 +85,7 @@ namespace MNCD.Services.Impl
 
             if (analysis is null)
             {
-                throw new ArgumentException($"Analysis with id '{id}' was not found.");
+                throw new AnalysisNotFoundException($"Analysis with id '{id}' was not found.");
             }
 
             return analysis;
@@ -82,6 +93,18 @@ namespace MNCD.Services.Impl
 
         public async Task<Analysis> Analyze(int sessionId, int dataSetId, AnalysisRequest request)
         {
+            request = request ?? throw new ArgumentNullException(nameof(request));
+
+            if (sessionId <= 0)
+            {
+                throw new ArgumentException("Session id must be greater than zero.", nameof(sessionId));
+            }
+
+            if (dataSetId <= 0)
+            {
+                throw new ArgumentException("Data set id must be greater than zero.", nameof(dataSetId));
+            }
+
             var session = await _sessions.GetAnalysisSession(sessionId).ConfigureAwait(false);
             var dataSet = await _dataSets.GetDataSet(dataSetId).ConfigureAwait(false);
 
@@ -116,6 +139,11 @@ namespace MNCD.Services.Impl
 
         public async Task ToggleVisibility(int id)
         {
+            if (id <= 0)
+            {
+                throw new ArgumentException("Id must be greater than zero.", nameof(id));
+            }
+
             var analysis = await GetAnalysis(id);
             analysis.IsOpen = !analysis.IsOpen;
             await _ctx.SaveChangesAsync();
@@ -123,13 +151,23 @@ namespace MNCD.Services.Impl
 
         public async Task RemoveFromSession(int sessionId, int analysisId)
         {
+            if (sessionId <= 0)
+            {
+                throw new ArgumentException("Session id must be greater than zero.", nameof(sessionId));
+            }
+
+            if (analysisId <= 0)
+            {
+                throw new ArgumentException("Analysis id must be greater than zero.", nameof(analysisId));
+            }
+
             var session = await _sessions.GetAnalysisSession(sessionId);
 
             var analysis = session.Analyses.FirstOrDefault(a => a.Id == analysisId);
 
             if (analysis is null)
             {
-                throw new ArgumentException($"Analysis with id '{analysisId}' doesn't exist in sesion with id '{sessionId}'.");
+                throw new AnalysisNotFoundException($"Analysis with id '{analysisId}' doesn't exist in sesion with id '{sessionId}'.");
             }
 
             _ctx.Analyses.Remove(analysis);
@@ -139,15 +177,19 @@ namespace MNCD.Services.Impl
 
         private Network GetNetworkToAnalyze(AnalysisRequest request)
         {
+            request = request ?? throw new ArgumentNullException(nameof(request));
+
             var network = NetworkReaderHelper.ReadDataSet(request.DataSet);
 
             if (request.Approach == AnalysisApproach.SingleLayerOnly)
             {
                 var errors = ValidateSingleLayerAnalysis(request, network);
+
                 if (errors.Count > 0)
                 {
                     throw new ArgumentException(string.Join('\n', errors));
                 }
+
                 var selected = request.SelectedLayer;
                 var layer = network.Layers[selected];
                 return new Network(layer, network.Actors);

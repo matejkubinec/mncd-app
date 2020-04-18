@@ -5,7 +5,7 @@ export interface Dictionary<T> {
 export enum AnalysisApproach {
   MultiLayer = 0,
   SingleLayerOnly = 1,
-  SingleLayerFlattening = 2
+  SingleLayerFlattening = 2,
 }
 
 export enum AnalysisAlgorithm {
@@ -13,19 +13,19 @@ export enum AnalysisAlgorithm {
   Louvain = 1,
   KClique = 2,
   CLECC = 3,
-  ABACUS = 4
+  ABACUS = 4,
 }
 
 export enum FlattenningAlgorithm {
   BasicFlattening = 0,
   LocalSimplification = 1,
   MergeFlattening = 2,
-  WeightedFlattening = 3
+  WeightedFlattening = 3,
 }
 
 export enum FileType {
   MPX = 0,
-  EdgeList = 1
+  EdgeList = 1,
 }
 
 export interface DataSetRowViewModel {
@@ -133,8 +133,11 @@ export interface AnalysisSessionViewModel {
   analyses: AnalysisViewModel[];
 }
 
-export interface ApiResponse<T> {
+export interface Response {
   message: string;
+}
+
+export interface ApiResponse<T> extends Response {
   data: T;
 }
 

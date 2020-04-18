@@ -29,8 +29,10 @@ namespace MNCD.Web.Controllers
         public async Task<IActionResult> Index()
         {
             var datasets = await _dataSetService.GetDataSets();
-            var result = _mapper.Map<List<DataSetRowViewModel>>(datasets);
-            return new JsonResult(result);
+            var data = _mapper.Map<List<DataSetRowViewModel>>(datasets);
+            var response = new ApiResponse<List<DataSetRowViewModel>>("Data sets returned.", data);
+
+            return new OkObjectResult(response);
         }
 
         [HttpGet]
@@ -38,8 +40,10 @@ namespace MNCD.Web.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var dataSet = await _dataSetService.GetDataSet(id);
-            var result = _mapper.Map<List<DataSetRowViewModel>>(dataSet);
-            return new JsonResult(result);
+            var data = _mapper.Map<DataSetRowViewModel>(dataSet);
+            var response = new ApiResponse<DataSetRowViewModel>("Data set was found.", data);
+
+            return new OkObjectResult(response);
         }
 
         [HttpPost]
@@ -47,24 +51,22 @@ namespace MNCD.Web.Controllers
         {
             if (string.IsNullOrWhiteSpace(model.Name))
             {
-                return new BadRequestObjectResult("Name is required.");
+                return new BadRequestObjectResult(new Response("Name is required."));
             }
 
-            if (model.File == null)
+            if (model.File is null)
             {
-                return new BadRequestObjectResult("File is required.");
+                return new BadRequestObjectResult(new Response("File is required."));
             }
 
             var name = model.Name;
             var content = await ReadFileContent(model.File);
 
             var dataSet = await _dataSetService.AddDataSet(name, content, model.format);
-            var viewModel = _mapper.Map<DataSetRowViewModel>(dataSet);
-            return new JsonResult(new ApiResponse<DataSetRowViewModel>
-            {
-                Data = viewModel,
-                Message = "Dataset was added."
-            });
+            var data = _mapper.Map<DataSetRowViewModel>(dataSet);
+            var response = new ApiResponse<DataSetRowViewModel>("Dataset was added.", data);
+
+            return new OkObjectResult(response);
         }
 
         [HttpPatch]
@@ -72,21 +74,19 @@ namespace MNCD.Web.Controllers
         {
             if (string.IsNullOrWhiteSpace(model.Name))
             {
-                return new BadRequestObjectResult("Name must not be empty.");
+                return new BadRequestObjectResult(new Response("Name must not be empty."));
             }
 
             if (model.Id <= 0)
             {
-                return new BadRequestObjectResult("Invalid dataset id.");
+                return new BadRequestObjectResult(new Response("Id must be greater than zero."));
             }
 
             var dataSet = await _dataSetService.UpdateDataSet(model.Id, model.Name);
-            var viewModel = _mapper.Map<DataSetRowViewModel>(dataSet);
-            return new JsonResult(new ApiResponse<DataSetRowViewModel>
-            {
-                Data = viewModel,
-                Message = "Dataset was updated."
-            });
+            var data = _mapper.Map<DataSetRowViewModel>(dataSet);
+            var response = new ApiResponse<DataSetRowViewModel>("Dataset was updated.", data);
+
+            return new OkObjectResult(response);
         }
 
         [HttpDelete]
@@ -99,21 +99,20 @@ namespace MNCD.Web.Controllers
             }
 
             await _dataSetService.DeleteDataSet(id);
+            var response = new ApiResponse<int>("Data set was deleted.", id);
 
-            return new JsonResult(new ApiResponse<int>
-            {
-                Data = id,
-                Message = "Dataset was deleted."
-            });
+            return new OkObjectResult(response);
         }
 
         private async Task<string> ReadFileContent(IFormFile file)
         {
             var content = "";
+
             using (var reader = new StreamReader(file.OpenReadStream()))
             {
                 content = await reader.ReadToEndAsync();
             }
+
             return content;
         }
     }

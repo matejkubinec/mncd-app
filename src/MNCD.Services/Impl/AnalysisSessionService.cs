@@ -7,6 +7,7 @@ using MNCD.Data;
 using MNCD.Domain.Entities;
 using MNCD.Domain.Services;
 using System.Linq.Expressions;
+using MNCD.Domain.Exceptions;
 
 namespace MNCD.Services.Impl
 {
@@ -23,17 +24,22 @@ namespace MNCD.Services.Impl
         {
             return await _ctx.AnalysisSessions
                 .Include(a => a.Analyses)
-                .OrderBy(a => a.CreateDate).ToListAsync();
+                .OrderBy(a => a.CreateDate)
+                .ToListAsync();
         }
 
         public async Task<AnalysisSession> GetAnalysisSession(int id)
         {
+            if (id <= 0)
+            {
+                throw new ArgumentException("Id must be greater than zero.", nameof(id));
+            }
+
             var session = await GetFullSession(a => a.Id == id);
 
             if (session == null)
             {
-                // TODO: custom exception
-                throw new ApplicationException("Session was not found.");
+                throw new AnalysisSessionNotFoundException($"Analysis session with id '{id}' was not found.");
             }
 
             return session;
@@ -41,12 +47,16 @@ namespace MNCD.Services.Impl
 
         public async Task<AnalysisSession> GetAnalysisSession(string guid)
         {
+            if (!Guid.TryParse(guid, out var parsedGuid))
+            {
+                throw new ArgumentException("Invalid guid.", nameof(guid));
+            }
+
             var session = await GetFullSession(a => a.Guid == guid);
 
             if (session is null)
             {
-                // TODO: custom exception
-                throw new ApplicationException("Session was not found.");
+                throw new AnalysisSessionNotFoundException($"Analysis session with guid '{guid}' was not found.");
             }
 
             return session;
@@ -56,7 +66,7 @@ namespace MNCD.Services.Impl
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("Name cannot be empty.");
+                throw new ArgumentException("Name cannot be empty.", nameof(name));
             }
 
             var session = new AnalysisSession
@@ -75,15 +85,19 @@ namespace MNCD.Services.Impl
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("Name cannot be empty.");
+                throw new ArgumentException("Name cannot be empty.", nameof(name));
+            }
+
+            if (id <= 0)
+            {
+                throw new ArgumentException("Id must be greater than zero.", nameof(id));
             }
 
             var session = await _ctx.AnalysisSessions.FindAsync(id);
 
             if (session == null)
             {
-                // TODO: custom exception
-                throw new ApplicationException("Analysis session was not found.");
+                throw new AnalysisSessionNotFoundException($"Analysis session with id '{id}' was not found.");
             }
 
             session.Name = name;
@@ -94,12 +108,16 @@ namespace MNCD.Services.Impl
 
         public async Task RemoveAnalysisSession(int id)
         {
+            if (id <= 0)
+            {
+                throw new ArgumentException("Id must be greater than zero.", nameof(id));
+            }
+
             var session = await GetFullSession(a => a.Id == id);
 
             if (session == null)
             {
-                // TODO: custom exception
-                throw new ApplicationException("Analysis session was not found.");
+                throw new AnalysisSessionNotFoundException($"Analysis session with id '{id}' was not found.");
             }
 
             foreach (var request in session.Analyses.Select(a => a.Request))

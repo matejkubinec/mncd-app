@@ -34,8 +34,9 @@ namespace MNCD.Web.Controllers
         public async Task<IActionResult> GetAnalysisSesion(string guid)
         {
             var session = await _analysisSessionService.GetAnalysisSession(guid);
-            var viewModel = _mapper.Map<AnalysisSessionViewModel>(session);
-            return new JsonResult(viewModel);
+            var data = _mapper.Map<AnalysisSessionViewModel>(session);
+
+            return new OkObjectResult(new ApiResponse<AnalysisSessionViewModel>("Session was found.", data));
         }
 
         [HttpPost]
@@ -43,20 +44,23 @@ namespace MNCD.Web.Controllers
         {
             var request = _mapper.Map<AnalysisRequest>(model);
             var analysis = await _analysisService.Analyze(model.SessionId, model.DatasetId, request);
-            var response = _mapper.Map<AnalysisViewModel>(analysis);
-            return new JsonResult(new ApiResponse<AnalysisViewModel>
-            {
-                Data = response,
-                Message = "Request was analyzed."
-            });
+            var data = _mapper.Map<AnalysisViewModel>(analysis);
+
+            return new OkObjectResult(new ApiResponse<AnalysisViewModel>("Request was analyzed.", data));
         }
 
         [HttpPost]
         [Route("{id}/toggle-visibility")]
         public async Task<IActionResult> Toggle(int id)
         {
+            if (id <= 0)
+            {
+                return new BadRequestObjectResult(new Response("Id must be greater than zero."));
+            }
+
             await _analysisService.ToggleVisibility(id);
-            return new OkResult();
+
+            return new OkObjectResult(new Response("Visibility was toggled."));
         }
     }
 }

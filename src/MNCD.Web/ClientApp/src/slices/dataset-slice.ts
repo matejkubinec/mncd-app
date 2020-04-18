@@ -4,7 +4,8 @@ import {
   DataSetAddViewModel,
   FileType,
   ApiResponse,
-  DataSetEditViewModel
+  Response,
+  DataSetEditViewModel,
 } from "../types";
 import { createSlice, Dispatch, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
@@ -48,59 +49,62 @@ const initialState = {
     isOpen: false,
     isSaving: false,
     item: null,
-    error: null
+    error: null,
   },
   edit: {
     isOpen: false,
     isSaving: false,
     item: null,
-    error: null
+    error: null,
   },
   remove: {
     isOpen: false,
     isRemoving: false,
     item: null,
-    error: null
-  }
+    error: null,
+  },
 } as DataSetsState;
 
 const slice = createSlice({
   name: "data-set-slice",
   initialState: initialState,
   reducers: {
-    openDataSetsModal: state => {
+    openDataSetsModal: (state) => {
       state.isOpen = true;
       state.dataSet = null;
     },
-    closeDataSetsModal: state => {
+    closeDataSetsModal: (state) => {
       state.isOpen = false;
     },
-    fetchDataSetsListStart: state => {
+    fetchDataSetsListStart: (state) => {
       state.isLoading = true;
     },
-    fetchDataSetsListSuccess: (state, action) => {
+    fetchDataSetsListSuccess: (
+      state,
+      action: PayloadAction<ApiResponse<DataSetRowViewModel[]>>
+    ) => {
       state.isLoading = false;
-      state.items = action.payload;
+      state.items = action.payload.data;
     },
-    fetchDataSetsListFailure: (state, action) => {
+    fetchDataSetsListFailure: (state, action: PayloadAction<Response>) => {
       state.isLoading = false;
-      state.errorMessage = action.payload;
+      state.errorMessage = action.payload.message;
     },
-    openAddDataSetForm: state => {
+    openAddDataSetForm: (state) => {
       state.add.isOpen = true;
       state.add.item = {
         name: "",
         format: FileType.MPX,
-        file: ""
+        file: "",
       };
     },
     updateItemToAdd: (state, action) => {
       state.add.item = { ...state.add.item, ...action.payload };
     },
-    closeAddDataSetForm: state => {
+    closeAddDataSetForm: (state) => {
       state.add.isOpen = false;
     },
-    saveDataSetStart: state => {
+    saveDataSetStart: (state) => {
       state.add.isSaving = true;
     },
     saveDataSetSuccess: (
@@ -111,17 +115,17 @@ const slice = createSlice({
       state.items = [...state.items, action.payload.data];
       state.successMessage = action.payload.message;
     },
-    saveDataSetFailure: (state, action: PayloadAction<string>) => {
+    saveDataSetFailure: (state, action: PayloadAction<Response>) => {
       state.add.isSaving = false;
-      state.add.error = action.payload;
+      state.add.error = action.payload.message;
     },
-    hideSuccessMessage: state => {
+    hideSuccessMessage: (state) => {
       state.successMessage = null;
     },
-    hideErrorMessage: state => {
+    hideErrorMessage: (state) => {
       state.errorMessage = null;
     },
-    hideAddErrorMessage: state => {
+    hideAddErrorMessage: (state) => {
       state.add.error = null;
     },
     selectDataSet: (state, action: PayloadAction<DataSetRowViewModel>) => {
@@ -134,7 +138,7 @@ const slice = createSlice({
       state.edit.isOpen = true;
       state.edit.item = action.payload;
     },
-    closeEditDataSetForm: state => {
+    closeEditDataSetForm: (state) => {
       state.edit.isOpen = false;
       state.edit.item = null;
     },
@@ -143,7 +147,7 @@ const slice = createSlice({
         state.edit.item.name = action.payload;
       }
     },
-    editDataSetStart: state => {
+    editDataSetStart: (state) => {
       state.edit.isSaving = true;
     },
     editDataSetSuccess: (
@@ -152,16 +156,16 @@ const slice = createSlice({
     ) => {
       state.edit.isSaving = false;
       const items = state.items;
-      const idx = items.findIndex(i => i.id === action.payload.data.id);
+      const idx = items.findIndex((i) => i.id === action.payload.data.id);
       items[idx] = action.payload.data;
       state.items = items;
       state.successMessage = action.payload.message;
     },
-    editDataSetFailure: (state, action: PayloadAction<string>) => {
+    editDataSetFailure: (state, action: PayloadAction<Response>) => {
       state.edit.isSaving = false;
-      state.edit.error = action.payload;
+      state.edit.error = action.payload.message;
     },
-    hideEditDataSetError: state => {
+    hideEditDataSetError: (state) => {
       state.edit.error = null;
     },
     openRemoveDataSetForm: (
@@ -171,11 +175,11 @@ const slice = createSlice({
       state.remove.isOpen = true;
       state.remove.item = action.payload;
     },
-    closeRemoveDataSetForm: state => {
+    closeRemoveDataSetForm: (state) => {
       state.remove.isOpen = false;
       state.remove.item = null;
     },
-    removeDataSetStart: state => {
+    removeDataSetStart: (state) => {
       state.remove.isRemoving = true;
     },
     removeDataSetSuccess: (
@@ -183,18 +187,18 @@ const slice = createSlice({
       action: PayloadAction<ApiResponse<number>>
     ) => {
       state.remove.isRemoving = false;
-      state.items = state.items.filter(i => i.id !== action.payload.data);
+      state.items = state.items.filter((i) => i.id !== action.payload.data);
       state.dataSet = null;
       state.successMessage = action.payload.message;
     },
-    removeDataSetFailure: (state, action: PayloadAction<string>) => {
+    removeDataSetFailure: (state, action: PayloadAction<Response>) => {
       state.remove.isRemoving = false;
-      state.remove.error = action.payload;
+      state.remove.error = action.payload.message;
     },
-    hideRemoveDataSetError: state => {
+    hideRemoveDataSetError: (state) => {
       state.remove.error = null;
-    }
-  }
+    },
+  },
 });
 
 export const {
@@ -232,19 +236,30 @@ export const {
   removeDataSetStart,
   removeDataSetSuccess,
   removeDataSetFailure,
-  hideRemoveDataSetError
+  hideRemoveDataSetError,
 } = slice.actions;
 
 export const fetchDataSetsList = () => (dispatch: Dispatch) => {
   dispatch(fetchDataSetsListStart());
 
   axios
-    .get<DataSetRowViewModel[]>("/api/dataset")
-    .then(response => {
-      dispatch(fetchDataSetsListSuccess(response.data));
+    .get<ApiResponse<DataSetRowViewModel[]>>("/api/dataset")
+    .then(({ data }) => {
+      dispatch(fetchDataSetsListSuccess(data));
     })
-    .catch(reason => {
-      dispatch(fetchDataSetsListFailure(reason.message));
+    .catch(({ response, message }) => {
+      if (response) {
+        const { data, status } = response;
+
+        if (status !== 500) {
+          dispatch(fetchDataSetsListFailure(data));
+        } else {
+          dispatch(fetchDataSetsListFailure({ message }));
+        }
+      } else {
+        dispatch(fetchDataSetsListFailure({ message }));
+      }
+
       setTimeout(() => {
         dispatch(hideErrorMessage());
       }, notificationDuration);
@@ -259,7 +274,7 @@ export const saveDataSet = (file: File) => (
   const item = state.dataset.add.item;
 
   if (!item) {
-    dispatch(saveDataSetFailure("Item is not valid."));
+    dispatch(saveDataSetFailure({ message: "Item is not valid." }));
     return;
   }
 
@@ -273,22 +288,27 @@ export const saveDataSet = (file: File) => (
 
   axios
     .post<ApiResponse<DataSetRowViewModel>>("/api/dataset", formData)
-    .then(response => {
-      if (response.status === 200) {
-        dispatch(saveDataSetSuccess(response.data));
-        dispatch(closeAddDataSetForm());
-        setTimeout(() => {
-          dispatch(hideSuccessMessage());
-        }, notificationDuration);
-      } else {
-        dispatch(saveDataSetFailure(response.data.message));
-        setTimeout(() => {
-          dispatch(hideAddErrorMessage());
-        }, notificationDuration);
-      }
+    .then(({ data }) => {
+      dispatch(saveDataSetSuccess(data));
+      dispatch(closeAddDataSetForm());
+
+      setTimeout(() => {
+        dispatch(hideSuccessMessage());
+      }, notificationDuration);
     })
-    .catch(reason => {
-      dispatch(saveDataSetFailure(reason.message));
+    .catch(({ response, message }) => {
+      if (response) {
+        const { data, status } = response;
+
+        if (status !== 500) {
+          dispatch(saveDataSetFailure(data));
+        } else {
+          dispatch(saveDataSetFailure({ message }));
+        }
+      } else {
+        dispatch(saveDataSetFailure({ message }));
+      }
+
       setTimeout(() => {
         dispatch(hideAddErrorMessage());
       }, notificationDuration);
@@ -301,23 +321,26 @@ export const editDataSet = (item: DataSetEditViewModel) => (
   dispatch(editDataSetStart());
   axios
     .patch<ApiResponse<DataSetRowViewModel>>("/api/dataset", item)
-    .then(response => {
-      if (response.status === 200) {
-        dispatch(editDataSetSuccess(response.data));
-        dispatch(closeEditDataSetForm());
-        setTimeout(() => {
-          dispatch(hideSuccessMessage());
-        }, notificationDuration);
+    .then(({ data }) => {
+      dispatch(editDataSetSuccess(data));
+      dispatch(closeEditDataSetForm());
+    })
+    .catch(({ response, message }) => {
+      if (response) {
+        const { data, status } = response;
+
+        if (status !== 500) {
+          dispatch(editDataSetFailure(data));
+        } else {
+          dispatch(editDataSetFailure({ message }));
+        }
       } else {
-        dispatch(editDataSetFailure(response.statusText));
-        setTimeout(() => {
-          dispatch(hideEditDataSetError());
-        }, notificationDuration);
+        dispatch(editDataSetFailure({ message }));
       }
     })
-    .catch(reason => {
-      dispatch(editDataSetFailure(reason.message));
+    .finally(() => {
       setTimeout(() => {
+        dispatch(hideSuccessMessage());
         dispatch(hideEditDataSetError());
       }, notificationDuration);
     });
@@ -327,23 +350,26 @@ export const removeDataSet = (id: number) => (dispatch: Dispatch) => {
   dispatch(removeDataSetStart());
   axios
     .delete<ApiResponse<number>>(`/api/dataset/${id}`)
-    .then(response => {
-      if (response.status === 200) {
-        dispatch(removeDataSetSuccess(response.data));
-        dispatch(closeRemoveDataSetForm());
-        setTimeout(() => {
-          dispatch(hideSuccessMessage());
-        }, notificationDuration);
+    .then(({ data }) => {
+      dispatch(removeDataSetSuccess(data));
+      dispatch(closeRemoveDataSetForm());
+    })
+    .catch(({ response, message }) => {
+      if (response) {
+        const { data, status } = response;
+
+        if (status !== 500) {
+          dispatch(removeDataSetFailure(data));
+        } else {
+          dispatch(removeDataSetFailure({ message }));
+        }
       } else {
-        dispatch(removeDataSetFailure(response.statusText));
-        setTimeout(() => {
-          dispatch(hideRemoveDataSetError());
-        }, notificationDuration);
+        dispatch(removeDataSetFailure({ message }));
       }
     })
-    .catch(reason => {
-      dispatch(removeDataSetFailure(reason.message));
+    .finally(() => {
       setTimeout(() => {
+        dispatch(hideSuccessMessage());
         dispatch(hideRemoveDataSetError());
       }, notificationDuration);
     });

@@ -9,6 +9,7 @@ using System.Linq;
 using MNCD.Core;
 using MNCD.Readers;
 using MNCD.Writers;
+using MNCD.Domain.Exceptions;
 
 namespace MNCD.Services.Impl
 {
@@ -34,11 +35,21 @@ namespace MNCD.Services.Impl
 
         public async Task<NetworkDataSet> AddDataSet(string name, string content, FileType fileType)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("Name must not be empty.", nameof(name));
+            }
+
+            if (string.IsNullOrEmpty(content))
+            {
+                throw new ArgumentException("Content must not be empty.", nameof(content));
+            }
+
             var hash = _hashService.GetHashFor(content);
 
             if (await ExistsDataSet(hash))
             {
-                throw new ArgumentException($"DataSet already exists in the system.");
+                throw new NetworkDataSetExistsException($"Data set already exists in the system.");
             }
 
             var network = ReadNetwork(content, fileType);
@@ -63,11 +74,16 @@ namespace MNCD.Services.Impl
 
         public async Task DeleteDataSet(int id)
         {
+            if (id <= 0)
+            {
+                throw new ArgumentException("Id must be greater than zero.", nameof(id));
+            }
+
             var dataSet = await _ctx.DataSets.FindAsync(id);
 
             if (dataSet is null)
             {
-                throw new ArgumentException($"DataSet with '{id}' was not found.");
+                throw new NetworkDataSetNotFoundException($"Data set with '{id}' was not found.");
             }
 
             dataSet.Deleted = true;
@@ -76,14 +92,11 @@ namespace MNCD.Services.Impl
 
         public async Task<NetworkDataSet> GetDataSet(int id)
         {
-            return await _ctx
-                .DataSets
-                .Include(d => d.NetworkInfo)
-                .FirstOrDefaultAsync(d => d.Id == id);
-        }
+            if (id <= 0)
+            {
+                throw new ArgumentException("Id must be greater than zero.", nameof(id));
+            }
 
-        public async Task<NetworkDataSet> UpdateDataSet(int id, string name)
-        {
             var dataSet = await _ctx
                 .DataSets
                 .Include(d => d.NetworkInfo)
@@ -91,8 +104,25 @@ namespace MNCD.Services.Impl
 
             if (dataSet is null)
             {
-                throw new ArgumentException($"DataSet with id '{id}' was not found.");
+                throw new NetworkDataSetNotFoundException($"Data set with id '{id}' was not found.");
             }
+
+            return dataSet;
+        }
+
+        public async Task<NetworkDataSet> UpdateDataSet(int id, string name)
+        {
+            if (id <= 0)
+            {
+                throw new ArgumentException("Id must be greater than zero.", nameof(id));
+            }
+
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("Name must not be empty.", nameof(name));
+            }
+
+            var dataSet = await GetDataSet(id);
 
             dataSet.Name = name;
 
