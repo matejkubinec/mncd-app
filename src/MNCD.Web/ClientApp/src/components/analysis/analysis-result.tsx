@@ -1,13 +1,17 @@
 import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../store";
-import { AnalysisResultItem, AnalysisResultControls } from "./index";
+import {
+  AnalysisResultItem,
+  AnalysisResultControls,
+  AnalysisSideBySide,
+} from "./index";
 import { Stack } from "office-ui-fabric-react";
 
 class AnalysisResult extends React.Component<ReduxProps> {
   renderAnalyses = () => {
     return this.props.items
-      .filter(i => i.isOpen)
+      .filter((i) => i.isOpen)
       .map((item, i) => (
         <Stack.Item key={i} grow={1}>
           <AnalysisResultItem analysis={item} />
@@ -26,13 +30,17 @@ class AnalysisResult extends React.Component<ReduxProps> {
           <AnalysisResultControls />
         </Stack.Item>
         <Stack.Item grow={2}>
-          <Stack
-            horizontal
-            horizontalAlign="space-evenly"
-            tokens={{ childrenGap: 20 }}
-          >
-            {this.renderAnalyses()}
-          </Stack>
+          {this.props.isSideBySide ? (
+            <AnalysisSideBySide />
+          ) : (
+            <Stack
+              horizontal
+              horizontalAlign="space-evenly"
+              tokens={{ childrenGap: 20 }}
+            >
+              {this.renderAnalyses()}
+            </Stack>
+          )}
         </Stack.Item>
       </Stack>
     );
@@ -40,9 +48,10 @@ class AnalysisResult extends React.Component<ReduxProps> {
 }
 
 const mapProps = (rootState: RootState) => {
-  const { session } = rootState.analysis;
+  const { session, layout } = rootState.analysis;
   return {
-    items: session ? session.analyses : []
+    items: session ? session.analyses : [],
+    isSideBySide: layout === "side-by-side",
   };
 };
 

@@ -42,11 +42,11 @@ class AnalysisPage extends React.Component<IProps> {
 const mapProps = (state: RootState) => ({
   success: state.analysis.success,
   error: state.analysis.error,
-  isLoading: state.analysis.isSessionLoading
+  isLoading: state.analysis.isSessionLoading,
 });
 
 const mapDispatch = {
-  fetchAnalysisSession
+  fetchAnalysisSession,
 };
 
 const connector = connect(mapProps, mapDispatch);

@@ -56,7 +56,7 @@ class AnalysisResultItem extends Component<IProps & ReduxProps> {
     const itemStyles = {
       root: {
         border: "1px solid " + this.props.theme.palette.whiteTranslucent40,
-        borderRadius: this.props.theme.effects.roundedCorner2,
+        borderRadius: 4,
         boxShadow: this.props.theme.effects.elevation4,
         backgroundColor: this.props.theme.palette.white
       }
@@ -65,9 +65,7 @@ class AnalysisResultItem extends Component<IProps & ReduxProps> {
     const headerStyle = {
       root: {
         padding: 10,
-        border: "1px solid " + this.props.theme.palette.whiteTranslucent40,
-        borderRadius: this.props.theme.effects.roundedCorner2,
-        //boxShadow: this.props.theme.effects.elevation4,
+        borderRadius: 4,
         backgroundColor: this.props.theme.palette.accent,
         color: this.props.theme.palette.white,
         textAlign: "center"
@@ -78,6 +76,7 @@ class AnalysisResultItem extends Component<IProps & ReduxProps> {
       <Stack
         tokens={{ padding: 10, childrenGap: 15 }}
         style={{
+          borderRadius: 4,
           boxShadow: this.props.theme.effects.elevation16,
           backgroundColor: this.props.theme.palette.neutralLighterAlt
         }}

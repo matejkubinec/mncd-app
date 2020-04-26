@@ -24,6 +24,11 @@ export type AnalysisState = {
   dataSet: DataSetRowViewModel | null;
   success: string | null;
   error: string | null;
+  layout: "all" | "side-by-side",
+  sideBySide: {
+    index1: number;
+    index2: number;
+  };
 };
 
 const initialState: AnalysisState = {
@@ -49,6 +54,11 @@ const initialState: AnalysisState = {
   dataSet: null,
   success: null,
   error: null,
+  layout: "all",
+  sideBySide: {
+    index1: 0,
+    index2: 0,
+  },
 };
 
 const slice = createSlice({
@@ -63,7 +73,6 @@ const slice = createSlice({
       action: PayloadAction<ApiResponse<AnalysisSessionViewModel>>
     ) => {
       const { data } = action.payload;
-      console.log(data);
       state.isSessionLoading = false;
       state.request.sessionId = data.id;
       state.session = data;
@@ -272,6 +281,15 @@ const slice = createSlice({
         }
       }
     },
+    setLeftSide: (state, action: PayloadAction<number>) => {
+      state.sideBySide.index1 = action.payload;
+    },
+    setRightSide: (state, action: PayloadAction<number>) => {
+      state.sideBySide.index2 = action.payload;
+    },
+    setLayout: (state, action: PayloadAction<"all" | "side-by-side">) => {
+      state.layout = action.payload;
+    },
     showSuccessMessage: (state, action: PayloadAction<string>) => {
       state.success = action.payload;
     },
@@ -309,6 +327,9 @@ export const {
   hideSuccessMessage,
   showErrorMessage,
   hideErrorMessage,
+  setLeftSide, 
+  setRightSide,
+  setLayout,
 } = slice.actions;
 
 export const setAnalysisApproach = (approach: AnalysisApproach) => (

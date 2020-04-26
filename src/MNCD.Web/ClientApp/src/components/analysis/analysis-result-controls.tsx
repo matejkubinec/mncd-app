@@ -1,14 +1,25 @@
 import React, { Component } from "react";
 import { RootState } from "../../store";
 import { connect, ConnectedProps } from "react-redux";
-import { Stack, Checkbox, List, VerticalDivider, IconButton } from "office-ui-fabric-react";
+import {
+  Stack,
+  Checkbox,
+  List,
+  VerticalDivider,
+  IconButton,
+  Toggle,
+} from "office-ui-fabric-react";
 import {
   approachToString,
   analysisToString,
-  flatteningToString
+  flatteningToString,
 } from "../../utils";
 import { AnalysisRequestViewModel, AnalysisApproach } from "../../types";
-import { toggleVisibility, toggleResultControls } from "../../slices/analysis-slice";
+import {
+  toggleVisibility,
+  toggleResultControls,
+  setLayout,
+} from "../../slices/analysis-slice";
 
 interface IListItem {
   id: number;
@@ -23,7 +34,7 @@ export class AnalysisResultControls extends Component<ReduxProps> {
 
   handleToggleControls = () => {
     this.props.toggleResultControls();
-  }
+  };
 
   handleRenderCell = (item?: IListItem) => {
     if (item) {
@@ -36,8 +47,8 @@ export class AnalysisResultControls extends Component<ReduxProps> {
               boxShadow: this.props.theme.effects.elevation4,
               marginBottom: 15,
               backgroundColor: this.props.theme.palette.white,
-              borderRadius: this.props.theme.effects.roundedCorner2
-            }
+              borderRadius: this.props.theme.effects.roundedCorner2,
+            },
           }}
         >
           <Stack.Item align="center">
@@ -54,16 +65,27 @@ export class AnalysisResultControls extends Component<ReduxProps> {
               <Stack.Item styles={{ root: { marginBottom: 5 } }}>
                 <b>Analysis {item.id}</b>
               </Stack.Item>
-              <Stack horizontal horizontalAlign="space-between" tokens={{ childrenGap: 10 }}>
+              <Stack
+                horizontal
+                horizontalAlign="space-between"
+                tokens={{ childrenGap: 10 }}
+              >
                 <Stack.Item>{approachToString(item.req.approach)}</Stack.Item>
-                {item.req.approach === AnalysisApproach.SingleLayerOnly ?
-                  <Stack.Item>{item.req.selectedLayerName}</Stack.Item> : null
-                }
-                {item.req.approach === AnalysisApproach.SingleLayerFlattening ?
-                  <Stack.Item>{flatteningToString(item.req.flatteningAlgorithm)}</Stack.Item> : null
-                }
+                {item.req.approach === AnalysisApproach.SingleLayerOnly ? (
+                  <Stack.Item>{item.req.selectedLayerName}</Stack.Item>
+                ) : null}
+                {item.req.approach ===
+                AnalysisApproach.SingleLayerFlattening ? (
+                  <Stack.Item>
+                    {flatteningToString(item.req.flatteningAlgorithm)}
+                  </Stack.Item>
+                ) : null}
               </Stack>
-              <Stack horizontal horizontalAlign="space-between" tokens={{ childrenGap: 10 }}>
+              <Stack
+                horizontal
+                horizontalAlign="space-between"
+                tokens={{ childrenGap: 10 }}
+              >
                 <Stack.Item>{item.req.dataSetName}</Stack.Item>
                 <Stack.Item>
                   {analysisToString(item.req.analysisAlgorithm)}
@@ -85,50 +107,98 @@ export class AnalysisResultControls extends Component<ReduxProps> {
   };
 
   render() {
-    const listItems = this.props.items.map(i => {
+    const listItems = this.props.items.map((i) => {
       return { id: i.id, isOpen: i.isOpen, req: i.request } as IListItem;
     });
 
     return (
-      <Stack horizontal tokens={{ childrenGap: 5 }} styles={{ root: { minHeight: 250, } }}>
-        <Stack.Item styles={{
-          root: {
-            boxShadow: this.props.theme.effects.elevation4,
-            marginBottom: 15,
-            backgroundColor: this.props.theme.palette.white,
-            borderRadius: this.props.theme.effects.roundedCorner2,
-            cursor: "pointer",
-            userSelect: "none"
-          }
-        }}>
-          <IconButton
-            style={{ height: "100%" }}
-            iconProps={{ iconName: this.props.showControls ? "ChevronLeft" : "ChevronRight" }}
-            onClick={this.handleToggleControls}
+      <Stack>
+        <Stack.Item
+          styles={{
+            root: {
+              padding: 10,
+              marginBottom: 10,
+              backgroundColor: this.props.theme.palette.white,
+              boxShadow: this.props.theme.effects.elevation4,
+            },
+          }}
+        >
+          <h4>Options</h4>
+          <Toggle
+            label="Layout"
+            inlineLabel
+            onText="Side-by-Side"
+            offText="All"
+            checked={this.props.isSideBySide}
+            onChange={this.handleLayoutChange}
           />
         </Stack.Item>
-        {this.props.showControls ?
-          <Stack.Item>
-            <Stack tokens={{ childrenGap: 10 }}>
-              <List items={listItems} onRenderCell={this.handleRenderCell} />
-            </Stack>
-          </Stack.Item> : null
-        }
+        {!this.props.isSideBySide ? (
+          <Stack
+            horizontal
+            tokens={{ childrenGap: 5 }}
+            styles={{ root: { minHeight: 250 } }}
+          >
+            <Stack.Item
+              styles={{
+                root: {
+                  marginBottom: 15,
+                  borderRadius: 4,
+                  backgroundColor: this.props.theme.palette.white,
+                  boxShadow: this.props.theme.effects.elevation4,
+                  cursor: "pointer",
+                  userSelect: "none",
+                },
+              }}
+            >
+              <IconButton
+                style={{ height: "100%" }}
+                iconProps={{
+                  iconName: this.props.showControls
+                    ? "ChevronLeft"
+                    : "ChevronRight",
+                }}
+                onClick={this.handleToggleControls}
+              />
+            </Stack.Item>
+            {this.props.showControls ? (
+              <Stack.Item>
+                <Stack tokens={{ childrenGap: 10 }}>
+                  <List
+                    items={listItems}
+                    onRenderCell={this.handleRenderCell}
+                  />
+                </Stack>
+              </Stack.Item>
+            ) : null}
+          </Stack>
+        ) : null}
       </Stack>
     );
   }
+
+  private handleLayoutChange = (_: any, checked?: boolean) => {
+    if (checked !== undefined) {
+      this.props.setLayout(checked ? "side-by-side" : "all");
+    }
+  };
 }
 
 const mapStateToProps = (state: RootState) => {
-  const { session, areResultControlsVisible } = state.analysis;
+  const { session, areResultControlsVisible, layout } = state.analysis;
   return {
     showControls: areResultControlsVisible,
     items: session ? session.analyses : [],
-    theme: state.theme.current
+    theme: state.theme.current,
+    isSideBySide: layout === "side-by-side",
   };
 };
 
-const mapDispatchToProps = { toggleVisibility, toggleResultControls };
+const mapDispatchToProps = {
+  toggleVisibility,
+  toggleResultControls,
+  setLayout,
+};
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
