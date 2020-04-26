@@ -156,3 +156,16 @@ export interface ActorItem {
   idx: number;
   name: string;
 }
+
+export interface DataSetDetailViewModel {
+  id: number;
+  name: string;
+  nodeCount: number;
+  edgeCount: number;
+  layerCount: number;
+  fileType: string;
+  diagonalUrl: string;
+  slicesUrl: string;
+  layerNames: string[];
+  actorNames: string[];
+}

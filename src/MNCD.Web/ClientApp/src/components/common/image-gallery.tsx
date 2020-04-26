@@ -7,12 +7,14 @@ import {
   ImageLoadState,
   Spinner,
   SpinnerSize,
-  Text
+  Text,
 } from "office-ui-fabric-react";
 
 interface IProps {
   titles: string[];
   urls: string[];
+  height: number;
+  useMaxHeight: boolean;
 }
 
 interface IState {
@@ -20,11 +22,16 @@ interface IState {
 }
 
 export default class ImageGallery extends React.Component<IProps, IState> {
+  public static defaultProps = {
+    height: 750,
+    useMaxHeight: false,
+  };
+
   constructor(props: IProps) {
     super(props);
 
     this.state = {
-      currentIdx: 0
+      currentIdx: 0,
     };
   }
 
@@ -47,14 +54,19 @@ export default class ImageGallery extends React.Component<IProps, IState> {
     const src = this.props.urls[this.state.currentIdx];
 
     return (
-      <Stack tokens={{ childrenGap: 10 }}>
+      <Stack
+        tokens={{ childrenGap: 10 }}
+        style={{ height: this.props.useMaxHeight ? "100%" : this.props.height }}
+      >
         <Stack.Item>
           <span style={{ fontWeight: 600 }}>{title}</span>
         </Stack.Item>
         <Stack
           horizontal
           horizontalAlign="space-between"
-          style={{ height: 750 }}
+          style={{
+            height: this.props.useMaxHeight ? "100%" : this.props.height,
+          }}
         >
           <Stack.Item styles={{ root: { width: 50 } }}>
             {showPrev ? (
@@ -99,7 +111,7 @@ class ImageContainer extends React.Component<ICProps, ICState> {
     super(props);
     this.state = {
       isLoading: true,
-      isError: false
+      isError: false,
     };
   }
 

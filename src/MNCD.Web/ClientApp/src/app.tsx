@@ -4,6 +4,7 @@ import { SessionList } from "./components/sessions";
 import { AnalysisPage } from "./components/analysis/index";
 import { FormatsPage } from "./components/pages";
 import { NotificationsContainer } from "./components/common";
+import { DataSetDetail } from "./components/dataset";
 
 export default class App extends Component {
   render() {
@@ -13,6 +14,7 @@ export default class App extends Component {
           <Route exact path="/" component={SessionList} />
           <Route path="/session/:guid" component={AnalysisPage} />
           <Route path="/formats" component={FormatsPage} />
+          <Route path="/dataset/:id" component={DataSetDetail} />
         </Switch>
         <NotificationsContainer />
       </React.Fragment>

@@ -10,6 +10,7 @@ using MNCD.Core;
 using MNCD.Readers;
 using MNCD.Writers;
 using MNCD.Domain.Exceptions;
+using System.Data;
 
 namespace MNCD.Services.Impl
 {
@@ -100,6 +101,8 @@ namespace MNCD.Services.Impl
             var dataSet = await _ctx
                 .DataSets
                 .Include(d => d.NetworkInfo)
+                .Include(d => d.DiagonalVisualization)
+                .Include(d => d.SlicesVisualization)
                 .FirstOrDefaultAsync(d => d.Id == id);
 
             if (dataSet is null)

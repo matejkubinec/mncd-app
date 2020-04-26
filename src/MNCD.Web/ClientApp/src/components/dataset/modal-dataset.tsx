@@ -6,7 +6,7 @@ import {
   updateItemToAdd,
   openAddDataSetForm,
   closeAddDataSetForm,
-  selectDataSet
+  selectDataSet,
 } from "../../slices/dataset-slice";
 import { RootState } from "../../store";
 import { connect, ConnectedProps } from "react-redux";
@@ -19,14 +19,14 @@ import {
   Modal,
   MessageBar,
   MessageBarType,
-  DefaultButton
+  DefaultButton,
 } from "office-ui-fabric-react";
 import DataSetsList from "./list-dataset";
 import { AddDataSet, RemoveDataSet, EditDataSet } from ".";
 import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
 import {
   MotionAnimations,
-  MotionDurations
+  MotionDurations,
 } from "@uifabric/fluent-theme/lib/fluent/FluentMotion";
 import { DataSetRowViewModel } from "../../types";
 
@@ -139,8 +139,8 @@ class DataSetsModal extends React.Component<IProps> {
                 right: this.props.isSidebarOpen ? 0 : -250,
                 boxShadow: Depths.depth8,
                 transitionDuration: MotionDurations.duration2,
-                transition: "all " + MotionAnimations.slideRightIn
-              }
+                transition: "all " + MotionAnimations.slideRightIn,
+              },
             }}
           >
             {this.renderSidebar()}
@@ -157,7 +157,7 @@ const mapState = (state: RootState) => {
   return {
     ...dataset,
     isSidebarOpen: add.isOpen || edit.isOpen || remove.isOpen,
-    theme: state.theme.current
+    theme: state.theme.current,
   };
 };
 
@@ -168,7 +168,7 @@ const mapDispatch = {
   updateItemToAdd,
   openAddDataSetForm,
   closeAddDataSetForm,
-  selectDataSet
+  selectDataSet,
 };
 
 const connector = connect(mapState, mapDispatch);

@@ -178,7 +178,6 @@ namespace MNCD.Tests.Services
 
                 Assert.Equal("Data set with new name", dataSet.Name);
                 Assert.Collection(dataSets, d => Assert.Equal("Data set with new name", d.Name));
-
             }
         }
 

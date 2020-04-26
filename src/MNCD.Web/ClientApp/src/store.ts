@@ -9,6 +9,7 @@ import {
 import {
   AnalysisReducer,
   DataSetReducer,
+  DataSetDetailReducer,
   SessionReducer,
   ThemeReducer
 } from "./slices";
@@ -18,6 +19,7 @@ export const history = createBrowserHistory();
 const reducer = combineReducers({
   session: SessionReducer,
   dataset: DataSetReducer,
+  datasetDetail: DataSetDetailReducer,
   analysis: AnalysisReducer,
   theme: ThemeReducer,
   notifications,

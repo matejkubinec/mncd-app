@@ -1,6 +1,8 @@
-﻿using MNCD.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using MNCD.Data;
 using MNCD.Domain.DTO.Visualization;
 using MNCD.Domain.Entities;
+using MNCD.Domain.Exceptions;
 using MNCD.Domain.Extensions;
 using MNCD.Domain.Services;
 using Newtonsoft.Json;
@@ -16,14 +18,13 @@ namespace MNCD.Services.Impl
 {
     public class VisualizationService : IVisualizationService
     {
+        private readonly int MAX_RETRY = 5;
         private readonly MNCDContext _ctx;
-        private readonly IAnalysisService _analysisService;
         private readonly string _baseUrl;
 
-        public VisualizationService(MNCDContext ctx, IAnalysisService analysisService, string baseUrl)
+        public VisualizationService(MNCDContext ctx, string baseUrl)
         {
             _ctx = ctx;
-            _analysisService = analysisService;
             _baseUrl = baseUrl;
         }
 
@@ -40,245 +41,291 @@ namespace MNCD.Services.Impl
             return visualization;
         }
 
-        public async Task<Visualization> GetVisualization(int analysisId, VisualizationType type)
+        public async Task<Visualization> GetDataSetVisualization(int dataSetId, VisualizationType type)
         {
-            var analysis = await _analysisService.GetAnalysis(analysisId);
+            var dataSet = await _ctx.DataSets
+                .Include(d => d.SlicesVisualization)
+                .Include(d => d.DiagonalVisualization)
+                .FirstOrDefaultAsync(d => d.Id == dataSetId);
+
+            if (dataSet is null)
+            {
+                // TODO: add message
+                throw new NetworkDataSetNotFoundException(string.Empty);
+            }
+
+            return await GetVisualizationFromDataSet(dataSet, type);
+        }
+
+        public async Task<Visualization> GetAnalysisVisualization(int analysisId, VisualizationType type)
+        {
+            var analysis = _ctx.Analyses
+                .Include(a => a.Result)
+                .Include(a => a.Request)
+                .ThenInclude(r => r.DataSet)
+                .ThenInclude(d => d.DiagonalVisualization)
+                .Include(a => a.Request)
+                .ThenInclude(r => r.DataSet)
+                .ThenInclude(d => d.SlicesVisualization)
+                .Include(a => a.Visualizations)
+                .FirstOrDefault(a => a.Id == analysisId);
+
+            if (analysis is null)
+            {
+                throw new AnalysisNotFoundException($"Analysis with id '{analysisId} was not found.");
+            }
+
             return await GetVisualizationFromAnalysis(analysis, type);
         }
 
         public async Task<Visualization> VisualizeMultilayer(MultilayerRequest request)
         {
-            var client = GetClient();
             var json = JsonConvert.SerializeObject(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var uri = _baseUrl + "/api/multi-layer/diagonal";
-            var response = await client.PostAsync(uri, content);
+            var message = string.Empty;
+            var uri = $"{_baseUrl}/api/multi-layer";
 
-            if (response.IsSuccessStatusCode)
+            if (request.Type == VisualizationType.MultiLayer_Diagonal)
             {
-                var svg = await response.Content.ReadAsStringAsync();
-                return new Visualization
-                {
-                    Title = request.Type.ToTitle(),
-                    Type = request.Type,
-                    SvgImage = svg
-                };
+                uri += "/diagonal";
+            }
+            else if (request.Type == VisualizationType.MultiLayer_Slices)
+            {
+                uri += "/slices";
             }
             else
             {
-                var message = await HandleError(response);
-                throw new ArgumentException(message);
+                message = $"Visualization type '{request.Type}' is not supported.";
+                throw new NotSupportedException(message);
             }
+
+            for (var i = 0; i < MAX_RETRY; i++)
+            {
+                var client = GetClient();
+                var response = await client.PostAsync(uri, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var svg = await response.Content.ReadAsStringAsync();
+                    return new Visualization
+                    {
+                        Title = request.Type.ToTitle(),
+                        Type = request.Type,
+                        SvgImage = svg
+                    };
+                }
+                else
+                {
+                    message = await HandleError(response);
+                }
+            }
+
+            throw new ArgumentException(message);
         }
 
         public async Task<Visualization> VisualizeMultilayerCommunities(MultilayerCommunitiesRequest request)
         {
-            var client = GetClient();
             var json = JsonConvert.SerializeObject(request);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var uri = _baseUrl + "/api/multi-layer/hairball";
-            var response = await client.PostAsync(uri, content);
+            var message = string.Empty;
+            var uri = $"{_baseUrl}/api/multi-layer/";
 
-            if (response.IsSuccessStatusCode)
+            if (request.Type == VisualizationType.MultiLayerHairball)
             {
-                var svg = await response.Content.ReadAsStringAsync();
-                return new Visualization
-                {
-                    Title = request.Type.ToTitle(),
-                    Type = request.Type,
-                    SvgImage = svg
-                };
+                uri += "hairball";
+            }
+            else if (request.Type == VisualizationType.MultiLayerSlicesCommunities)
+            {
+                uri += "slices-communities";
             }
             else
             {
-                var message = await HandleError(response);
-                throw new ArgumentException(message);
+                message = $"Visualization type '{request.Type}' is not supported.";
+                throw new NotSupportedException(message);
             }
+
+            for (var i = 0; i < MAX_RETRY; i++)
+            {
+                var client = GetClient();
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync(uri, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var svg = await response.Content.ReadAsStringAsync();
+                    return new Visualization
+                    {
+                        Title = request.Type.ToTitle(),
+                        Type = request.Type,
+                        SvgImage = svg
+                    };
+                }
+                else
+                {
+                    message = await HandleError(response);
+                }
+            }
+
+            throw new ArgumentException(message);
         }
 
         public async Task<Visualization> VisualizeSingleLayer(SingleLayerRequest request)
         {
-            var client = GetClient();
+            var message = string.Empty;
             var json = JsonConvert.SerializeObject(request);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var uri = _baseUrl + "/api/single-layer/network";
-            var response = await client.PostAsync(uri, content);
+            var uri = $"{_baseUrl}/api/single-layer/network";
 
-            if (response.IsSuccessStatusCode)
+            for (var i = 0; i < MAX_RETRY; i++)
             {
-                var svg = await response.Content.ReadAsStringAsync();
-                return new Visualization
+                var client = GetClient();
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync(uri, content);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    Title = request.Type.ToTitle(),
-                    Type = request.Type,
-                    SvgImage = svg
-                };
+                    var svg = await response.Content.ReadAsStringAsync();
+                    return new Visualization
+                    {
+                        Title = request.Type.ToTitle(),
+                        Type = request.Type,
+                        SvgImage = svg
+                    };
+                }
+                else
+                {
+                    message = await HandleError(response);
+                }
             }
-            else
-            {
-                var message = await HandleError(response);
-                throw new ArgumentException(message);
-            }
+
+            throw new ArgumentException(message);
         }
 
         public async Task<Visualization> VisualizeSingleLayerCommunity(SingleLayerCommunityRequest request)
         {
-            var client = GetClient();
+            var message = string.Empty;
             var json = JsonConvert.SerializeObject(request);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var uri = _baseUrl + "/api/single-layer/community";
-            var response = await client.PostAsync(uri, content);
+            var uri = $"{_baseUrl}/api/single-layer/community";
 
-            if (response.IsSuccessStatusCode)
+            for (var i = 0; i < MAX_RETRY; i++)
             {
-                var svg = await response.Content.ReadAsStringAsync();
-                return new Visualization
+                var client = GetClient();
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync(uri, content);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    Title = request.Type.ToTitle(),
-                    Type = request.Type,
-                    SvgImage = svg
-                };
+                    var svg = await response.Content.ReadAsStringAsync();
+                    return new Visualization
+                    {
+                        Title = request.Type.ToTitle(),
+                        Type = request.Type,
+                        SvgImage = svg
+                    };
+                }
+                else
+                {
+                    message = await HandleError(response);
+                }
             }
-            else
-            {
-                var message = await HandleError(response);
-                throw new ArgumentException(message);
-            }
+
+            throw new ArgumentException(message);
         }
 
         public async Task<Visualization> VisualizeBarplot<R, T>(BarplotRequest<R, T> request)
         {
-            var client = GetClient();
+            var message = string.Empty;
             var json = JsonConvert.SerializeObject(request);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var uri = _baseUrl + "/api/common-charts/barplot";
-            var response = await client.PostAsync(uri, content);
+            var uri = $"{_baseUrl}/api/common-charts/barplot";
 
-            if (response.IsSuccessStatusCode)
+            for (var i = 0; i < MAX_RETRY; i++)
             {
-                var svg = await response.Content.ReadAsStringAsync();
-                return new Visualization
+                var client = GetClient();
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync(uri, content);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    Type = VisualizationType.Barplot,
-                    SvgImage = svg
-                };
+                    var svg = await response.Content.ReadAsStringAsync();
+                    return new Visualization
+                    {
+                        Type = VisualizationType.Barplot,
+                        SvgImage = svg
+                    };
+                }
+                else
+                {
+                    message = await HandleError(response);
+                }
             }
-            else
-            {
-                var message = await HandleError(response);
-                throw new ArgumentException(message);
-            }
+
+            throw new ArgumentException(message);
         }
 
         public async Task<Visualization> VisualizeTreemap<T>(TreemapRequest<T> request)
         {
-            var client = GetClient();
+            var message = string.Empty;
             var json = JsonConvert.SerializeObject(request);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var uri = _baseUrl + "/api/common-charts/treemap";
-            var response = await client.PostAsync(uri, content);
+            var uri = $"{_baseUrl}/api/common-charts/treemap";
 
-            if (response.IsSuccessStatusCode)
+            for (var i = 0; i < MAX_RETRY; i++)
             {
-                var svg = await response.Content.ReadAsStringAsync();
-                return new Visualization
+                var client = GetClient();
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync(uri, content);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    Type = VisualizationType.Treemap,
-                    SvgImage = svg
-                };
-            }
-            else
-            {
-                var message = await HandleError(response);
-                throw new ArgumentException(message);
-            }
-        }
-
-        public async Task<Visualization> VisualizeSlices(SlicesRequest request)
-        {
-            var client = GetClient();
-            var json = JsonConvert.SerializeObject(request);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var uri = _baseUrl + "/api/multi-layer/slices";
-            var response = await client.PostAsync(uri, content);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var svg = await response.Content.ReadAsStringAsync();
-                return new Visualization
+                    var svg = await response.Content.ReadAsStringAsync();
+                    return new Visualization
+                    {
+                        Type = VisualizationType.Treemap,
+                        SvgImage = svg
+                    };
+                }
+                else
                 {
-                    Type = VisualizationType.MultiLayerSlices,
-                    SvgImage = svg
-                };
+                    message = await HandleError(response);
+                }
             }
-            else
-            {
-                var message = await HandleError(response);
-                throw new ArgumentException(message);
-            }
-        }
 
-        public async Task<Visualization> VisualizeSlicesCommunities(SlicesCommunitiesRequest request)
-        {
-            var client = GetClient();
-            var json = JsonConvert.SerializeObject(request);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var uri = _baseUrl + "/api/multi-layer/slices-communities";
-            var response = await client.PostAsync(uri, content);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var svg = await response.Content.ReadAsStringAsync();
-                return new Visualization
-                {
-                    Type = VisualizationType.MultiLayerSlicesCommunities,
-                    SvgImage = svg
-                };
-            }
-            else
-            {
-                var message = await HandleError(response);
-                throw new ArgumentException(message);
-            }
-        }
-
-        private async Task<string> HandleError(HttpResponseMessage response)
-        {
-            if (response.StatusCode == HttpStatusCode.BadRequest)
-            {
-                var responseDataJson = await response.Content.ReadAsStringAsync();
-                var responseData = JsonConvert.DeserializeObject<ErrorResponse>(responseDataJson);
-                var errorMessage = "Invalid request, errors: \n" + string.Join('\n', responseData.Errors);
-                return errorMessage;
-            }
-            else
-            {
-                var errorMessage = await response.Content.ReadAsStringAsync();
-                return errorMessage;
-            }
+            throw new ArgumentException(message);
         }
 
         private async Task<Visualization> GetVisualizationFromAnalysis(Analysis analysis, VisualizationType type)
         {
             var viz = analysis.Visualizations.FirstOrDefault(a => a.Type == type);
-            if (viz == null)
+            if (viz is null)
             {
                 if (type.IsMultiLayer())
                 {
-                    viz = await VisualizeMultilayer(new MultilayerRequest
+                    if (type == VisualizationType.MultiLayer_Diagonal)
                     {
-                        EdgeList = analysis.Request.DataSet.EdgeList,
-                        Type = type
-                    });
+                        viz = analysis.Request.DataSet.DiagonalVisualization;
+                    }
+                    else
+                    {
+                        viz = await VisualizeMultilayer(new MultilayerRequest
+                        {
+                            EdgeList = analysis.Request.DataSet.EdgeList,
+                            Type = type
+                        });
+                    }
                 }
                 else if (type.IsMultiLayerCommunities())
                 {
-                    viz = await VisualizeMultilayerCommunities(new MultilayerCommunitiesRequest
+                    if (type == VisualizationType.MultiLayer_Diagonal)
                     {
-                        EdgeList = analysis.Request.DataSet.EdgeList,
-                        CommunityList = analysis.Result.CommunityList,
-                        Type = type
-                    });
+                        viz = analysis.Request.DataSet.SlicesVisualization;
+                    }
+                    else
+                    {
+                        var request = new MultilayerCommunitiesRequest
+                        {
+                            EdgeList = analysis.Request.DataSet.EdgeList,
+                            CommunityList = analysis.Result.CommunityList,
+                            Type = type
+                        };
+                        viz = await VisualizeMultilayerCommunities(request);
+                    }
                 }
                 else if (type.IsSingleLayer())
                 {
@@ -304,7 +351,7 @@ namespace MNCD.Services.Impl
                         .OrderBy(c => c);
                     var communitiesCount = communities
                         .Select(c => analysis.Result.ActorToCommunity.Where(a => a.Value == c).Count());
-                    viz = await VisualizeBarplot(new BarplotRequest<int, int>
+                    var request = new BarplotRequest<int, int>
                     {
                         X = communities,
                         Y = communitiesCount,
@@ -315,35 +362,43 @@ namespace MNCD.Services.Impl
                         {
                             ColorCommunities = true
                         }
-                    });
+                    };
+                    viz = await VisualizeBarplot(request);
                 }
                 else if (type == VisualizationType.Treemap)
                 {
-                    var communities = analysis.Result.ActorToCommunity.Values.Distinct().OrderByDescending(c => c);
-                    var communitiesCount = communities.Select(c => analysis.Result.ActorToCommunity.Where(a => a.Value == c).Count());
-                    viz = await VisualizeTreemap(new TreemapRequest<int>
+                    var communities = analysis.Result.ActorToCommunity.Values
+                        .Distinct()
+                        .OrderByDescending(c => c);
+                    var communitiesCount = communities
+                        .Select(c => analysis.Result.ActorToCommunity.Where(a => a.Value == c)
+                        .Count());
+                    var request = new TreemapRequest<int>
                     {
                         Label = communities.Select(c => "C" + c),
                         Sizes = communitiesCount,
                         Type = type
-                    });
+                    };
+                    viz = await VisualizeTreemap(request);
                 }
-                else if (type == VisualizationType.MultiLayerSlices)
+                else if (type == VisualizationType.MultiLayer_Slices)
                 {
-                    viz = await VisualizeSlices(new SlicesRequest
+                    var request = new MultilayerRequest
                     {
                         EdgeList = analysis.Request.DataSet.EdgeList,
                         Type = type
-                    });
+                    };
+                    viz = await VisualizeMultilayer(request);
                 }
                 else if (type == VisualizationType.MultiLayerSlicesCommunities)
                 {
-                    viz = await VisualizeSlicesCommunities(new SlicesCommunitiesRequest
+                    var request = new MultilayerCommunitiesRequest
                     {
                         EdgeList = analysis.Request.DataSet.EdgeList,
                         CommunityList = analysis.Result.CommunityList,
                         Type = type
-                    });
+                    };
+                    viz = await VisualizeMultilayerCommunities(request);
                 }
 
                 analysis.Visualizations.Add(viz);
@@ -352,12 +407,64 @@ namespace MNCD.Services.Impl
             return viz;
         }
 
+        private async Task<Visualization> GetVisualizationFromDataSet(
+            NetworkDataSet dataSet,
+            VisualizationType type)
+        {
+            if (type == VisualizationType.MultiLayer_Diagonal)
+            {
+                if (dataSet.DiagonalVisualization is null)
+                {
+                    var request = new MultilayerRequest
+                    {
+                        EdgeList = dataSet.EdgeList,
+                        Type = VisualizationType.MultiLayer_Diagonal
+                    };
+                    dataSet.DiagonalVisualization = await VisualizeMultilayer(request);
+                    await _ctx.SaveChangesAsync();
+                }
+                return dataSet.DiagonalVisualization;
+            }
+            else if (type == VisualizationType.MultiLayer_Slices)
+            {
+                if (dataSet.SlicesVisualization is null)
+                {
+                    var request = new MultilayerRequest
+                    {
+                        EdgeList = dataSet.EdgeList,
+                        Type = VisualizationType.MultiLayer_Slices
+                    };
+                    dataSet.SlicesVisualization = await VisualizeMultilayer(request);
+                    await _ctx.SaveChangesAsync();
+                }
+                return dataSet.SlicesVisualization;
+            }
+
+            throw new NotSupportedException($"Visualization type '{type}' is not supported for datasets.");
+        }
+
         private HttpClient GetClient()
         {
             return new HttpClient
             {
                 Timeout = TimeSpan.FromMinutes(5)
             };
+        }
+
+        private async Task<string> HandleError(HttpResponseMessage response)
+        {
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                var responseDataJson = await response.Content.ReadAsStringAsync();
+                var responseData = JsonConvert.DeserializeObject<ErrorResponse>(responseDataJson);
+                var errorMessage = "Invalid request, errors: \n" + string.Join('\n', responseData.Errors);
+                return errorMessage;
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                return errorMessage;
+            }
         }
 
         private class ErrorResponse

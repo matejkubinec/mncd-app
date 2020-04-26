@@ -127,9 +127,10 @@ class SessionList extends React.Component<ReduxProps> {
 
   render() {
     return (
-      <Stack tokens={{ padding: 50 }}>
+      <Stack tokens={{ padding: 25 }}>
         <Stack
           style={{
+            borderRadius: 4,
             boxShadow: this.props.theme.effects.elevation16,
             background: this.props.theme.palette.white
           }}

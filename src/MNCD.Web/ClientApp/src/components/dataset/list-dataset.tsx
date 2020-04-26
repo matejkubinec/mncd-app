@@ -14,6 +14,7 @@ import {
 } from "../../slices/dataset-slice";
 import { ConnectedProps, connect } from "react-redux";
 import { RootState } from "../../store";
+import { history } from "../../store";
 
 class DataSetsList extends React.Component<ReduxProps> {
   private columns: IColumn[] = [
@@ -52,6 +53,10 @@ class DataSetsList extends React.Component<ReduxProps> {
       onRender: (item: DataSetRowViewModel) => {
         return (
           <Stack horizontal>
+            <IconButton
+              iconProps={{ iconName: "Search" }}
+              onClick={_ => history.push(`/dataset/${item.id}`)}
+            />
             <IconButton
               iconProps={{ iconName: "Edit" }}
               onClick={e => this.handleEditDataSet(e, item)}

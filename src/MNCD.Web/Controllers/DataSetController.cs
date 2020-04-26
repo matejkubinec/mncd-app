@@ -40,8 +40,8 @@ namespace MNCD.Web.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var dataSet = await _dataSetService.GetDataSet(id);
-            var data = _mapper.Map<DataSetRowViewModel>(dataSet);
-            var response = new ApiResponse<DataSetRowViewModel>("Data set was found.", data);
+            var data = _mapper.Map<DataSetDetailViewModel>(dataSet);
+            var response = new ApiResponse<DataSetDetailViewModel>("Data set was found.", data);
 
             return new OkObjectResult(response);
         }

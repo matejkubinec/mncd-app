@@ -32,7 +32,7 @@ namespace MNCD.Web.Mappings
         {
             var types = new List<VisualizationType>
             {
-                VisualizationType.MultiLayerDiagonal
+                VisualizationType.MultiLayer_Diagonal
             };
             var items = new List<AnalysisVisualizationItemViewModel>();
             foreach (var type in types)
@@ -70,9 +70,9 @@ namespace MNCD.Web.Mappings
         {
             var types = new List<VisualizationType>
             {
-                VisualizationType.SingleLayerSpring,
-                VisualizationType.SingleLayerCircular,
-                VisualizationType.SingleLayerSpiral
+                VisualizationType.SingleLayer_Spring,
+                VisualizationType.SingleLayer_Circular,
+                VisualizationType.SingleLayer_Spiral
             };
             var items = new List<AnalysisVisualizationItemViewModel>();
             foreach (var type in types)
@@ -132,7 +132,7 @@ namespace MNCD.Web.Mappings
 
         private AnalysisVisualizationItemViewModel MapSlices(Analysis analysis)
         {
-            var type = VisualizationType.MultiLayerSlices;
+            var type = VisualizationType.MultiLayer_Slices;
             var visualization = analysis.Visualizations.FirstOrDefault(v => v.Type == type);
             return new AnalysisVisualizationItemViewModel
             {

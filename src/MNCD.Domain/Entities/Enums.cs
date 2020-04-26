@@ -32,17 +32,17 @@ namespace MNCD.Domain.Entities
 
     public enum VisualizationType
     {
-        MultiLayerDiagonal = 0,
+        MultiLayer_Diagonal = 0,
         MultiLayerHairball = 1,
-        SingleLayerSpring = 2,
-        SingleLayerCircular = 3,
-        SingleLayerSpiral = 4,
+        SingleLayer_Spring = 2,
+        SingleLayer_Circular = 3,
+        SingleLayer_Spiral = 4,
         SingleLayerCommunitiesSpring = 5,
         SingleLayerCommunitiesCircular = 6,
         SingleLayerCommunitiesSpiral = 7,
         Barplot = 8,
         Treemap = 9,
-        MultiLayerSlices = 10,
+        MultiLayer_Slices = 10,
         MultiLayerSlicesCommunities = 11
     }
 }

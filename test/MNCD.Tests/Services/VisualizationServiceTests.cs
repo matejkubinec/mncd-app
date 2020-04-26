@@ -10,7 +10,7 @@ namespace MNCD.Tests.Services
     public class VisualizationServiceTests
     {
         private static string Url => "https://mncd-viz.azurewebsites.net/";
-        private readonly VisualizationService _service = new VisualizationService(null, null, Url);
+        private readonly VisualizationService _service = new VisualizationService(null, Url);
 
         [Fact]
         public async Task VisualizeMultilayer()
@@ -27,7 +27,7 @@ namespace MNCD.Tests.Services
             });
             var types = new List<VisualizationType>
              {
-                 VisualizationType.MultiLayerDiagonal
+                 VisualizationType.MultiLayer_Diagonal
              };
             foreach (var type in types)
             {
@@ -96,9 +96,9 @@ namespace MNCD.Tests.Services
             });
             var types = new List<VisualizationType>
              {
-                 VisualizationType.SingleLayerCircular,
-                 VisualizationType.SingleLayerSpiral,
-                 VisualizationType.SingleLayerSpring
+                 VisualizationType.SingleLayer_Circular,
+                 VisualizationType.SingleLayer_Spiral,
+                 VisualizationType.SingleLayer_Spring
              };
             foreach (var type in types)
             {
@@ -140,9 +140,9 @@ namespace MNCD.Tests.Services
             });
             var types = new List<VisualizationType>
              {
-                 VisualizationType.SingleLayerCircular,
-                 VisualizationType.SingleLayerSpiral,
-                 VisualizationType.SingleLayerSpring
+                 VisualizationType.SingleLayer_Circular,
+                 VisualizationType.SingleLayer_Spiral,
+                 VisualizationType.SingleLayer_Spring
              };
             foreach (var type in types)
             {

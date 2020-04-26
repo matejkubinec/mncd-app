@@ -93,16 +93,12 @@ namespace MNCD.Web
         {
             var mappingConfig = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile<DataSetRowViewModelProfile>();
-                cfg.AddProfile<SessionRowViewModelProfile>();
-                cfg.AddProfile<AnalysisRequestViewModelProfile>();
-                cfg.AddProfile<AnalysisResultViewModelProfile>();
-                cfg.AddProfile<AnalysisViewModelProfile>();
-                cfg.AddProfile<AnalysisSessionViewModelProfile>();
+                cfg.AddMaps(new[] { typeof(DataSetDetailViewModelProfile) });
             });
+
             var mapper = mappingConfig.CreateMapper();
 
-            services.AddSingleton<IMapper>(mapper);
+            services.AddSingleton(mapper);
         }
 
         private void RegisterDbContext(IServiceCollection services)
@@ -126,10 +122,7 @@ namespace MNCD.Web
 
             var vizUrl = Configuration.GetValue<string>("VisualizationApiUrl");
             services.AddTransient<IVisualizationService, VisualizationService>(x =>
-                new VisualizationService(
-                    x.GetService<MNCDContext>(),
-                    x.GetService<IAnalysisService>(),
-                    vizUrl));
+                new VisualizationService(x.GetService<MNCDContext>(), vizUrl));
         }
     }
 }
