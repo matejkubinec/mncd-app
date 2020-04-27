@@ -19,7 +19,7 @@ class DataSetDetail extends Component<IProps> {
   }
 
   render() {
-    const { isLoading, dataSet, theme, layout } = this.props;
+    const { isLoading, dataSet, theme } = this.props;
 
     if (isLoading) {
       return "Loading...";
@@ -44,21 +44,13 @@ class DataSetDetail extends Component<IProps> {
           }}
         >
           <Stack.Item>
-            <h2 style={{ textAlign: "center" }}>{dataSet.name}</h2>
+            <h1 style={{ textAlign: "center" }}>{dataSet.name}</h1>
           </Stack.Item>
           <Stack.Item>
             <Separator />
           </Stack.Item>
           <Stack horizontal>
-            <Stack
-              grow={2}
-              tokens={{ padding: "25px 25px 0 25px" }}
-              style={{
-                borderRadius: 4,
-                boxShadow: theme.effects.elevation8,
-                background: theme.palette.white,
-              }}
-            >
+            <Stack grow={2} tokens={{ padding: "25px 25px 0 25px" }}>
               <h3 style={{ textAlign: "center" }}>Information</h3>
               <table style={{ width: 250 }}>
                 <tbody>

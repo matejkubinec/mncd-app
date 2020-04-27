@@ -1,17 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30021.99
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MNCD.Domain", "MNCD.Domain\MNCD.Domain.csproj", "{BD5FCA03-AD33-4329-86D4-45AE270EA11A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MNCD.Domain", "MNCD.Domain\MNCD.Domain.csproj", "{BD5FCA03-AD33-4329-86D4-45AE270EA11A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MNCD.Data", "MNCD.Data\MNCD.Data.csproj", "{189369F2-EC00-4DBB-8CB7-DB9D6CF84FDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MNCD.Data", "MNCD.Data\MNCD.Data.csproj", "{189369F2-EC00-4DBB-8CB7-DB9D6CF84FDC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MNCD.Services", "MNCD.Services\MNCD.Services.csproj", "{97C06228-6D76-4C7A-A5D9-81F264F1F7C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MNCD.Services", "MNCD.Services\MNCD.Services.csproj", "{97C06228-6D76-4C7A-A5D9-81F264F1F7C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MNCD.Web", "MNCD.Web\MNCD.Web.csproj", "{E55CDD4A-B049-4547-AC1B-01A630B20F39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MNCD.Web", "MNCD.Web\MNCD.Web.csproj", "{E55CDD4A-B049-4547-AC1B-01A630B20F39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MNCD.Tests", "..\test\MNCD.Tests\MNCD.Tests.csproj", "{342EC207-88D7-4900-91A4-298CED08FFF8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MNCD.Tests", "..\test\MNCD.Tests\MNCD.Tests.csproj", "{342EC207-88D7-4900-91A4-298CED08FFF8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,9 +21,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{BD5FCA03-AD33-4329-86D4-45AE270EA11A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -86,5 +83,11 @@ Global
 		{342EC207-88D7-4900-91A4-298CED08FFF8}.Release|x64.Build.0 = Release|Any CPU
 		{342EC207-88D7-4900-91A4-298CED08FFF8}.Release|x86.ActiveCfg = Release|Any CPU
 		{342EC207-88D7-4900-91A4-298CED08FFF8}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F9FDD7CF-059C-45B0-95B9-AFDE821EB7A3}
 	EndGlobalSection
 EndGlobal

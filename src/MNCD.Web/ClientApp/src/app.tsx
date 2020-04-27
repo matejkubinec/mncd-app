@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Route, Switch } from "react-router";
 import { SessionList } from "./components/sessions";
-import { AnalysisPage } from "./components/analysis/index";
+import { AnalysisPage, AnalysisDetail } from "./components/analysis/index";
 import { FormatsPage } from "./components/pages";
 import { NotificationsContainer } from "./components/common";
 import { DataSetDetail } from "./components/dataset";
@@ -15,6 +15,7 @@ export default class App extends Component {
           <Route path="/session/:guid" component={AnalysisPage} />
           <Route path="/formats" component={FormatsPage} />
           <Route path="/dataset/:id" component={DataSetDetail} />
+          <Route path="/analysis/:id" component={AnalysisDetail} />
         </Switch>
         <NotificationsContainer />
       </React.Fragment>

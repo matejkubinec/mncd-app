@@ -14,7 +14,7 @@ class AnalysisResult extends React.Component<ReduxProps> {
       .filter((i) => i.isOpen)
       .map((item, i) => (
         <Stack.Item key={i} grow={1}>
-          <AnalysisResultItem analysis={item} />
+          <AnalysisResultItem analysis={item} theme={this.props.theme} />
         </Stack.Item>
       ));
   };
@@ -50,6 +50,7 @@ class AnalysisResult extends React.Component<ReduxProps> {
 const mapProps = (rootState: RootState) => {
   const { session, layout } = rootState.analysis;
   return {
+    theme: rootState.theme.current,
     items: session ? session.analyses : [],
     isSideBySide: layout === "side-by-side",
   };

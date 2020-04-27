@@ -1,24 +1,23 @@
 import React, { Component } from "react";
-import { connect, ConnectedProps } from "react-redux";
 import {
   AnalysisViewModel,
   AnalysisVisualizationItemViewModel,
-  AnalysisApproach
+  AnalysisApproach,
 } from "../../types";
-import { Stack } from "office-ui-fabric-react";
+import { Stack, ITheme } from "office-ui-fabric-react";
 import {
   Evaluation,
   Request,
   Visualization,
-  CommunitiesDetails
+  CommunitiesDetails,
 } from "./result";
-import { RootState } from "../../store";
 
 interface IProps {
   analysis: AnalysisViewModel;
+  theme: ITheme;
 }
 
-class AnalysisResultItem extends Component<IProps & ReduxProps> {
+class AnalysisResultItem extends Component<IProps> {
   getSingleLayerCommuntiesViz(): AnalysisVisualizationItemViewModel[] {
     const viz = this.props.analysis.visualization;
     return viz ? viz.singleLayerCommunities : [];
@@ -58,8 +57,8 @@ class AnalysisResultItem extends Component<IProps & ReduxProps> {
         border: "1px solid " + this.props.theme.palette.whiteTranslucent40,
         borderRadius: 4,
         boxShadow: this.props.theme.effects.elevation4,
-        backgroundColor: this.props.theme.palette.white
-      }
+        backgroundColor: this.props.theme.palette.white,
+      },
     };
 
     const headerStyle = {
@@ -68,8 +67,8 @@ class AnalysisResultItem extends Component<IProps & ReduxProps> {
         borderRadius: 4,
         backgroundColor: this.props.theme.palette.accent,
         color: this.props.theme.palette.white,
-        textAlign: "center"
-      }
+        textAlign: "center",
+      },
     };
 
     return (
@@ -78,11 +77,24 @@ class AnalysisResultItem extends Component<IProps & ReduxProps> {
         style={{
           borderRadius: 4,
           boxShadow: this.props.theme.effects.elevation16,
-          backgroundColor: this.props.theme.palette.neutralLighterAlt
+          backgroundColor: this.props.theme.palette.neutralLighterAlt,
         }}
       >
         <Stack.Item styles={headerStyle}>
           <h2>Analysis {analysis.id}</h2>
+        </Stack.Item>
+        <Stack.Item styles={itemStyles}>
+          <div style={{ textAlign: "center", padding: 5 }}>
+            Click{" "}
+            <a
+              href={`/analysis/${analysis.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              here
+            </a>{" "}
+            to view a more detailed version.
+          </div>
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
           <Request
@@ -100,22 +112,22 @@ class AnalysisResultItem extends Component<IProps & ReduxProps> {
         <Stack.Item styles={itemStyles}>
           <Visualization
             header="Multi Layer Visualization"
-            titles={multiLayerViz.map(v => v.title)}
-            urls={multiLayerViz.map(v => v.url)}
+            titles={multiLayerViz.map((v) => v.title)}
+            urls={multiLayerViz.map((v) => v.url)}
           />
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
           <Visualization
             header="Layers"
-            titles={slices.map(v => v.title)}
-            urls={slices.map(v => v.url)}
+            titles={slices.map((v) => v.title)}
+            urls={slices.map((v) => v.url)}
           />
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
           <Visualization
             header="Communities in layers"
-            titles={slicesCommunities.map(v => v.title)}
-            urls={slicesCommunities.map(v => v.url)}
+            titles={slicesCommunities.map((v) => v.title)}
+            urls={slicesCommunities.map((v) => v.url)}
           />
         </Stack.Item>
         {approach !== AnalysisApproach.MultiLayer ? (
@@ -123,15 +135,15 @@ class AnalysisResultItem extends Component<IProps & ReduxProps> {
             <Stack.Item styles={itemStyles}>
               <Visualization
                 header="Single Layer Visualization"
-                titles={singleLayerViz.map(v => v.title)}
-                urls={singleLayerViz.map(v => v.url)}
+                titles={singleLayerViz.map((v) => v.title)}
+                urls={singleLayerViz.map((v) => v.url)}
               />
             </Stack.Item>
             <Stack.Item styles={itemStyles}>
               <Visualization
                 header="Single Layer Communities Visualization"
-                titles={singleLayerCommunitiesViz.map(v => v.title)}
-                urls={singleLayerCommunitiesViz.map(v => v.url)}
+                titles={singleLayerCommunitiesViz.map((v) => v.title)}
+                urls={singleLayerCommunitiesViz.map((v) => v.url)}
               />
             </Stack.Item>
           </React.Fragment>
@@ -144,16 +156,4 @@ class AnalysisResultItem extends Component<IProps & ReduxProps> {
   }
 }
 
-const mapProps = (rootState: RootState) => {
-  return {
-    theme: rootState.theme.current
-  };
-};
-
-const mapDispatch = {};
-
-const connector = connect(mapProps, mapDispatch);
-
-type ReduxProps = ConnectedProps<typeof connector>;
-
-export default connector(AnalysisResultItem);
+export default AnalysisResultItem;

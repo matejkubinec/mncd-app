@@ -55,7 +55,7 @@ export interface AnalysisRequestViewModel {
   id: number;
   sessionId: number;
 
-  dataSetId: number;
+  datasetId: number;
   dataSetName?: string;
 
   selectedLayer: number;

@@ -10,7 +10,7 @@ import {
   SpinnerSize,
   TextField,
   MessageBar,
-  MessageBarType
+  MessageBarType,
 } from "office-ui-fabric-react";
 import { FileType } from "../../types";
 import { ConnectedProps, connect } from "react-redux";
@@ -18,9 +18,8 @@ import { RootState } from "../../store";
 import {
   updateItemToAdd,
   closeAddDataSetForm,
-  saveDataSet
+  saveDataSet,
 } from "../../slices/dataset-slice";
-import { Link } from "react-router-dom";
 
 interface IProps {
   file: File;
@@ -29,7 +28,7 @@ interface IProps {
 class AddDataSet extends React.Component<ReduxProps, IProps> {
   private options: IDropdownOption[] = [
     { key: FileType.MPX.toString(), text: "MPX", selected: true },
-    { key: FileType.EdgeList.toString(), text: "Edge List" }
+    { key: FileType.EdgeList.toString(), text: "Edge List" },
   ];
 
   handleFileChange = (file: File) => {
@@ -96,9 +95,9 @@ class AddDataSet extends React.Component<ReduxProps, IProps> {
             <h2>Add Dataset</h2>
           </Stack.Item>
           <Stack.Item>
-            <Link to="/formats" target="_blank">
+            <a href="/formats" target="_blank" rel="noopener noreferrer">
               Supported formats
-            </Link>
+            </a>
           </Stack.Item>
           {this.props.error ? (
             <MessageBar messageBarType={MessageBarType.error}>
@@ -132,7 +131,7 @@ class AddDataSet extends React.Component<ReduxProps, IProps> {
               buttonProps={{
                 label: "Network File",
                 style: { width: "100%" },
-                iconProps: { iconName: "Upload" }
+                iconProps: { iconName: "Upload" },
               }}
             />
           </Stack.Item>
@@ -179,7 +178,7 @@ const mapProps = (state: RootState) => {
   return {
     isSaving,
     item,
-    error
+    error,
   };
 };
 

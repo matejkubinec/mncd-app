@@ -41,7 +41,7 @@ const initialState: AnalysisState = {
   request: {
     id: 0,
     sessionId: 0,
-    dataSetId: 0,
+    datasetId: 0,
     selectedLayer: 0,
     approach: AnalysisApproach.SingleLayerFlattening,
     analysisAlgorithm: AnalysisAlgorithm.Louvain,
@@ -207,7 +207,7 @@ const slice = createSlice({
       action: PayloadAction<DataSetRowViewModel>
     ) => {
       state.dataSet = action.payload;
-      state.request.dataSetId = action.payload.id;
+      state.request.datasetId = action.payload.id;
       state.isRequestValid = true;
 
       if (state.request.approach === AnalysisApproach.SingleLayerFlattening) {
@@ -357,7 +357,7 @@ export const fetchAnalysisSession = (guid: string) => (dispatch: Dispatch) => {
   dispatch(fetchAnalysisSessionStart());
 
   axios
-    .get<ApiResponse<AnalysisSessionViewModel>>("/api/analysis/" + guid)
+    .get<ApiResponse<AnalysisSessionViewModel>>("/api/session/" + guid)
     .then(({ data }) => {
       dispatch(fetchAnalysisSessionSuccess(data));
     })

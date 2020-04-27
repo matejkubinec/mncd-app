@@ -2,18 +2,18 @@ import React, { Component } from "react";
 import {
   AnalysisRequestViewModel,
   AnalysisApproach,
-  FlattenningAlgorithm
+  FlattenningAlgorithm,
 } from "../../../types";
 import {
   approachToString,
   analysisToString,
-  flatteningToString
+  flatteningToString,
 } from "../../../utils";
 import { Stack, Separator } from "office-ui-fabric-react";
 
 interface AnalysisRequestRow {
   name: string;
-  value: string;
+  value: string | React.ReactElement;
   separator?: boolean;
   isParam?: boolean;
 }
@@ -50,13 +50,21 @@ export default class AnalysisRequest extends Component<IProps> {
   getRows(): AnalysisRequestRow[] {
     const request = this.props.request;
     const rows = [
-      { name: "Approach", value: this.approach }
+      { name: "Approach", value: this.approach },
     ] as AnalysisRequestRow[];
 
     rows.push({
       name: "DataSet",
-      value: request.dataSetName || "",
-      separator: true
+      value: (
+        <a
+          href={`/dataset/${request.datasetId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {request.dataSetName || ""}
+        </a>
+      ),
+      separator: true,
     });
 
     if (request.approach === AnalysisApproach.SingleLayerOnly) {
@@ -73,7 +81,7 @@ export default class AnalysisRequest extends Component<IProps> {
       rows.push({
         name: "Flattening",
         value: this.flatteningAlgorithm,
-        separator: true
+        separator: true,
       });
 
       for (const param in request.flatteningAlgorithmParameters) {
@@ -88,13 +96,13 @@ export default class AnalysisRequest extends Component<IProps> {
           rows.push({
             name: param,
             value: formatted as any,
-            isParam: true
+            isParam: true,
           });
         } else {
           rows.push({
             name: param,
             value: request.flatteningAlgorithmParameters[param],
-            isParam: true
+            isParam: true,
           });
         }
       }
@@ -106,7 +114,7 @@ export default class AnalysisRequest extends Component<IProps> {
       rows.push({
         name: param,
         value: request.analysisAlgorithmParameters[param],
-        isParam: true
+        isParam: true,
       });
     }
 
@@ -128,7 +136,10 @@ export default class AnalysisRequest extends Component<IProps> {
           ) : null}
           <Stack horizontal horizontalAlign="center">
             <Stack.Item styles={{ root: { width: "50%" } }}>
-              <span style={{ fontWeight }}>{r.name}</span>
+              <span style={{ fontWeight }}>
+                {r.name[0].toUpperCase()}
+                {r.name.substring(1)}
+              </span>
             </Stack.Item>
             <Stack.Item styles={{ root: { width: "50%" } }}>
               {r.value}

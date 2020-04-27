@@ -54,7 +54,7 @@ class AnalysisSideBySide extends React.Component<ReduxProps> {
               <Separator />
             </Stack.Item>
             <Stack.Item>
-              <AnalysisResultItem analysis={item1} />
+              <AnalysisResultItem analysis={item1} theme={theme} />
             </Stack.Item>
           </Stack>
         </Stack>
@@ -71,7 +71,7 @@ class AnalysisSideBySide extends React.Component<ReduxProps> {
               <Separator />
             </Stack.Item>
             <Stack.Item>
-              <AnalysisResultItem analysis={item2} />
+              <AnalysisResultItem analysis={item2} theme={theme} />
             </Stack.Item>
           </Stack>
         </Stack>

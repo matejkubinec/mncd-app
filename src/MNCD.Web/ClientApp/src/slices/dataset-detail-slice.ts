@@ -7,7 +7,6 @@ interface State {
   isLoading: boolean;
   error: string;
   dataSet: DataSetDetailViewModel | null;
-  layout: "diagonal" | "slices";
 }
 
 const initialState: State = {
@@ -15,7 +14,6 @@ const initialState: State = {
   isLoading: false,
   error: "",
   dataSet: null,
-  layout: "diagonal",
 };
 
 export const fetchDataSetDetailById = createAsyncThunk(
@@ -51,7 +49,5 @@ const slice = createSlice({
     },
   },
 });
-
-export const {} = slice.actions;
 
 export default slice.reducer;

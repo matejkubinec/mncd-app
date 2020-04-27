@@ -23,8 +23,8 @@ const light = createTheme({
     neutralPrimary: "#323130",
     neutralDark: "#201f1e",
     black: "#000000",
-    white: "#ffffff"
-  }
+    white: "#ffffff",
+  },
 });
 
 const dark = createTheme({
@@ -50,8 +50,8 @@ const dark = createTheme({
     neutralPrimary: "#ffffff",
     neutralDark: "#f4f4f4",
     black: "#f8f8f8",
-    white: "#292929"
-  }
+    white: "#292929",
+  },
 });
 
 export { light, dark };

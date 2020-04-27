@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using MNCD.Domain.Services;
 using MNCD.Web.Models;
+using MNCD.Web.Models.Analysis;
 using MNCD.Web.Models.Session;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -31,6 +32,16 @@ namespace MNCD.Web.Controllers
             var response = new ApiResponse<List<SessionRowViewModel>>("Session list returned.", data);
 
             return new OkObjectResult(response);
+        }
+
+        [HttpGet]
+        [Route("{guid}")]
+        public async Task<IActionResult> GetSession(string guid)
+        {
+            var session = await _analysisSessionService.GetAnalysisSession(guid);
+            var data = _mapper.Map<AnalysisSessionViewModel>(session);
+
+            return new OkObjectResult(new ApiResponse<AnalysisSessionViewModel>("Session was found.", data));
         }
 
         [HttpPost]

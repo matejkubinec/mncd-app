@@ -5,9 +5,11 @@ import AnalysisResultItem from "./analysis-result-item";
 import AnalysisResult from "./analysis-result";
 import AnalysisResultControls from "./analysis-result-controls";
 import AnalysisSideBySide from "./analysis-side-by-side";
+import AnalysisDetail from "./analysis-detail";
 
 export {
   AnalysisControls,
+  AnalysisDetail,
   AnalysisSideBySide,
   AnalysisPage,
   AnalysisPageHeader,
