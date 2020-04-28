@@ -303,11 +303,11 @@ namespace MNCD.Services.Impl
                             await WriteContent(archive, $"images/{vis.Title}.svg", vis.SvgImage);
                         }
                     }
-
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                    await memoryStream.CopyToAsync(outStream);
-                    outStream.Seek(0, SeekOrigin.Begin);
                 }
+
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                await memoryStream.CopyToAsync(outStream);
+                outStream.Seek(0, SeekOrigin.Begin);
             }
         }
 

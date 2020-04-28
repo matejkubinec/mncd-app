@@ -187,11 +187,11 @@ namespace MNCD.Services.Impl
                         var svg = dataSet.SlicesVisualization.SvgImage;
                         await WriteContent(archive, "images/slices.svg", svg);
                     }
-
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                    await memoryStream.CopyToAsync(outStream);
-                    outStream.Seek(0, SeekOrigin.Begin);
                 }
+
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                await memoryStream.CopyToAsync(outStream);
+                outStream.Seek(0, SeekOrigin.Begin);
             }
 
             return dataSet.Name;
