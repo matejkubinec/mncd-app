@@ -1,12 +1,11 @@
 import React from "react";
 import { connect, ConnectedProps } from "react-redux";
-import { RootState } from "../../store";
+import { RootState, history } from "../../store";
 import { Stack, IconButton } from "office-ui-fabric-react";
-import { push } from "connected-react-router";
 
 class AnalysisPage extends React.Component<ReduxProps> {
   handleBackToSessionListClick = () => {
-    this.props.push("/");
+    history.push("/");
   };
 
   render() {
@@ -20,8 +19,8 @@ class AnalysisPage extends React.Component<ReduxProps> {
             position: "relative",
             zIndex: 10,
             backgroundColor: this.props.theme.palette.accent,
-            color: this.props.theme.palette.white
-          }
+            color: this.props.theme.palette.white,
+          },
         }}
       >
         <Stack.Item>
@@ -48,10 +47,10 @@ class AnalysisPage extends React.Component<ReduxProps> {
 
 const mapProps = (rootState: RootState) => ({
   theme: rootState.theme.current,
-  session: rootState.analysis.session
+  session: rootState.analysis.session,
 });
 
-const mapDispatch = { push };
+const mapDispatch = {};
 
 const connector = connect(mapProps, mapDispatch);
 

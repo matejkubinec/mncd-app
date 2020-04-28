@@ -79,11 +79,14 @@ class DataSetDetail extends Component<IProps> {
                   onRenderCell={this.renderListItem}
                 />
               </ol>
-              <Stack>
-                <PrimaryButton onClick={this.handleDownload}>
-                  Download
-                </PrimaryButton>
-              </Stack>
+              <Stack.Item verticalFill>
+                <Stack verticalAlign="end" verticalFill>
+                  <Separator />
+                  <PrimaryButton onClick={this.handleDownload}>
+                    Download
+                  </PrimaryButton>
+                </Stack>
+              </Stack.Item>
             </Stack>
             <Stack grow={3} maxWidth={1000}>
               <h3 style={{ textAlign: "center" }}>Visualization</h3>

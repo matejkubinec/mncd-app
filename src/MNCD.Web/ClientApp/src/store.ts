@@ -1,6 +1,4 @@
 import { createBrowserHistory } from "history";
-import { connectRouter, routerMiddleware } from "connected-react-router";
-import { reducer as notifications } from "react-notification-system-redux";
 import {
   combineReducers,
   getDefaultMiddleware,
@@ -24,11 +22,9 @@ const reducer = combineReducers({
   analysis: AnalysisReducer,
   analysisDetail: AnalysisDetailReducer,
   theme: ThemeReducer,
-  notifications,
-  router: connectRouter(history),
 });
 
-const middleware = [...getDefaultMiddleware(), routerMiddleware(history)];
+const middleware = getDefaultMiddleware();
 
 const store = configureStore({
   reducer,

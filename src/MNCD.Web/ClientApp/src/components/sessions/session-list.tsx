@@ -6,8 +6,7 @@ import {
   dismissSesionsListSuccessMessage,
   dismissSesionsListErrorMessage,
 } from "../../slices/session-slice";
-import { push } from "connected-react-router";
-import { RootState } from "../../store";
+import { RootState, history } from "../../store";
 import { connect, ConnectedProps } from "react-redux";
 import {
   Stack,
@@ -65,7 +64,7 @@ class SessionList extends React.Component<ReduxProps> {
         const onOpen = () => {
           this.props.dismissSesionsListSuccessMessage();
           this.props.dismissSesionsListErrorMessage();
-          this.props.push(`/session/${item.id}`);
+          history.push(`/session/${item.id}`);
         };
         return (
           <Stack horizontal tokens={{ childrenGap: 5 }}>
@@ -189,7 +188,6 @@ const mapDispatch = {
   openRemoveDialog,
   dismissSesionsListSuccessMessage,
   dismissSesionsListErrorMessage,
-  push,
 };
 
 const connector = connect(mapState, mapDispatch);

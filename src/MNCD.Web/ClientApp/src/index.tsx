@@ -1,11 +1,9 @@
 import { Fabric, initializeIcons } from "office-ui-fabric-react";
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter } from "react-router-dom";
 import App from "./app";
-import { ConnectedRouter } from "connected-react-router";
 import { Provider } from "react-redux";
-import store, { history } from "./store";
+import store from "./store";
 
 import "./index.css";
 
@@ -21,13 +19,9 @@ if (rootElement) {
 
 ReactDOM.render(
   <Provider store={store}>
-    <ConnectedRouter history={history}>
-      <BrowserRouter>
-        <Fabric applyTheme theme={theme} style={{ backgroundColor }}>
-          <App />
-        </Fabric>
-      </BrowserRouter>
-    </ConnectedRouter>
+    <Fabric applyTheme theme={theme} style={{ backgroundColor }}>
+      <App />
+    </Fabric>
   </Provider>,
   rootElement
 );
