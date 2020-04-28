@@ -18,10 +18,25 @@ const initialState: State = {
 
 export const fetchDataSetDetailById = createAsyncThunk(
   "/api/dataset/:id",
-  async (dataSetId: string) => {
+  async (dataSetId: string, thunkAPI) => {
     const url = `/api/dataset/${dataSetId}`;
-    const response = await axios.get<ApiResponse<DataSetDetailViewModel>>(url);
-    return response.data;
+    try {
+      const resp = await axios.get<ApiResponse<DataSetDetailViewModel>>(url);
+      return resp.data;
+    } catch (error) {
+      const { response, message } = error;
+      if (response) {
+        const { data, status } = response;
+
+        if (status !== 500) {
+          return thunkAPI.rejectWithValue(data);
+        } else {
+          return thunkAPI.rejectWithValue({ message });
+        }
+      } else {
+        return thunkAPI.rejectWithValue({ message });
+      }
+    }
   }
 );
 
@@ -50,8 +65,8 @@ const slice = createSlice({
       state,
       action: PayloadAction<ApiResponse<DataSetDetailViewModel>>
     ) => {
-      console.log(state);
-      console.log(action);
+      state.error = action.payload.message;
+      state.isLoading = false;
     },
   },
 });

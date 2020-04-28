@@ -24,7 +24,7 @@ export type AnalysisState = {
   dataSet: DataSetRowViewModel | null;
   success: string | null;
   error: string | null;
-  layout: "all" | "side-by-side",
+  layout: "all" | "side-by-side";
   sideBySide: {
     index1: number;
     index2: number;
@@ -327,7 +327,7 @@ export const {
   hideSuccessMessage,
   showErrorMessage,
   hideErrorMessage,
-  setLeftSide, 
+  setLeftSide,
   setRightSide,
   setLayout,
 } = slice.actions;

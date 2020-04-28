@@ -27,10 +27,26 @@ const initialState: State = {
 
 export const fetchAnalysisDetailById = createAsyncThunk(
   "/api/analysis/:id",
-  async (analysisId: string) => {
+  async (analysisId: string, thunkAPI) => {
     const url = `/api/analysis/${analysisId}`;
-    const response = await axios.get<ApiResponse<AnalysisViewModel>>(url);
-    return response.data;
+
+    try {
+      const response = await axios.get<ApiResponse<AnalysisViewModel>>(url);
+      return response.data;
+    } catch (error) {
+      const { response, message } = error;
+      if (response) {
+        const { data, status } = response;
+
+        if (status !== 500) {
+          return thunkAPI.rejectWithValue(data);
+        } else {
+          return thunkAPI.rejectWithValue({ message });
+        }
+      } else {
+        return thunkAPI.rejectWithValue({ message });
+      }
+    }
   }
 );
 
@@ -60,13 +76,7 @@ const slice = createSlice({
       state,
       action: PayloadAction<ApiResponse<AnalysisViewModel>>
     ) => {
-      const error = (action as any).error;
-
-      if (error) {
-        state.error = error.message;
-      }
-      console.log(state);
-      console.log(action);
+      state.error = action.payload.message;
       state.isLoading = false;
     },
   },

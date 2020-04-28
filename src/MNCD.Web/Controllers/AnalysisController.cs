@@ -37,7 +37,7 @@ namespace MNCD.Web.Controllers
             var analysis = await _analysisService.GetAnalysis(id);
             var data = _mapper.Map<AnalysisViewModel>(analysis);
 
-            return new OkObjectResult(new ApiResponse<AnalysisViewModel>("Session was found.", data));
+            return new OkObjectResult(new ApiResponse<AnalysisViewModel>("Analysis was found.", data));
         }
 
         [HttpPost]

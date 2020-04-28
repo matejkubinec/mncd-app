@@ -6,7 +6,13 @@ import {
   fetchDataSetDetailById,
   downloadDataSetById,
 } from "../../slices/dataset-detail-slice";
-import { Stack, Separator, List, PrimaryButton } from "office-ui-fabric-react";
+import {
+  Stack,
+  Separator,
+  List,
+  PrimaryButton,
+  ProgressIndicator,
+} from "office-ui-fabric-react";
 import { ImageGallery } from "../common";
 
 interface MatchParams {
@@ -28,16 +34,6 @@ class DataSetDetail extends Component<IProps> {
       return "Loading...";
     }
 
-    if (!dataSet) {
-      return "";
-    }
-
-    const { diagonalUrl, slicesUrl } = dataSet;
-    const titles = ["", ""];
-    const urls = [diagonalUrl, slicesUrl];
-    const colsActors = Math.round(dataSet.nodeCount / 20);
-    const colsLayers = Math.round(dataSet.layerCount / 5);
-
     return (
       <Stack tokens={{ padding: 25 }}>
         <Stack
@@ -49,52 +45,12 @@ class DataSetDetail extends Component<IProps> {
           }}
         >
           <Stack.Item>
-            <h1 style={{ textAlign: "center" }}>{dataSet.name}</h1>
+            <h1>{dataSet ? dataSet.name : "Dataset"}</h1>
           </Stack.Item>
           <Stack.Item>
             <Separator />
+            {this.renderBody()}
           </Stack.Item>
-          <Stack horizontal>
-            <Stack grow={2} tokens={{ padding: "25px 25px 0 25px" }}>
-              <h3 style={{ textAlign: "center" }}>Information</h3>
-              <table style={{ width: 250 }}>
-                <tbody>
-                  {this.renderItem("Node Count", dataSet.nodeCount)}
-                  {this.renderItem("Edge Count", dataSet.edgeCount)}
-                  {this.renderItem("Layer Count", dataSet.layerCount)}
-                  {this.renderItem("File Type", dataSet.fileType)}
-                </tbody>
-              </table>
-              <Separator />
-              <h4>Layers</h4>
-              <ol style={{ columns: colsLayers > 1 ? colsLayers : 1 }}>
-                <List
-                  items={dataSet.layerNames}
-                  onRenderCell={this.renderListItem}
-                />
-              </ol>
-              <Separator />
-              <h4>Actors</h4>
-              <ol style={{ columns: colsActors > 1 ? colsActors : 1 }}>
-                <List
-                  items={dataSet.actorNames}
-                  onRenderCell={this.renderListItem}
-                />
-              </ol>
-              <Stack.Item verticalFill>
-                <Stack verticalAlign="end" verticalFill>
-                  <Separator />
-                  <PrimaryButton onClick={this.handleDownload}>
-                    Download
-                  </PrimaryButton>
-                </Stack>
-              </Stack.Item>
-            </Stack>
-            <Stack grow={3} maxWidth={1000}>
-              <h3 style={{ textAlign: "center" }}>Visualization</h3>
-              <ImageGallery titles={titles} urls={urls} useMaxHeight />
-            </Stack>
-          </Stack>
         </Stack>
       </Stack>
     );
@@ -105,6 +61,82 @@ class DataSetDetail extends Component<IProps> {
       const { id } = this.props.dataSet;
       this.props.downloadDataSetById(id);
     }
+  };
+
+  private renderBody = () => {
+    const { dataSet, error, isLoading, theme } = this.props;
+
+    if (isLoading) {
+      return <ProgressIndicator />;
+    }
+
+    if (error) {
+      return (
+        <Stack
+          style={{
+            padding: 10,
+            borderRadius: theme.effects.roundedCorner2,
+            backgroundColor: theme.semanticColors.errorBackground,
+          }}
+        >
+          {error}
+        </Stack>
+      );
+    }
+
+    if (!dataSet) {
+      return null;
+    }
+
+    const { diagonalUrl, slicesUrl } = dataSet;
+    const titles = ["", ""];
+    const urls = [diagonalUrl, slicesUrl];
+    const colsActors = Math.round(dataSet.nodeCount / 20);
+    const colsLayers = Math.round(dataSet.layerCount / 5);
+
+    return (
+      <Stack horizontal>
+        <Stack grow={2} tokens={{ padding: "25px 25px 0 25px" }}>
+          <h2 style={{ textAlign: "center" }}>Information</h2>
+          <table style={{ width: 250 }}>
+            <tbody>
+              {this.renderItem("Node Count", dataSet.nodeCount)}
+              {this.renderItem("Edge Count", dataSet.edgeCount)}
+              {this.renderItem("Layer Count", dataSet.layerCount)}
+              {this.renderItem("File Type", dataSet.fileType)}
+            </tbody>
+          </table>
+          <Separator />
+          <h3>Layers</h3>
+          <ol style={{ columns: colsLayers > 1 ? colsLayers : 1 }}>
+            <List
+              items={dataSet.layerNames}
+              onRenderCell={this.renderListItem}
+            />
+          </ol>
+          <Separator />
+          <h3>Actors</h3>
+          <ol style={{ columns: colsActors > 1 ? colsActors : 1 }}>
+            <List
+              items={dataSet.actorNames}
+              onRenderCell={this.renderListItem}
+            />
+          </ol>
+          <Stack.Item verticalFill>
+            <Stack verticalAlign="end" verticalFill>
+              <Separator />
+              <PrimaryButton onClick={this.handleDownload}>
+                Download
+              </PrimaryButton>
+            </Stack>
+          </Stack.Item>
+        </Stack>
+        <Stack grow={3} maxWidth={1000}>
+          <h2 style={{ textAlign: "center" }}>Visualization</h2>
+          <ImageGallery titles={titles} urls={urls} useMaxHeight />
+        </Stack>
+      </Stack>
+    );
   };
 
   private renderListItem = (item?: string) => <li>{item || ""}</li>;

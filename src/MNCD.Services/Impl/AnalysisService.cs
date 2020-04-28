@@ -82,6 +82,7 @@ namespace MNCD.Services.Impl
             var analysis = await _ctx.Analyses
                 .Include(a => a.Request)
                 .ThenInclude(r => r.DataSet)
+                .ThenInclude(d => d.NetworkInfo)
                 .Include(a => a.Result)
                 .Include(a => a.Visualizations)
                 .FirstOrDefaultAsync(a => a.Id == id);

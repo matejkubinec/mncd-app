@@ -110,7 +110,7 @@ class AnalysisDetail extends React.Component<IProps> {
             </Stack>
           </Stack.Item>
         </Stack>
-        <Stack grow={3}>
+        <Stack grow={3} style={{ paddingTop: 10 }}>
           <h2>Visualizations</h2>
           <Stack>{this.renderVisualizations(analysis)}</Stack>
         </Stack>
