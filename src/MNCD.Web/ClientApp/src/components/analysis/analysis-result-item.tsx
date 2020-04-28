@@ -55,7 +55,7 @@ class AnalysisResultItem extends Component<IProps> {
     const itemStyles = {
       root: {
         border: "1px solid " + this.props.theme.palette.whiteTranslucent40,
-        borderRadius: 4,
+        borderRadius: this.props.theme.effects.roundedCorner2,
         boxShadow: this.props.theme.effects.elevation4,
         backgroundColor: this.props.theme.palette.white,
       },
@@ -64,7 +64,7 @@ class AnalysisResultItem extends Component<IProps> {
     const headerStyle = {
       root: {
         padding: 10,
-        borderRadius: 4,
+        borderRadius: this.props.theme.effects.roundedCorner2,
         backgroundColor: this.props.theme.palette.accent,
         color: this.props.theme.palette.white,
         textAlign: "center",
@@ -75,7 +75,7 @@ class AnalysisResultItem extends Component<IProps> {
       <Stack
         tokens={{ padding: 10, childrenGap: 15 }}
         style={{
-          borderRadius: 4,
+          borderRadius: this.props.theme.effects.roundedCorner2,
           boxShadow: this.props.theme.effects.elevation16,
           backgroundColor: this.props.theme.palette.neutralLighterAlt,
         }}

@@ -4,7 +4,7 @@ import {
   openAddEditDialog,
   openRemoveDialog,
   dismissSesionsListSuccessMessage,
-  dismissSesionsListErrorMessage
+  dismissSesionsListErrorMessage,
 } from "../../slices/session-slice";
 import { push } from "connected-react-router";
 import { RootState } from "../../store";
@@ -21,7 +21,7 @@ import {
   DetailsList,
   Text,
   MessageBar,
-  MessageBarType
+  MessageBarType,
 } from "office-ui-fabric-react";
 import { SessionRowViewModel } from "../../types";
 import { SessionRemoveDialog, SessionAddEditDialog } from ".";
@@ -34,7 +34,7 @@ class SessionList extends React.Component<ReduxProps> {
       fieldName: "name",
       name: "Name",
       isRowHeader: true,
-      minWidth: 100
+      minWidth: 100,
     },
     {
       key: "createDate",
@@ -44,7 +44,7 @@ class SessionList extends React.Component<ReduxProps> {
       minWidth: 120,
       onRender(item: SessionRowViewModel) {
         return new Date(item.createDate).toLocaleString();
-      }
+      },
     },
     {
       key: "analysesCount",
@@ -52,7 +52,7 @@ class SessionList extends React.Component<ReduxProps> {
       fieldName: "analysesCount",
       name: "Analyses",
       styles: { root: { textAlign: "right" } },
-      minWidth: 70
+      minWidth: 70,
     },
     {
       key: "editSession",
@@ -86,8 +86,8 @@ class SessionList extends React.Component<ReduxProps> {
             />
           </Stack>
         );
-      }
-    }
+      },
+    },
   ];
 
   componentDidMount() {
@@ -130,9 +130,9 @@ class SessionList extends React.Component<ReduxProps> {
       <Stack tokens={{ padding: 25 }}>
         <Stack
           style={{
-            borderRadius: 4,
+            borderRadius: this.props.theme.effects.roundedCorner2,
             boxShadow: this.props.theme.effects.elevation16,
-            background: this.props.theme.palette.white
+            background: this.props.theme.palette.white,
           }}
           tokens={{ padding: 25 }}
         >
@@ -180,7 +180,7 @@ class SessionList extends React.Component<ReduxProps> {
 
 const mapState = (state: RootState) => ({
   ...state.session.list,
-  theme: state.theme.current
+  theme: state.theme.current,
 });
 
 const mapDispatch = {
@@ -189,7 +189,7 @@ const mapDispatch = {
   openRemoveDialog,
   dismissSesionsListSuccessMessage,
   dismissSesionsListErrorMessage,
-  push
+  push,
 };
 
 const connector = connect(mapState, mapDispatch);

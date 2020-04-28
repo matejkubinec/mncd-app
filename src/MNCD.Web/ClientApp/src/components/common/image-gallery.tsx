@@ -160,7 +160,7 @@ class ImageContainer extends React.Component<ICProps, ICState> {
         {isError ? this.renderError() : null}
         {isLoading ? this.renderLoading() : null}
         <Image
-          styles={{ root: { height: "100%", borderRadius: 4, display } }}
+          styles={{ root: { height: "100%", borderRadius: 2, display } }}
           imageFit={ImageFit.centerContain}
           src={this.props.src}
           onLoadingStateChange={this.handleLoadingStateChange}

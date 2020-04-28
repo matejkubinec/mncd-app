@@ -27,7 +27,7 @@ class AnalysisSideBySide extends React.Component<ReduxProps> {
       width: "50%",
       padding: 5,
       margin: 15,
-      borderRadius: 4,
+      borderRadius: theme.effects.roundedCorner2,
       boxShadow: theme.effects.elevation16,
       background: theme.palette.white,
     };

@@ -70,6 +70,7 @@ const slice = createSlice({
       state.list.items = action.payload.data;
     },
     fetchSessionsListError: (state, action: PayloadAction<Response>) => {
+      state.list.isLoading = false;
       state.list.error = action.payload.message;
     },
     dismissSesionsListSuccessMessage: (state) => {

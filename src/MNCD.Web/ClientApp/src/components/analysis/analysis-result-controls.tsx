@@ -143,7 +143,7 @@ export class AnalysisResultControls extends Component<ReduxProps> {
               styles={{
                 root: {
                   marginBottom: 15,
-                  borderRadius: 4,
+                  borderRadius: this.props.theme.effects.roundedCorner2,
                   backgroundColor: this.props.theme.palette.white,
                   boxShadow: this.props.theme.effects.elevation4,
                   cursor: "pointer",

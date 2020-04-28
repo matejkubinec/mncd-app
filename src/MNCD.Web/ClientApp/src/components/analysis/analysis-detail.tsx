@@ -38,7 +38,7 @@ class AnalysisDetail extends React.Component<IProps> {
         <Stack
           tokens={{ padding: 25 }}
           style={{
-            borderRadius: 4,
+            borderRadius: theme.effects.roundedCorner2,
             boxShadow: theme.effects.elevation16,
             background: theme.palette.white,
           }}
@@ -62,8 +62,8 @@ class AnalysisDetail extends React.Component<IProps> {
     return (
       <Stack
         style={{
-          borderRadius: 4,
           padding: 10,
+          borderRadius: theme.effects.roundedCorner2,
           backgroundColor: theme.semanticColors.errorBackground,
         }}
       >

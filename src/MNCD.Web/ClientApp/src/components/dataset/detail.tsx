@@ -38,7 +38,7 @@ class DataSetDetail extends Component<IProps> {
         <Stack
           tokens={{ padding: "10px 25px 25px 25px" }}
           style={{
-            borderRadius: 4,
+            borderRadius: theme.effects.roundedCorner2,
             boxShadow: theme.effects.elevation16,
             background: theme.palette.white,
           }}
