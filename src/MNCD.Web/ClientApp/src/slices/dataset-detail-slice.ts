@@ -28,7 +28,13 @@ export const fetchDataSetDetailById = createAsyncThunk(
 const slice = createSlice({
   name: "dataset-detail",
   initialState,
-  reducers: {},
+  reducers: {
+    downloadDataSetById: (_, action: PayloadAction<string | number>) => {
+      const dataSetId = action.payload;
+      const url = `/api/dataset/download/${dataSetId}`;
+      window.open(url);
+    },
+  },
   extraReducers: {
     [fetchDataSetDetailById.pending.toString()]: (state) => {
       state.isLoading = true;
@@ -49,5 +55,7 @@ const slice = createSlice({
     },
   },
 });
+
+export const { downloadDataSetById } = slice.actions;
 
 export default slice.reducer;

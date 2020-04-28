@@ -104,9 +104,25 @@ namespace MNCD.Web.Controllers
             return new OkObjectResult(response);
         }
 
+        [HttpGet]
+        [Route("download/{id}")]
+        public async Task<IActionResult> Download(int id)
+        {
+            if (id <= 0)
+            {
+                return new BadRequestObjectResult("Invalid dataset id.");
+            }
+
+            var stream = new MemoryStream();
+
+            var fileName = await _dataSetService.GetDataSetArchive(id, stream);
+
+            return File(stream, "application/zip", fileName + ".zip");
+        }
+
         private async Task<string> ReadFileContent(IFormFile file)
         {
-            var content = "";
+            var content = string.Empty;
 
             using (var reader = new StreamReader(file.OpenReadStream()))
             {

@@ -2,8 +2,11 @@ import React, { Component } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../store";
 import { RouteComponentProps } from "react-router";
-import { fetchDataSetDetailById } from "../../slices/dataset-detail-slice";
-import { Stack, Separator, List } from "office-ui-fabric-react";
+import {
+  fetchDataSetDetailById,
+  downloadDataSetById,
+} from "../../slices/dataset-detail-slice";
+import { Stack, Separator, List, PrimaryButton } from "office-ui-fabric-react";
 import { ImageGallery } from "../common";
 
 interface MatchParams {
@@ -76,6 +79,11 @@ class DataSetDetail extends Component<IProps> {
                   onRenderCell={this.renderListItem}
                 />
               </ol>
+              <Stack>
+                <PrimaryButton onClick={this.handleDownload}>
+                  Download
+                </PrimaryButton>
+              </Stack>
             </Stack>
             <Stack grow={3} maxWidth={1000}>
               <h3 style={{ textAlign: "center" }}>Visualization</h3>
@@ -86,6 +94,13 @@ class DataSetDetail extends Component<IProps> {
       </Stack>
     );
   }
+
+  private handleDownload = () => {
+    if (this.props.dataSet) {
+      const { id } = this.props.dataSet;
+      this.props.downloadDataSetById(id);
+    }
+  };
 
   private renderListItem = (item?: string) => <li>{item || ""}</li>;
 
@@ -106,7 +121,7 @@ const mapProps = (rootState: RootState) => ({
   theme: rootState.theme.current,
 });
 
-const mapDispatch = { fetchDataSetDetailById };
+const mapDispatch = { fetchDataSetDetailById, downloadDataSetById };
 
 const connector = connect(mapProps, mapDispatch);
 

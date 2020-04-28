@@ -11,6 +11,10 @@ using MNCD.Readers;
 using MNCD.Writers;
 using MNCD.Domain.Exceptions;
 using System.Data;
+using System.IO.Compression;
+using Newtonsoft.Json;
+using System.IO;
+using MNCD.Domain.Extensions;
 
 namespace MNCD.Services.Impl
 {
@@ -32,6 +36,37 @@ namespace MNCD.Services.Impl
             _ctx = ctx;
             _hashService = hashService;
             _readerService = readerService;
+        }
+
+        public async Task<List<NetworkDataSet>> GetDataSets()
+        {
+            return await _ctx
+                .DataSets
+                .Include(d => d.NetworkInfo)
+                .Where(d => !d.Deleted)
+                .ToListAsync();
+        }
+
+        public async Task<NetworkDataSet> GetDataSet(int id)
+        {
+            if (id <= 0)
+            {
+                throw new ArgumentException("Id must be greater than zero.", nameof(id));
+            }
+
+            var dataSet = await _ctx
+                .DataSets
+                .Include(d => d.NetworkInfo)
+                .Include(d => d.DiagonalVisualization)
+                .Include(d => d.SlicesVisualization)
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            if (dataSet is null)
+            {
+                throw new NetworkDataSetNotFoundException($"Data set with id '{id}' was not found.");
+            }
+
+            return dataSet;
         }
 
         public async Task<NetworkDataSet> AddDataSet(string name, string content, FileType fileType)
@@ -91,28 +126,6 @@ namespace MNCD.Services.Impl
             await _ctx.SaveChangesAsync();
         }
 
-        public async Task<NetworkDataSet> GetDataSet(int id)
-        {
-            if (id <= 0)
-            {
-                throw new ArgumentException("Id must be greater than zero.", nameof(id));
-            }
-
-            var dataSet = await _ctx
-                .DataSets
-                .Include(d => d.NetworkInfo)
-                .Include(d => d.DiagonalVisualization)
-                .Include(d => d.SlicesVisualization)
-                .FirstOrDefaultAsync(d => d.Id == id);
-
-            if (dataSet is null)
-            {
-                throw new NetworkDataSetNotFoundException($"Data set with id '{id}' was not found.");
-            }
-
-            return dataSet;
-        }
-
         public async Task<NetworkDataSet> UpdateDataSet(int id, string name)
         {
             if (id <= 0)
@@ -134,13 +147,63 @@ namespace MNCD.Services.Impl
             return dataSet;
         }
 
-        public async Task<List<NetworkDataSet>> GetDataSets()
+        public async Task<string> GetDataSetArchive(int id, Stream outStream)
         {
-            return await _ctx
-                .DataSets
-                .Include(d => d.NetworkInfo)
-                .Where(d => !d.Deleted)
-                .ToListAsync();
+            outStream = outStream ?? throw new ArgumentNullException(nameof(outStream));
+            var dataSet = await GetDataSet(id);
+            var info = JsonConvert.SerializeObject(new Information
+            {
+                Name = dataSet.Name,
+                FileType = dataSet.FileType.ToString(),
+                NodeCount = dataSet.NetworkInfo.NodeCount,
+                EdgeCount = dataSet.NetworkInfo.EdgeCount,
+                LayerCount = dataSet.NetworkInfo.LayerCount,
+                LayerNames = dataSet.NetworkInfo.LayerNames,
+                ActorNames = dataSet.NetworkInfo.ActorNames,
+            });
+            var edgeList = dataSet.EdgeList;
+            var originalData = dataSet.Content;
+
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+                {
+                    await WriteContent(archive, "dataset-info.json", info);
+                    await WriteContent(archive, "data" + dataSet.FileType.ToExtension(), dataSet.Content);
+
+                    if (dataSet.FileType != FileType.EdgeList)
+                    {
+                        await WriteContent(archive, "data.edgelist.txt", edgeList);
+                    }
+
+                    if (dataSet.DiagonalVisualization != null)
+                    {
+                        var svg = dataSet.DiagonalVisualization.SvgImage;
+                        await WriteContent(archive, "images/diagonal.svg", svg);
+                    }
+
+                    if (dataSet.SlicesVisualization != null)
+                    {
+                        var svg = dataSet.SlicesVisualization.SvgImage;
+                        await WriteContent(archive, "images/slices.svg", svg);
+                    }
+
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    await memoryStream.CopyToAsync(outStream);
+                    outStream.Seek(0, SeekOrigin.Begin);
+                }
+            }
+
+            return dataSet.Name;
+        }
+
+        private async Task WriteContent(ZipArchive archive, string fileName, string content)
+        {
+            using (var stream = archive.CreateEntry(fileName).Open())
+            using (var streamWriter = new StreamWriter(stream))
+            {
+                await streamWriter.WriteAsync(content);
+            }
         }
 
         private async Task<bool> ExistsDataSet(string hash)
@@ -173,6 +236,23 @@ namespace MNCD.Services.Impl
                 FileType.EdgeList => _edgeListReader.FromString(content),
                 _ => throw new ArgumentException($"File type '{fileType}' is not supported.")
             };
+        }
+
+        private class Information
+        {
+            public string Name { get; set; }
+
+            public string FileType { get; set; }
+
+            public int NodeCount { get; set; }
+
+            public int EdgeCount { get; set; }
+
+            public int LayerCount { get; set; }
+
+            public List<string> LayerNames { get; set; } = new List<string>();
+
+            public List<string> ActorNames { get; set; } = new List<string>();
         }
     }
 }

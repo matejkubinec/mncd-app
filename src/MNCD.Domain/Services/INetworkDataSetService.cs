@@ -1,5 +1,6 @@
 using MNCD.Domain.Entities;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace MNCD.Domain.Services
@@ -15,5 +16,7 @@ namespace MNCD.Domain.Services
         Task<NetworkDataSet> UpdateDataSet(int id, string name);
 
         Task DeleteDataSet(int id);
+
+        Task<string> GetDataSetArchive(int id, Stream outStream);
     }
 }
