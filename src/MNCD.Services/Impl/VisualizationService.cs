@@ -364,6 +364,7 @@ namespace MNCD.Services.Impl
                         }
                     };
                     viz = await VisualizeBarplot(request);
+                    viz.Title = "Communities Count - Barplot";
                 }
                 else if (type == VisualizationType.Treemap)
                 {
@@ -380,6 +381,7 @@ namespace MNCD.Services.Impl
                         Type = type
                     };
                     viz = await VisualizeTreemap(request);
+                    viz.Title = "Communities Count - Treemap";
                 }
                 else if (type == VisualizationType.MultiLayer_Slices)
                 {

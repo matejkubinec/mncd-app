@@ -1,3 +1,4 @@
+using System.IO;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -55,12 +56,28 @@ namespace MNCD.Web.Controllers
         {
             if (id <= 0)
             {
-                return new BadRequestObjectResult(new Response("Id must be greater than zero."));
+                return new BadRequestObjectResult(new Response("Invalid dataset id."));
             }
 
             await _analysisService.ToggleVisibility(id);
 
             return new OkObjectResult(new Response("Visibility was toggled."));
+        }
+
+        [HttpGet]
+        [Route("download/{id}")]
+        public async Task<IActionResult> Download(int id)
+        {
+            if (id <= 0)
+            {
+                return new BadRequestObjectResult(new Response("Invalid dataset id."));
+            }
+
+            var stream = new MemoryStream();
+
+            await _analysisService.ArchiveAnalysis(id, stream);
+
+            return File(stream, "application/zip", $"Analysis {id}.zip");
         }
     }
 }

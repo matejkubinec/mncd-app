@@ -38,16 +38,16 @@ namespace MNCD.Domain.Extensions
         {
             VisualizationType.MultiLayer_Diagonal => "Diagonal Layout",
             VisualizationType.MultiLayerHairball => "Hairball Layout",
+            VisualizationType.MultiLayerSlicesCommunities => "Communities in Layers",
             VisualizationType.SingleLayer_Spring => "Spring Layout",
             VisualizationType.SingleLayer_Circular => "Circular Layout",
             VisualizationType.SingleLayer_Spiral => "Spiral Layout",
-            VisualizationType.SingleLayerCommunitiesSpring => "Spring Layout",
-            VisualizationType.SingleLayerCommunitiesCircular => "Circular Layout",
-            VisualizationType.SingleLayerCommunitiesSpiral => "Spiral Layout",
+            VisualizationType.SingleLayerCommunitiesSpring => "Communities - Spring Layout",
+            VisualizationType.SingleLayerCommunitiesCircular => "Communities - Circular Layout",
+            VisualizationType.SingleLayerCommunitiesSpiral => "Communities - Spiral Layout",
             VisualizationType.Barplot => "Barplot",
             VisualizationType.Treemap => "Treemap",
             VisualizationType.MultiLayer_Slices => "Layers",
-            VisualizationType.MultiLayerSlicesCommunities => "Communities in Layers",
             _ => ""
         };
 

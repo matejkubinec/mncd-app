@@ -41,6 +41,9 @@ const slice = createSlice({
     setVisualizationType: (state, action: PayloadAction<VisualizationType>) => {
       state.visualization = action.payload;
     },
+    downloadAnalysisById: (_, action: PayloadAction<string | number>) => {
+      window.open(`/api/analysis/download/${action.payload}`);
+    },
   },
   extraReducers: {
     [fetchAnalysisDetailById.pending.toString()]: (state) => {
@@ -69,6 +72,6 @@ const slice = createSlice({
   },
 });
 
-export const { setVisualizationType } = slice.actions;
+export const { setVisualizationType, downloadAnalysisById } = slice.actions;
 
 export default slice.reducer;

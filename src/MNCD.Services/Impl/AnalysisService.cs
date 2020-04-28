@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +15,7 @@ using MNCD.Services.Algorithms;
 using MNCD.Services.Algorithms.Analysis;
 using MNCD.Services.Algorithms.Flattening;
 using MNCD.Services.Helpers;
+using Newtonsoft.Json;
 
 namespace MNCD.Services.Impl
 {
@@ -163,6 +166,11 @@ namespace MNCD.Services.Impl
 
             var session = await _sessions.GetAnalysisSession(sessionId);
 
+            if (session is null)
+            {
+                throw new AnalysisSessionNotFoundException($"Analysis sesion with id '{sessionId}' doesn't exist.");
+            }
+
             var analysis = session.Analyses.FirstOrDefault(a => a.Id == analysisId);
 
             if (analysis is null)
@@ -173,6 +181,143 @@ namespace MNCD.Services.Impl
             _ctx.Analyses.Remove(analysis);
 
             await _ctx.SaveChangesAsync();
+        }
+
+        public async Task ArchiveAnalysis(int analysisId, Stream outStream)
+        {
+            outStream = outStream ?? throw new ArgumentNullException(nameof(outStream));
+
+            if (analysisId <= 0)
+            {
+                throw new ArgumentException("Analysis id must be greater than zero.", nameof(analysisId));
+            }
+
+            var analysis = _ctx.Analyses
+                .Include(a => a.Visualizations)
+                .Include(a => a.Request)
+                .ThenInclude(r => r.DataSet)
+                .ThenInclude(r => r.NetworkInfo)
+                .Include(a => a.Request)
+                .ThenInclude(r => r.DataSet)
+                .ThenInclude(r => r.SlicesVisualization)
+                .Include(a => a.Request)
+                .ThenInclude(r => r.DataSet)
+                .ThenInclude(r => r.DiagonalVisualization)
+                .Include(a => a.Result)
+                .FirstOrDefault(a => a.Id == analysisId);
+
+            if (analysis is null)
+            {
+                throw new AnalysisNotFoundException($"Analysis with id '{analysisId}' doesn't exist.");
+            }
+
+            var dataSet = analysis.Request.DataSet;
+            var req = analysis.Request;
+            var res = analysis.Result;
+
+            var dataSetInfo = JsonConvert.SerializeObject(new
+            {
+                Name = dataSet.Name,
+                FileType = dataSet.FileType.ToString(),
+                NodeCount = dataSet.NetworkInfo.NodeCount,
+                EdgeCount = dataSet.NetworkInfo.EdgeCount,
+                LayerCount = dataSet.NetworkInfo.LayerCount,
+                LayerNames = dataSet.NetworkInfo.LayerNames,
+                ActorNames = dataSet.NetworkInfo.ActorNames,
+            });
+            var edgeList = dataSet.EdgeList;
+            var originalData = dataSet.Content;
+            var analyzedEdgeList = res.AnalyzedNetworkEdgeList;
+            var communityList = res.CommunityList;
+            var actorToCommunity = res.ActorToCommunity;
+
+            var requestContent = new RequestContent
+            {
+                CreateDate = req.CreateDate,
+                Approach = req.Approach.ToString(),
+                AnalysisAlgorithm = req.AnalysisAlgorithm.ToString(),
+                AnalysisAlgorithmParameters = req.AnalysisAlgorithmParameters
+            };
+
+            if (req.Approach == AnalysisApproach.SingleLayerFlattening)
+            {
+                requestContent.FlatteningAlgorithm = analysis.Request.FlatteningAlgorithm.ToString();
+                requestContent.FlatteningAlgorithmParameters = analysis.Request.FlatteningAlgorithmParameters;
+            }
+            else if (req.Approach == AnalysisApproach.SingleLayerOnly)
+            {
+                requestContent.SelectedLayer = dataSet.NetworkInfo.LayerNames[req.SelectedLayer];
+            }
+
+            var resultContent = new ResultContent();
+
+            if (req.Approach.IsSingleLayerApproach())
+            {
+                resultContent.Coverage = res.Coverage;
+                resultContent.Modularity = res.Modularity;
+                resultContent.Performance = res.Performance;
+            }
+            else
+            {
+                resultContent.Exclusivities = res.Exclusivities;
+                resultContent.Homogenities = res.Homogenities;
+                resultContent.Modularities = res.Modularities;
+                resultContent.Performances = res.Performances;
+                resultContent.Coverages = res.Coverages;
+                resultContent.Varieties = res.Varieties;
+            }
+
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+                {
+                    await WriteContent(archive, "/dataset/dataset-info.json", dataSetInfo);
+                    await WriteContent(archive, "/dataset/data" + dataSet.FileType.ToExtension(), dataSet.Content);
+                    await WriteContent(archive, "request.json", JsonConvert.SerializeObject(requestContent));
+                    await WriteContent(archive, "result.json", JsonConvert.SerializeObject(resultContent));
+                    await WriteContent(archive, "analyzed-data.edgelist.txt", analyzedEdgeList);
+                    await WriteContent(archive, "community-list.txt", communityList);
+                    await WriteContent(archive, "actor-to-community.json", JsonConvert.SerializeObject(actorToCommunity));
+
+                    if (dataSet.FileType != FileType.EdgeList)
+                    {
+                        await WriteContent(archive, "dataset/data.edgelist.txt", edgeList);
+                    }
+
+                    if (dataSet.DiagonalVisualization != null)
+                    {
+                        var svg = dataSet.DiagonalVisualization.SvgImage;
+                        await WriteContent(archive, "dataset/images/diagonal.svg", svg);
+                    }
+
+                    if (dataSet.SlicesVisualization != null)
+                    {
+                        var svg = dataSet.SlicesVisualization.SvgImage;
+                        await WriteContent(archive, "dataset/images/slices.svg", svg);
+                    }
+
+                    foreach (var vis in analysis.Visualizations)
+                    {
+                        if (vis != null)
+                        {
+                            await WriteContent(archive, $"images/{vis.Title}.svg", vis.SvgImage);
+                        }
+                    }
+
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    await memoryStream.CopyToAsync(outStream);
+                    outStream.Seek(0, SeekOrigin.Begin);
+                }
+            }
+        }
+
+        private async Task WriteContent(ZipArchive archive, string fileName, string content)
+        {
+            using (var stream = archive.CreateEntry(fileName).Open())
+            using (var streamWriter = new StreamWriter(stream))
+            {
+                await streamWriter.WriteAsync(content);
+            }
         }
 
         private Network GetNetworkToAnalyze(AnalysisRequest request)
@@ -223,6 +368,44 @@ namespace MNCD.Services.Impl
             }
 
             return errors;
+        }
+
+        private class ResultContent
+        {
+            public List<double> Varieties { get; set; } = new List<double>();
+
+            public List<double> Exclusivities { get; set; } = new List<double>();
+
+            public List<double> Homogenities { get; set; } = new List<double>();
+
+            public List<double> Performances { get; set; } = new List<double>();
+
+            public List<double> Coverages { get; set; } = new List<double>();
+
+            public List<double> Modularities { get; set; } = new List<double>();
+
+            public double? Coverage { get; set; }
+
+            public double? Performance { get; set; }
+
+            public double? Modularity { get; set; }
+        }
+
+        private class RequestContent
+        {
+            public DateTime CreateDate { get; set; }
+
+            public string SelectedLayer { get; set; }
+
+            public string Approach { get; set; }
+
+            public string AnalysisAlgorithm { get; set; }
+
+            public Dictionary<string, string> AnalysisAlgorithmParameters { get; set; }
+
+            public string FlatteningAlgorithm { get; set; }
+
+            public Dictionary<string, string> FlatteningAlgorithmParameters { get; set; }
         }
     }
 }

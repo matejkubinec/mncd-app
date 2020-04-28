@@ -7,11 +7,13 @@ import {
   Separator,
   Dropdown,
   IDropdownOption,
+  PrimaryButton,
 } from "office-ui-fabric-react";
 import {
   fetchAnalysisDetailById,
   setVisualizationType,
   VisualizationType,
+  downloadAnalysisById,
 } from "../../slices/analysis-detail-slice";
 import { AnalysisApproach, AnalysisViewModel } from "../../types";
 import { Request, Evaluation, CommunitiesDetails } from "./result";
@@ -99,6 +101,14 @@ class AnalysisDetail extends React.Component<IProps> {
           <Stack>
             <CommunitiesDetails result={analysis.result} />
           </Stack>
+          <Stack.Item align="stretch" verticalFill>
+            <Stack verticalAlign="end" verticalFill>
+              <Separator />
+              <PrimaryButton onClick={this.handleDownload}>
+                Download
+              </PrimaryButton>
+            </Stack>
+          </Stack.Item>
         </Stack>
         <Stack grow={3}>
           <h2>Visualizations</h2>
@@ -174,10 +184,18 @@ class AnalysisDetail extends React.Component<IProps> {
           onChange={this.handleVisualizationTypeChange}
         />
         <Stack.Item styles={{ root: { padding: 10 } }}>
-          <ImageGallery titles={titles} urls={urls} />;
+          <ImageGallery titles={titles} urls={urls} />
         </Stack.Item>
       </Stack>
     );
+  };
+
+  private handleDownload = () => {
+    const { analysis } = this.props;
+    if (analysis) {
+      const { id } = analysis;
+      this.props.downloadAnalysisById(id);
+    }
   };
 
   private handleVisualizationTypeChange = (_: any, opt?: IDropdownOption) => {
@@ -193,7 +211,11 @@ const mapProps = (rootState: RootState) => ({
   ...rootState.analysisDetail,
 });
 
-const mapDispatch = { fetchAnalysisDetailById, setVisualizationType };
+const mapDispatch = {
+  fetchAnalysisDetailById,
+  setVisualizationType,
+  downloadAnalysisById,
+};
 
 const connector = connect(mapProps, mapDispatch);
 

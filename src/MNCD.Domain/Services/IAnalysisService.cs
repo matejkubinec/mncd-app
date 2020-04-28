@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using MNCD.Domain.Entities;
 
@@ -15,5 +16,7 @@ namespace MNCD.Domain.Services
         Task ToggleVisibility(int id);
 
         Task RemoveFromSession(int sessionId, int analysisId);
+
+        Task ArchiveAnalysis(int analysisId, Stream outStream);
     }
 }
