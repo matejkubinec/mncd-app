@@ -8,20 +8,20 @@ import {
   Separator,
   IconButton,
   MessageBar,
-  MessageBarType
+  MessageBarType,
 } from "office-ui-fabric-react";
 import {
   AnalysisDataSetControl,
   AnalysisApproachControl,
   AnalysisChooseLayerControl,
   AnalysisAlgorithmControl,
-  AnalysisFlatteningControl
+  AnalysisFlatteningControl,
 } from "./controls";
 import {
   analyzeDataSet,
   toggleControlsVisiblity,
   hideSuccessMessage,
-  hideErrorMessage
+  hideErrorMessage,
 } from "../../slices/analysis-slice";
 
 class AnalysisControls extends React.Component<ReduxProps> {
@@ -42,8 +42,9 @@ class AnalysisControls extends React.Component<ReduxProps> {
             root: {
               backgroundColor: this.props.theme.palette.white,
               boxShadow: this.props.theme.effects.elevation4,
-              borderBottom: "1px solid " + this.props.theme.palette.neutralLight
-            }
+              borderBottom:
+                "1px solid " + this.props.theme.palette.neutralLight,
+            },
           }}
           horizontalAlign="center"
         >
@@ -51,7 +52,7 @@ class AnalysisControls extends React.Component<ReduxProps> {
             iconProps={{
               iconName: this.props.areControlsVisible
                 ? "ChevronUp"
-                : "ChevronDown"
+                : "ChevronDown",
             }}
             style={{ width: "100%" }}
             onClick={this.toggleControlsVisiblity}
@@ -63,8 +64,8 @@ class AnalysisControls extends React.Component<ReduxProps> {
             root: {
               display: this.props.areControlsVisible ? "flex" : "none",
               boxShadow: this.props.theme.effects.elevation4,
-              backgroundColor: this.props.theme.palette.white
-            }
+              backgroundColor: this.props.theme.palette.white,
+            },
           }}
         >
           {this.props.success || this.props.error ? (
@@ -137,14 +138,14 @@ const mapProps = (rootState: RootState) => ({
   theme: rootState.theme.current,
   isAnalyzing: rootState.analysis.isAnalyzing,
   isRequestValid: rootState.analysis.isRequestValid,
-  areControlsVisible: rootState.analysis.areControlsVisible
+  areControlsVisible: rootState.analysis.areControlsVisible,
 });
 
 const mapDispatch = {
   analyzeDataSet,
   toggleControlsVisiblity,
   hideSuccessMessage,
-  hideErrorMessage
+  hideErrorMessage,
 };
 
 const connector = connect(mapProps, mapDispatch);

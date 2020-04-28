@@ -8,6 +8,7 @@ import {
   VerticalDivider,
   IconButton,
   Toggle,
+  Separator,
 } from "office-ui-fabric-react";
 import {
   approachToString,
@@ -124,6 +125,7 @@ export class AnalysisResultControls extends Component<ReduxProps> {
           }}
         >
           <h4>Options</h4>
+          <Separator />
           <Toggle
             label="Layout"
             inlineLabel

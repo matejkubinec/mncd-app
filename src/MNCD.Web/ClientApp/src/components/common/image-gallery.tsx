@@ -107,6 +107,8 @@ interface ICState {
 }
 
 class ImageContainer extends React.Component<ICProps, ICState> {
+  private resizeHandle: any;
+
   constructor(props: ICProps) {
     super(props);
     this.state = {
@@ -126,7 +128,19 @@ class ImageContainer extends React.Component<ICProps, ICState> {
 
     if (loadState === ImageLoadState.loaded) {
       this.setState({ isLoading: false });
+
+      setTimeout(() => {
+        this.forceUpdate();
+      }, 10);
     }
+  };
+
+  componentDidMount = () => {
+    window.addEventListener("resize", this.handleWindowResize);
+  };
+
+  componentWillUnmount = () => {
+    window.removeEventListener("resize", this.handleWindowResize);
   };
 
   renderError = () => {
@@ -164,8 +178,16 @@ class ImageContainer extends React.Component<ICProps, ICState> {
           imageFit={ImageFit.centerContain}
           src={this.props.src}
           onLoadingStateChange={this.handleLoadingStateChange}
+          maximizeFrame
         />
       </Stack>
     );
   }
+
+  private handleWindowResize = () => {
+    clearTimeout(this.resizeHandle);
+    this.resizeHandle = setTimeout(() => {
+      this.forceUpdate();
+    }, 500);
+  };
 }

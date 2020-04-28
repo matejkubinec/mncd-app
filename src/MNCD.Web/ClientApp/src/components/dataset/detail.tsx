@@ -35,6 +35,8 @@ class DataSetDetail extends Component<IProps> {
     const { diagonalUrl, slicesUrl } = dataSet;
     const titles = ["", ""];
     const urls = [diagonalUrl, slicesUrl];
+    const colsActors = Math.round(dataSet.nodeCount / 20);
+    const colsLayers = Math.round(dataSet.layerCount / 5);
 
     return (
       <Stack tokens={{ padding: 25 }}>
@@ -65,7 +67,7 @@ class DataSetDetail extends Component<IProps> {
               </table>
               <Separator />
               <h4>Layers</h4>
-              <ol>
+              <ol style={{ columns: colsLayers > 1 ? colsLayers : 1 }}>
                 <List
                   items={dataSet.layerNames}
                   onRenderCell={this.renderListItem}
@@ -73,7 +75,7 @@ class DataSetDetail extends Component<IProps> {
               </ol>
               <Separator />
               <h4>Actors</h4>
-              <ol>
+              <ol style={{ columns: colsActors > 1 ? colsActors : 1 }}>
                 <List
                   items={dataSet.actorNames}
                   onRenderCell={this.renderListItem}
