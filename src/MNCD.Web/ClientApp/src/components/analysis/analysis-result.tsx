@@ -26,17 +26,28 @@ class AnalysisResult extends React.Component<ReduxProps> {
 
     return (
       <Stack horizontal tokens={{ childrenGap: 20, padding: 20 }}>
-        <Stack.Item styles={{ root: { maxWidth: 600 } }} align="start">
+        <Stack.Item
+          styles={{ root: { maxWidth: 600, marginTop: 5 } }}
+          align="start"
+        >
           <AnalysisResultControls />
         </Stack.Item>
-        <Stack.Item grow={2}>
+        <Stack.Item
+          grow={2}
+          styles={{
+            root: { overflowX: "scroll", overflowY: "hidden" },
+          }}
+        >
           {this.props.isSideBySide ? (
             <AnalysisSideBySide />
           ) : (
             <Stack
               horizontal
-              horizontalAlign="space-evenly"
+              horizontalAlign="end"
               tokens={{ childrenGap: 20 }}
+              styles={{
+                root: { justifyContent: "initial", padding: 20, paddingTop: 5 },
+              }}
             >
               {this.renderAnalyses()}
             </Stack>

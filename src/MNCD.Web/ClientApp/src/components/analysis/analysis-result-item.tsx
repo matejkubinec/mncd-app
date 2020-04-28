@@ -75,6 +75,7 @@ class AnalysisResultItem extends Component<IProps> {
       <Stack
         tokens={{ padding: 10, childrenGap: 15 }}
         style={{
+          minWidth: 500,
           borderRadius: this.props.theme.effects.roundedCorner2,
           boxShadow: this.props.theme.effects.elevation16,
           backgroundColor: this.props.theme.palette.neutralLighterAlt,
