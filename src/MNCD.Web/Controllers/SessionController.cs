@@ -35,10 +35,10 @@ namespace MNCD.Web.Controllers
         }
 
         [HttpGet]
-        [Route("{guid}")]
-        public async Task<IActionResult> GetSession(string guid)
+        [Route("{id}")]
+        public async Task<IActionResult> GetSession(int id)
         {
-            var session = await _analysisSessionService.GetAnalysisSession(guid);
+            var session = await _analysisSessionService.GetAnalysisSession(id);
             var data = _mapper.Map<AnalysisSessionViewModel>(session);
 
             return new OkObjectResult(new ApiResponse<AnalysisSessionViewModel>("Session was found.", data));

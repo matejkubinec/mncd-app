@@ -7,15 +7,15 @@ import { AnalysisPageHeader, AnalysisControls, AnalysisResult } from "./index";
 import { RouteComponentProps } from "react-router";
 
 interface MatchParams {
-  guid: string;
+  id: string;
 }
 
 interface IProps extends RouteComponentProps<MatchParams>, ReduxProps {}
 
 class AnalysisPage extends React.Component<IProps> {
   componentDidMount() {
-    const guid = this.props.match.params.guid;
-    this.props.fetchAnalysisSession(guid);
+    const { id } = this.props.match.params;
+    this.props.fetchAnalysisSession(id);
   }
 
   render() {

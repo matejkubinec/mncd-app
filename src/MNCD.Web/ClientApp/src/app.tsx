@@ -12,7 +12,7 @@ export default class App extends Component {
       <React.Fragment>
         <Switch>
           <Route exact path="/" component={SessionList} />
-          <Route path="/session/:guid" component={AnalysisPage} />
+          <Route path="/session/:id" component={AnalysisPage} />
           <Route path="/formats" component={FormatsPage} />
           <Route path="/dataset/:id" component={DataSetDetail} />
           <Route path="/analysis/:id" component={AnalysisDetail} />

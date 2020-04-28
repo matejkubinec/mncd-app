@@ -45,7 +45,6 @@ export interface DataSetAddViewModel {
 
 export interface SessionRowViewModel {
   id: number;
-  guid: string;
   name: string;
   analysesCount: number;
   createDate: Date;

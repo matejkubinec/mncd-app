@@ -23,9 +23,9 @@ namespace MNCD.Tests.Services
         }
 
         [Fact]
-        public async Task GetAnalysisSession_NotFound()
+        public async Task GetAnalysisSession_Found()
         {
-            using (var ctx = InitCtx(nameof(GetAnalysisSession_NotFound)))
+            using (var ctx = InitCtx(nameof(GetAnalysisSession_Found)))
             {
                 var service = new AnalysisSessionService(ctx);
                 var session = await service.GetAnalysisSession(1);
@@ -35,29 +35,9 @@ namespace MNCD.Tests.Services
         }
 
         [Fact]
-        public async Task GetAnalysisSession_InvalidGuid()
+        public async Task GetAnalysisSession_NotFound()
         {
-            using (var ctx = InitCtx(nameof(GetAnalysisSession_InvalidGuid)))
-            {
-                var service = new AnalysisSessionService(ctx);
-                await Assert.ThrowsAsync<ArgumentException>(() => service.GetAnalysisSession("this-is-not-guid"));
-            }
-        }
-
-        [Fact]
-        public async Task GetAnalysisSession_NotFoundGuid()
-        {
-            using (var ctx = InitCtx(nameof(GetAnalysisSession_NotFoundGuid)))
-            {
-                var service = new AnalysisSessionService(ctx);
-                await Assert.ThrowsAsync<AnalysisSessionNotFoundException>(() => service.GetAnalysisSession(new Guid().ToString()));
-            }
-        }
-
-        [Fact]
-        public async Task GetAnalysisSession_Found()
-        {
-            using (var ctx = InitCtx(nameof(GetAnalysisSession_Found)))
+            using (var ctx = InitCtx(nameof(GetAnalysisSession_NotFound)))
             {
                 var service = new AnalysisSessionService(ctx);
                 await Assert.ThrowsAsync<AnalysisSessionNotFoundException>(() => service.GetAnalysisSession(404));

@@ -353,11 +353,11 @@ export const setAnalysisApproach = (approach: AnalysisApproach) => (
   }
 };
 
-export const fetchAnalysisSession = (guid: string) => (dispatch: Dispatch) => {
+export const fetchAnalysisSession = (id: string) => (dispatch: Dispatch) => {
   dispatch(fetchAnalysisSessionStart());
 
   axios
-    .get<ApiResponse<AnalysisSessionViewModel>>("/api/session/" + guid)
+    .get<ApiResponse<AnalysisSessionViewModel>>("/api/session/" + id)
     .then(({ data }) => {
       dispatch(fetchAnalysisSessionSuccess(data));
     })

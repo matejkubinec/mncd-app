@@ -65,7 +65,7 @@ class SessionList extends React.Component<ReduxProps> {
         const onOpen = () => {
           this.props.dismissSesionsListSuccessMessage();
           this.props.dismissSesionsListErrorMessage();
-          this.props.push(`/session/${item.guid}`);
+          this.props.push(`/session/${item.id}`);
         };
         return (
           <Stack horizontal tokens={{ childrenGap: 5 }}>
@@ -138,7 +138,7 @@ class SessionList extends React.Component<ReduxProps> {
         >
           <SessionAddEditDialog />
           <SessionRemoveDialog />
-          <h2>Sessions</h2>
+          <h1>Sessions</h1>
           <Separator></Separator>
           {this.props.error ? (
             <MessageBar

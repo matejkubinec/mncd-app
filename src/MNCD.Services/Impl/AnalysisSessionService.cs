@@ -45,23 +45,6 @@ namespace MNCD.Services.Impl
             return session;
         }
 
-        public async Task<AnalysisSession> GetAnalysisSession(string guid)
-        {
-            if (!Guid.TryParse(guid, out var parsedGuid))
-            {
-                throw new ArgumentException("Invalid guid.", nameof(guid));
-            }
-
-            var session = await GetFullSession(a => a.Guid == guid);
-
-            if (session is null)
-            {
-                throw new AnalysisSessionNotFoundException($"Analysis session with guid '{guid}' was not found.");
-            }
-
-            return session;
-        }
-
         public async Task<AnalysisSession> AddAnalysisSession(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -71,7 +54,6 @@ namespace MNCD.Services.Impl
 
             var session = new AnalysisSession
             {
-                Guid = Guid.NewGuid().ToString(),
                 Name = name,
                 CreateDate = DateTime.Now
             };

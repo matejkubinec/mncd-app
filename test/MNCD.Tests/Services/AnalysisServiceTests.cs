@@ -169,6 +169,7 @@ namespace MNCD.Tests.Services
             }
         }
 
+        [Fact]
         public async Task Analyze_MultiLayer_CLECC()
         {
             var request = new AnalysisRequest()
