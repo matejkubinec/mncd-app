@@ -104,6 +104,7 @@ class DataSetsList extends React.Component<ReduxProps> {
         columns={this.columns}
         selectionMode={SelectionMode.single}
         onActiveItemChanged={this.handleChooseDataSet}
+        selectionPreservedOnEmptyClick={true}
         isHeaderVisible={true}
       />
     );
