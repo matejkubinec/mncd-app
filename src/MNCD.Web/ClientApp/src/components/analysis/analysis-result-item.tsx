@@ -59,7 +59,7 @@ class AnalysisResultItem extends Component<IProps> {
   }
 
   render() {
-    const { showControls, analysis } = this.props;
+    const { showControls, analysis, theme } = this.props;
     const { approach } = analysis.request;
     const multiLayerViz = this.getMultiLayerViz();
     const singleLayerViz = this.getSingleLayerViz();
@@ -125,18 +125,13 @@ class AnalysisResultItem extends Component<IProps> {
           </Stack>
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
-          <Request
-            request={analysis.request}
-            useMinMaxHeight
-            showHeader
-            showDepth
-          />
+          <Request theme={theme} request={analysis.request} />
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
-          <Evaluation result={analysis.result} useMinMaxHeight />
+          <Evaluation theme={theme} result={analysis.result} />
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
-          <CommunitiesDetails result={analysis.result} useMinMaxHeight />
+          <CommunitiesDetails theme={theme} result={analysis.result} />
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
           <Visualization

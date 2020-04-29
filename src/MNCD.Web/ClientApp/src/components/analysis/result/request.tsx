@@ -9,7 +9,15 @@ import {
   analysisToString,
   flatteningToString,
 } from "../../../utils";
-import { Stack, Separator, IStyle } from "office-ui-fabric-react";
+import {
+  Stack,
+  Separator,
+  IStyle,
+  IconButton,
+  ITheme,
+  DefaultButton,
+  Icon,
+} from "office-ui-fabric-react";
 
 interface AnalysisRequestRow {
   name: string;
@@ -19,16 +27,22 @@ interface AnalysisRequestRow {
 }
 
 interface IProps {
+  theme: ITheme;
   request: AnalysisRequestViewModel;
-  showDepth: boolean;
-  showHeader: boolean;
-  useMinMaxHeight: boolean;
 }
 
-export default class AnalysisRequest extends Component<IProps> {
-  public static defaultProps = {
-    useMinMaxHeight: false,
-  };
+interface IState {
+  minimized: boolean;
+}
+
+export default class AnalysisRequest extends Component<IProps, IState> {
+  constructor(props: IProps) {
+    super(props);
+
+    this.state = {
+      minimized: false,
+    };
+  }
 
   get flatteningAlgorithm(): string {
     return flatteningToString(this.props.request.flatteningAlgorithm);
@@ -156,31 +170,30 @@ export default class AnalysisRequest extends Component<IProps> {
   }
 
   render() {
+    const { s1 } = this.props.theme.spacing;
+    const { minimized } = this.state;
     const rows = this.getRows();
     return (
-      <Stack
-        tokens={{ padding: 10, childrenGap: 5 }}
-        styles={this.getStackStyle()}
-      >
-        {this.props.showHeader ? (
-          <Stack.Item>
-            <h2>Request</h2>
-          </Stack.Item>
-        ) : null}
-        {this.renderRows(rows)}
+      <Stack tokens={{ padding: s1, childrenGap: s1 }}>
+        {this.renderHeader(minimized)}
+        {this.state.minimized ? null : this.renderRows(rows)}
       </Stack>
     );
   }
 
-  private getStackStyle = () => {
-    const { useMinMaxHeight } = this.props;
-    const styles: IStyle = {};
-
-    if (useMinMaxHeight) {
-      styles.minHeight = 330;
-      styles.maxHeight = 330;
-    }
-
-    return { root: styles };
-  };
+  private renderHeader = (minimized: boolean) => (
+    <Stack horizontal>
+      <Stack.Item grow={1}>
+        <h2>Request</h2>
+      </Stack.Item>
+      <Stack.Item>
+        <IconButton
+          iconProps={{
+            iconName: minimized ? "ChevronDown" : "ChevronUp",
+          }}
+          onClick={() => this.setState({ minimized: !minimized })}
+        />
+      </Stack.Item>
+    </Stack>
+  );
 }

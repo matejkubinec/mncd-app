@@ -1,21 +1,23 @@
 import React, { Component } from "react";
 import {
   Stack,
-  Dropdown,
   IDropdownOption,
   List,
+  ITheme,
+  IconButton,
+  Dropdown,
   Separator,
-  IStyle,
 } from "office-ui-fabric-react";
 import { AnalysisResultViewModel, ActorItem } from "../../../types";
 
 interface IProps {
+  theme: ITheme;
   result: AnalysisResultViewModel;
-  useMinMaxHeight: boolean;
 }
 
 interface IState {
   idx: number;
+  minimized: boolean;
 }
 
 export default class CommunitiesDetails extends Component<IProps, IState> {
@@ -28,6 +30,7 @@ export default class CommunitiesDetails extends Component<IProps, IState> {
 
     this.state = {
       idx: 0,
+      minimized: false,
     };
   }
 
@@ -48,6 +51,8 @@ export default class CommunitiesDetails extends Component<IProps, IState> {
   };
 
   render() {
+    const { s1 } = this.props.theme.spacing;
+    const { minimized } = this.state;
     const { communityDetails } = this.props.result;
     const actors = communityDetails
       ? communityDetails[this.state.idx].actors
@@ -55,51 +60,56 @@ export default class CommunitiesDetails extends Component<IProps, IState> {
     const columns = Math.ceil(actors.length / 15);
 
     return (
-      <Stack
-        tokens={{ padding: 10, childrenGap: 5 }}
-        styles={this.getStackStyle()}
-      >
-        <Stack.Item>
-          <h2>Communities Details</h2>
-        </Stack.Item>
-        <Stack.Item>
-          <Dropdown
-            label="Community"
-            options={this.getOptions()}
-            selectedKey={this.state.idx}
-            onChange={this.handleCommunityChange}
-          />
-        </Stack.Item>
-        <Separator />
-        <ul style={{ columns }}>
-          <List items={actors} onRenderCell={this.renderListItem} />
-        </ul>
+      <Stack tokens={{ padding: s1, childrenGap: s1 }}>
+        {this.renderHeader(minimized)}
+        {minimized ? null : this.renderBody(columns, actors)}
       </Stack>
     );
   }
+
+  private renderHeader = (minimized: boolean) => (
+    <Stack horizontal>
+      <Stack.Item grow={1}>
+        <h2>Communities Details</h2>
+      </Stack.Item>
+      <Stack.Item>
+        <IconButton
+          iconProps={{
+            iconName: minimized ? "ChevronDown" : "ChevronUp",
+          }}
+          onClick={() => this.setState({ minimized: !minimized })}
+        />
+      </Stack.Item>
+    </Stack>
+  );
+
+  private renderBody = (columns: number, actors: ActorItem[]) => (
+    <Stack>
+      <Dropdown
+        label="Community"
+        options={this.getOptions()}
+        selectedKey={this.state.idx}
+        onChange={this.handleCommunityChange}
+      />
+      <Separator />
+      <ul style={{ columns, listStyleType: "none", padding: 0, margin: 0 }}>
+        <List items={actors} onRenderCell={this.renderListItem} />
+      </ul>
+    </Stack>
+  );
 
   private renderListItem = (item?: ActorItem) => {
     if (!item) {
       return null;
     }
+    const { s1 } = this.props.theme.spacing;
     const { idx, name } = item;
 
     return (
       <li key={idx}>
-        {idx > 9 ? idx : "0" + idx} {name}
+        <span>{idx > 9 ? idx : "0" + idx}</span>
+        <span style={{ paddingLeft: s1 }}>{name}</span>
       </li>
     );
-  };
-
-  private getStackStyle = () => {
-    const { useMinMaxHeight } = this.props;
-    const styles: IStyle = {};
-
-    if (useMinMaxHeight) {
-      styles.minHeight = 425;
-      styles.maxHeight = 425;
-    }
-
-    return { root: styles };
   };
 }

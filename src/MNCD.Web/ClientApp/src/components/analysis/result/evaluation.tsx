@@ -1,5 +1,11 @@
 import React, { Component } from "react";
-import { Stack, TooltipHost, Icon, IStyle } from "office-ui-fabric-react";
+import {
+  Stack,
+  TooltipHost,
+  Icon,
+  ITheme,
+  IconButton,
+} from "office-ui-fabric-react";
 import { AnalysisResultViewModel } from "../../../types";
 
 interface IRow {
@@ -10,14 +16,27 @@ interface IRow {
 }
 
 interface IProps {
+  theme: ITheme;
   result: AnalysisResultViewModel;
   useMinMaxHeight: boolean;
 }
 
-export default class Evaluation extends Component<IProps> {
+interface IState {
+  minimized: boolean;
+}
+
+export default class Evaluation extends Component<IProps, IState> {
   public static defaultProps = {
     useMinMaxHeight: false,
   };
+
+  constructor(props: IProps) {
+    super(props);
+
+    this.state = {
+      minimized: false,
+    };
+  }
 
   formatArray = (data: number[], prefix: string) => (
     <table>
@@ -161,29 +180,30 @@ export default class Evaluation extends Component<IProps> {
   }
 
   render() {
+    const { s1 } = this.props.theme.spacing;
+    const { minimized } = this.state;
     const rows = this.getRows();
     return (
-      <Stack
-        tokens={{ padding: 10, childrenGap: 5 }}
-        styles={this.getStackStyle()}
-      >
-        <Stack.Item>
-          <h2>Evaluation</h2>
-        </Stack.Item>
-        {this.renderRows(rows)}
+      <Stack tokens={{ padding: s1, childrenGap: s1 }}>
+        {this.renderHeader(minimized)}
+        {minimized ? null : this.renderRows(rows)}
       </Stack>
     );
   }
 
-  private getStackStyle = () => {
-    const { useMinMaxHeight } = this.props;
-    const styles: IStyle = {};
-
-    if (useMinMaxHeight) {
-      styles.minHeight = 300;
-      styles.maxHeight = 300;
-    }
-
-    return { root: styles };
-  };
+  private renderHeader = (minimized: boolean) => (
+    <Stack horizontal>
+      <Stack.Item grow={1}>
+        <h2>Evaluation</h2>
+      </Stack.Item>
+      <Stack.Item>
+        <IconButton
+          iconProps={{
+            iconName: minimized ? "ChevronDown" : "ChevronUp",
+          }}
+          onClick={() => this.setState({ minimized: !minimized })}
+        />
+      </Stack.Item>
+    </Stack>
+  );
 }
