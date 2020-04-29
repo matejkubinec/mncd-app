@@ -8,12 +8,22 @@ import {
   Dropdown,
   IDropdownOption,
   PrimaryButton,
+  TextField,
+  IconButton,
+  MessageBar,
+  MessageBarType,
+  Spinner,
+  SpinnerSize,
 } from "office-ui-fabric-react";
 import {
   fetchAnalysisDetailById,
   setVisualizationType,
   VisualizationType,
   downloadAnalysisById,
+  toggleVisualizations,
+  editAnalysisById,
+  dismissEditError,
+  editNotes,
 } from "../../slices/analysis-detail-slice";
 import { AnalysisApproach, AnalysisViewModel } from "../../types";
 import { Request, Evaluation, CommunitiesDetails } from "./result";
@@ -87,7 +97,10 @@ class AnalysisDetail extends React.Component<IProps> {
 
     return (
       <Stack horizontal>
-        <Stack grow={3}>
+        <Stack grow={2}>
+          <Stack>
+            <Stack>{this.renderVisualizations(analysis)}</Stack>
+          </Stack>
           <Stack>
             <Request
               request={analysis.request}
@@ -111,14 +124,58 @@ class AnalysisDetail extends React.Component<IProps> {
           </Stack.Item>
         </Stack>
         <Stack grow={3} style={{ paddingTop: 10 }}>
-          <h2>Visualizations</h2>
-          <Stack>{this.renderVisualizations(analysis)}</Stack>
+          <h2>Notes</h2>
+          {this.renderEditing(analysis)}
+        </Stack>
+      </Stack>
+    );
+  };
+
+  private renderEditing = (analysis: AnalysisViewModel) => {
+    const {
+      theme,
+      edit,
+      dismissEditError,
+      editAnalysisById,
+      editNotes,
+    } = this.props;
+    const { id } = analysis;
+    const { error, isSaving, notes } = edit;
+
+    return (
+      <Stack tokens={{ padding: "4px 0", childrenGap: theme.spacing.s1 }}>
+        {error ? (
+          <MessageBar
+            messageBarType={MessageBarType.error}
+            onDismiss={dismissEditError}
+          >
+            {error}
+          </MessageBar>
+        ) : null}
+        <TextField
+          multiline
+          rows={20}
+          autoAdjustHeight
+          resizable={false}
+          value={notes}
+          onChange={(_, v) => (v !== undefined ? editNotes(v) : null)}
+        />
+        <Stack horizontal horizontalAlign="end">
+          <PrimaryButton onClick={() => editAnalysisById({ id, notes })}>
+            {isSaving ? (
+              <Stack tokens={{ padding: theme.spacing.s1 }}>
+                <Spinner size={SpinnerSize.xSmall} />
+              </Stack>
+            ) : null}
+            Save
+          </PrimaryButton>
         </Stack>
       </Stack>
     );
   };
 
   private renderVisualizations = (analysis: AnalysisViewModel) => {
+    const { showVisualizations, theme } = this.props;
     const {
       multiLayer,
       multiLayerCommunities,
@@ -176,18 +233,43 @@ class AnalysisDetail extends React.Component<IProps> {
         break;
     }
 
+    const iconStyle = { color: this.props.theme.palette.black };
+    const iconName = showVisualizations ? "ChevronDown" : "ChevronUp";
+
     return (
-      <Stack tokens={{ padding: 25 }}>
-        <Dropdown
-          options={options}
-          selectedKey={this.props.visualization}
-          onChange={this.handleVisualizationTypeChange}
-        />
-        <Stack.Item styles={{ root: { padding: 10 } }}>
-          <ImageGallery titles={titles} urls={urls} />
-        </Stack.Item>
+      <Stack tokens={{ padding: 10 }}>
+        <Stack horizontal tokens={{ childrenGap: theme.spacing.s1 }}>
+          <h2>Visualizations</h2>
+          <IconButton
+            onClick={this.handleToggleVisualizations}
+            iconProps={{ iconName, style: iconStyle }}
+          />
+        </Stack>
+        {showVisualizations ? (
+          <Stack tokens={{ childrenGap: 5 }}>
+            <Dropdown
+              options={options}
+              selectedKey={this.props.visualization}
+              onChange={this.handleVisualizationTypeChange}
+            />
+            <Stack.Item
+              styles={{
+                root: {
+                  padding: 10,
+                  boxShadow: this.props.theme.effects.elevation4,
+                },
+              }}
+            >
+              <ImageGallery titles={titles} urls={urls} height={500} />
+            </Stack.Item>
+          </Stack>
+        ) : null}
       </Stack>
     );
+  };
+
+  private handleToggleVisualizations = () => {
+    this.props.toggleVisualizations();
   };
 
   private handleDownload = () => {
@@ -215,6 +297,10 @@ const mapDispatch = {
   fetchAnalysisDetailById,
   setVisualizationType,
   downloadAnalysisById,
+  toggleVisualizations,
+  editAnalysisById,
+  dismissEditError,
+  editNotes,
 };
 
 const connector = connect(mapProps, mapDispatch);

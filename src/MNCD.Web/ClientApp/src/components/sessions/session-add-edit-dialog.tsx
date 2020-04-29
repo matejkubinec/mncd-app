@@ -82,7 +82,7 @@ class SessionListAddEditDialog extends Component<ReduxProps> {
             <DefaultButton onClick={this.handleCancel}>Cancel</DefaultButton>
             <PrimaryButton onClick={this.handleSave}>
               {isSaving ? (
-                <Stack padding={5}>
+                <Stack tokens={{ padding: 5 }}>
                   <Spinner size={SpinnerSize.xSmall} />
                 </Stack>
               ) : null}

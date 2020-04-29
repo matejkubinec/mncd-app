@@ -167,6 +167,25 @@ namespace MNCD.Services.Impl
             await _ctx.SaveChangesAsync();
         }
 
+        public async Task EditNotes(int analysisId, string notes)
+        {
+            if (analysisId <= 0)
+            {
+                throw new ArgumentException("Analysis id must be greater than zero.", nameof(analysisId));
+            }
+
+            var analysis = await _ctx.Analyses.FirstOrDefaultAsync(a => a.Id == analysisId);
+
+            if (analysis is null)
+            {
+                throw new AnalysisNotFoundException($"Analysis with id '{analysisId}' doesn't exist.");
+            }
+
+            analysis.Notes = notes;
+
+            await _ctx.SaveChangesAsync();
+        }
+
         public async Task ArchiveAnalysis(int analysisId, Stream outStream)
         {
             outStream = outStream ?? throw new ArgumentNullException(nameof(outStream));

@@ -75,7 +75,7 @@ class SessionListRemoveDialog extends React.Component<ReduxProps> {
               onClick={this.handleSubmit}
             >
               {this.props.isRemoving ? (
-                <Stack padding={5}>
+                <Stack tokens={{ padding: 5 }}>
                   <Spinner size={SpinnerSize.xSmall} />
                 </Stack>
               ) : null}

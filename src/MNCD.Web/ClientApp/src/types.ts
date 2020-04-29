@@ -119,6 +119,7 @@ export interface AnalysisVisualizationViewModel {
 export interface AnalysisViewModel {
   id: number;
   isOpen: boolean;
+  notes: string;
   request: AnalysisRequestViewModel;
   result: AnalysisResultViewModel;
   visualization: AnalysisVisualizationViewModel;

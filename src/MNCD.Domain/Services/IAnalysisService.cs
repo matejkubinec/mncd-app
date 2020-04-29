@@ -18,5 +18,7 @@ namespace MNCD.Domain.Services
         Task Delete(int analysisId);
 
         Task ArchiveAnalysis(int analysisId, Stream outStream);
+
+        Task EditNotes(int analysisId, string notes);
     }
 }
