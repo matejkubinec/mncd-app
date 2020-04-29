@@ -16,23 +16,21 @@ import {
 class AnalysisResult extends React.Component<ReduxProps> {
   render() {
     const { items, isSideBySide, hasItems, theme } = this.props;
+    const { s1, m } = theme.spacing;
 
     if (!hasItems) {
       return null;
     }
 
     return (
-      <Stack horizontal tokens={{ childrenGap: 20, padding: 20 }}>
-        <Stack.Item
-          styles={{ root: { maxWidth: 600, marginTop: 5 } }}
-          align="start"
-        >
+      <Stack horizontal tokens={{ childrenGap: s1, padding: s1 }}>
+        <Stack.Item styles={{ root: { maxWidth: 600 } }} align="start">
           <AnalysisResultControls />
         </Stack.Item>
         <Stack.Item
           grow={2}
           styles={{
-            root: { overflowX: "scroll", overflowY: "hidden" },
+            root: { overflowX: "auto", overflowY: "hidden" },
           }}
         >
           {isSideBySide ? (
@@ -41,9 +39,9 @@ class AnalysisResult extends React.Component<ReduxProps> {
             <Stack
               horizontal
               horizontalAlign="end"
-              tokens={{ childrenGap: 20 }}
+              tokens={{ childrenGap: m }}
               styles={{
-                root: { justifyContent: "initial", padding: 20, paddingTop: 5 },
+                root: { justifyContent: "initial", padding: m },
               }}
             >
               {items.map((item) => (

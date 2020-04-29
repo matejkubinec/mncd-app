@@ -118,67 +118,66 @@ export class AnalysisResultControls extends Component<ReduxProps> {
 
     return (
       <Stack>
-        <Stack.Item
-          styles={{
-            root: {
-              padding: 10,
-              marginBottom: 10,
-              backgroundColor: this.props.theme.palette.white,
-              boxShadow: this.props.theme.effects.elevation4,
-            },
-          }}
+        <Stack
+          horizontal
+          tokens={{ childrenGap: 5 }}
+          styles={{ root: { minHeight: 250, paddingTop: 24 } }}
         >
-          <h4>Options</h4>
-          <Separator />
-          <Toggle
-            label="Layout"
-            inlineLabel
-            onText="Side-by-Side"
-            offText="All"
-            checked={this.props.isSideBySide}
-            onChange={this.handleLayoutChange}
-          />
-        </Stack.Item>
-        {!this.props.isSideBySide ? (
-          <Stack
-            horizontal
-            tokens={{ childrenGap: 5 }}
-            styles={{ root: { minHeight: 250 } }}
+          <Stack.Item
+            styles={{
+              root: {
+                marginBottom: 15,
+                borderRadius: this.props.theme.effects.roundedCorner2,
+                backgroundColor: this.props.theme.palette.white,
+                boxShadow: this.props.theme.effects.elevation4,
+                cursor: "pointer",
+                userSelect: "none",
+              },
+            }}
           >
-            <Stack.Item
-              styles={{
-                root: {
-                  marginBottom: 15,
-                  borderRadius: this.props.theme.effects.roundedCorner2,
-                  backgroundColor: this.props.theme.palette.white,
-                  boxShadow: this.props.theme.effects.elevation4,
-                  cursor: "pointer",
-                  userSelect: "none",
-                },
+            <IconButton
+              style={{ height: "100%" }}
+              iconProps={{
+                iconName: this.props.showControls
+                  ? "ChevronLeft"
+                  : "ChevronRight",
               }}
-            >
-              <IconButton
-                style={{ height: "100%" }}
-                iconProps={{
-                  iconName: this.props.showControls
-                    ? "ChevronLeft"
-                    : "ChevronRight",
-                }}
-                onClick={this.handleToggleControls}
-              />
-            </Stack.Item>
-            {this.props.showControls ? (
-              <Stack.Item>
-                <Stack tokens={{ childrenGap: 10 }}>
+              onClick={this.handleToggleControls}
+            />
+          </Stack.Item>
+          {this.props.showControls ? (
+            <Stack.Item>
+              <Stack tokens={{ childrenGap: 10 }}>
+                <Stack.Item
+                  styles={{
+                    root: {
+                      padding: 10,
+                      backgroundColor: this.props.theme.palette.white,
+                      boxShadow: this.props.theme.effects.elevation4,
+                    },
+                  }}
+                >
+                  <h3>Options</h3>
+                  <Separator />
+                  <Toggle
+                    label="Layout"
+                    inlineLabel
+                    onText="Side-by-Side"
+                    offText="All"
+                    checked={this.props.isSideBySide}
+                    onChange={this.handleLayoutChange}
+                  />
+                </Stack.Item>
+                {this.props.isSideBySide ? (
                   <List
                     items={listItems}
                     onRenderCell={this.handleRenderCell}
                   />
-                </Stack>
-              </Stack.Item>
-            ) : null}
-          </Stack>
-        ) : null}
+                ) : null}
+              </Stack>
+            </Stack.Item>
+          ) : null}
+        </Stack>
       </Stack>
     );
   }

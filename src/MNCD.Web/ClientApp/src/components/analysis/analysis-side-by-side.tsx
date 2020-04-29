@@ -13,20 +13,21 @@ import { setLeftSide, setRightSide } from "../../slices/analysis-slice";
 class AnalysisSideBySide extends React.Component<ReduxProps> {
   render() {
     const { analyses, theme, index1, index2 } = this.props;
+    const { s1, m } = theme.spacing;
 
     if (!analyses.length) {
       return null;
     }
 
-    const options: IDropdownOption[] = analyses.map((a) => ({
-      key: a.id,
+    const options: IDropdownOption[] = analyses.map((a, i) => ({
+      key: i,
       text: "Analysis " + a.id,
     }));
 
     const cardStyle = {
       width: "50%",
-      padding: 5,
-      margin: 15,
+      padding: s1,
+      margin: m,
       borderRadius: theme.effects.roundedCorner2,
       boxShadow: theme.effects.elevation16,
       background: theme.palette.neutralLighter,
@@ -41,60 +42,46 @@ class AnalysisSideBySide extends React.Component<ReduxProps> {
       <Stack horizontal horizontalAlign="space-evenly">
         <Stack style={cardStyle}>
           <Stack>
-            <Stack.Item>
+            <Stack tokens={{ padding: s1 }}>
               <Dropdown
                 dropdownWidth={250}
                 options={opt1}
-                onChange={this.handleLeftChange}
+                onChanged={this.handleLeftChange}
               />
-            </Stack.Item>
-            <Stack.Item>
-              <Separator />
-            </Stack.Item>
-            <Stack.Item>
-              <AnalysisResultItem
-                analysis={item1}
-                theme={theme}
-                showControls={false}
-              />
-            </Stack.Item>
+            </Stack>
+            <AnalysisResultItem
+              analysis={item1}
+              theme={theme}
+              showControls={false}
+            />
           </Stack>
         </Stack>
         <Stack style={cardStyle}>
           <Stack>
-            <Stack.Item>
+            <Stack tokens={{ padding: s1 }}>
               <Dropdown
                 dropdownWidth={250}
                 options={opt2}
-                onChange={this.handleRightChange}
+                onChanged={this.handleRightChange}
               />
-            </Stack.Item>
-            <Stack.Item>
-              <Separator />
-            </Stack.Item>
-            <Stack.Item>
-              <AnalysisResultItem
-                analysis={item2}
-                theme={theme}
-                showControls={false}
-              />
-            </Stack.Item>
+            </Stack>
+            <AnalysisResultItem
+              analysis={item2}
+              theme={theme}
+              showControls={false}
+            />
           </Stack>
         </Stack>
       </Stack>
     );
   }
 
-  private handleLeftChange = (_: any, __: any, idx?: number) => {
-    if (idx) {
-      this.props.setLeftSide(idx);
-    }
+  private handleLeftChange = (option: IDropdownOption) => {
+    this.props.setLeftSide(Number(option.key));
   };
 
-  private handleRightChange = (_: any, __: any, idx?: number) => {
-    if (idx) {
-      this.props.setRightSide(idx);
-    }
+  private handleRightChange = (option: IDropdownOption) => {
+    this.props.setRightSide(Number(option.key));
   };
 }
 

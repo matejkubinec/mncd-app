@@ -31,6 +31,7 @@ class AnalysisResultItem extends Component<IProps> {
 
   render() {
     const { showControls, analysis, theme } = this.props;
+    const { s1 } = theme.spacing;
     const { id, result, request, visualization } = analysis;
 
     const itemStyles = {
@@ -44,11 +45,11 @@ class AnalysisResultItem extends Component<IProps> {
 
     return (
       <Stack
-        tokens={{ padding: 10, childrenGap: 15 }}
+        tokens={{ padding: s1, childrenGap: s1 }}
         style={{ minWidth: 500 }}
       >
         <Stack.Item styles={itemStyles}>
-          <Stack tokens={{ padding: 10 }}>
+          <Stack tokens={{ padding: s1 }}>
             <Stack horizontal>
               <Stack.Item grow={10}>
                 <h1>Analysis {analysis.id}</h1>
@@ -77,17 +78,7 @@ class AnalysisResultItem extends Component<IProps> {
               ) : null}
             </Stack>
             <Separator />
-            <div>
-              Click{" "}
-              <a
-                href={`/analysis/${id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                here
-              </a>{" "}
-              to view a more detailed version.
-            </div>
+            {this.renderLink()}
           </Stack>
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
@@ -105,6 +96,20 @@ class AnalysisResultItem extends Component<IProps> {
       </Stack>
     );
   }
+
+  private renderLink = () => (
+    <div>
+      Click{" "}
+      <a
+        href={`/analysis/${this.props.analysis.id}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        here
+      </a>{" "}
+      to view a more detailed version.
+    </div>
+  );
 
   private handleMinimize = () => {
     this.props.onMinimize(this.props.analysis.id);
