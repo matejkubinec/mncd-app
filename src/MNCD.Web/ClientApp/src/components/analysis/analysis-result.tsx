@@ -1,26 +1,23 @@
 import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../store";
+import { Stack } from "office-ui-fabric-react";
+import {
+  toggleVisibility,
+  AnalysesLayout,
+  openDeleteDialog,
+} from "../../slices/analysis-slice";
 import {
   AnalysisResultItem,
   AnalysisResultControls,
   AnalysisSideBySide,
 } from "./index";
-import { Stack } from "office-ui-fabric-react";
 
 class AnalysisResult extends React.Component<ReduxProps> {
-  renderAnalyses = () => {
-    return this.props.items
-      .filter((i) => i.isOpen)
-      .map((item, i) => (
-        <Stack.Item key={i} grow={1}>
-          <AnalysisResultItem analysis={item} theme={this.props.theme} />
-        </Stack.Item>
-      ));
-  };
-
   render() {
-    if (this.props.items.length === 0) {
+    const { items, isSideBySide, hasItems, theme } = this.props;
+
+    if (!hasItems) {
       return null;
     }
 
@@ -38,7 +35,7 @@ class AnalysisResult extends React.Component<ReduxProps> {
             root: { overflowX: "scroll", overflowY: "hidden" },
           }}
         >
-          {this.props.isSideBySide ? (
+          {isSideBySide ? (
             <AnalysisSideBySide />
           ) : (
             <Stack
@@ -49,25 +46,47 @@ class AnalysisResult extends React.Component<ReduxProps> {
                 root: { justifyContent: "initial", padding: 20, paddingTop: 5 },
               }}
             >
-              {this.renderAnalyses()}
+              {items.map((item) => (
+                <AnalysisResultItem
+                  key={item.id}
+                  analysis={item}
+                  theme={theme}
+                  onDelete={this.handleAnalysisDelete}
+                  onMinimize={this.handleAnalysisMinimize}
+                />
+              ))}
             </Stack>
           )}
         </Stack.Item>
       </Stack>
     );
   }
+
+  private handleAnalysisMinimize = (id: number) => {
+    this.props.toggleVisibility(id);
+  };
+
+  private handleAnalysisDelete = (id: number) => {
+    this.props.openDeleteDialog(id);
+  };
 }
 
 const mapProps = (rootState: RootState) => {
   const { session, layout } = rootState.analysis;
+  const theme = rootState.theme.current;
+  const items = session ? session.analyses.filter((a) => a.isOpen) : [];
+  const hasItems = session && session.analyses.length > 0;
+  const isSideBySide = layout === AnalysesLayout.SideBySide;
+
   return {
-    theme: rootState.theme.current,
-    items: session ? session.analyses : [],
-    isSideBySide: layout === "side-by-side",
+    theme,
+    items,
+    hasItems,
+    isSideBySide,
   };
 };
 
-const mapDispatch = {};
+const mapDispatch = { toggleVisibility, openDeleteDialog };
 
 const connector = connect(mapProps, mapDispatch);
 

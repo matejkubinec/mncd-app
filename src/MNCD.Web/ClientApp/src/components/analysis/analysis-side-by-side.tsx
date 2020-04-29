@@ -29,15 +29,13 @@ class AnalysisSideBySide extends React.Component<ReduxProps> {
       margin: 15,
       borderRadius: theme.effects.roundedCorner2,
       boxShadow: theme.effects.elevation16,
-      background: theme.palette.white,
+      background: theme.palette.neutralLighter,
     };
 
     const opt1 = options.map((o, i) => ({ ...o, selected: i === index1 }));
     const opt2 = options.map((o, i) => ({ ...o, selected: i === index2 }));
     const item1 = analyses[index1];
     const item2 = analyses[index2];
-
-    console.log(analyses, item1, item2, index1, index2);
 
     return (
       <Stack horizontal horizontalAlign="space-evenly">
@@ -54,7 +52,11 @@ class AnalysisSideBySide extends React.Component<ReduxProps> {
               <Separator />
             </Stack.Item>
             <Stack.Item>
-              <AnalysisResultItem analysis={item1} theme={theme} />
+              <AnalysisResultItem
+                analysis={item1}
+                theme={theme}
+                showControls={false}
+              />
             </Stack.Item>
           </Stack>
         </Stack>
@@ -71,7 +73,11 @@ class AnalysisSideBySide extends React.Component<ReduxProps> {
               <Separator />
             </Stack.Item>
             <Stack.Item>
-              <AnalysisResultItem analysis={item2} theme={theme} />
+              <AnalysisResultItem
+                analysis={item2}
+                theme={theme}
+                showControls={false}
+              />
             </Stack.Item>
           </Stack>
         </Stack>

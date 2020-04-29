@@ -51,12 +51,12 @@ namespace MNCD.Web.Controllers
         }
 
         [HttpPost]
-        [Route("{id}/toggle-visibility")]
+        [Route("toggle-visibility/{id}")]
         public async Task<IActionResult> Toggle(int id)
         {
             if (id <= 0)
             {
-                return new BadRequestObjectResult(new Response("Invalid dataset id."));
+                return new BadRequestObjectResult(new Response("Invalid analysis id."));
             }
 
             await _analysisService.ToggleVisibility(id);
@@ -70,7 +70,7 @@ namespace MNCD.Web.Controllers
         {
             if (id <= 0)
             {
-                return new BadRequestObjectResult(new Response("Invalid dataset id."));
+                return new BadRequestObjectResult(new Response("Invalid analysis id."));
             }
 
             var stream = new MemoryStream();
@@ -78,6 +78,21 @@ namespace MNCD.Web.Controllers
             await _analysisService.ArchiveAnalysis(id, stream);
 
             return File(stream, "application/zip", $"Analysis {id}.zip");
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            if (id <= 0)
+            {
+                return new BadRequestObjectResult(new Response("Invalid analysis id."));
+            }
+
+            await _analysisService.Delete(id);
+
+            var message = $"Analysis with id '{id}' deleted.";
+            return new OkObjectResult(new ApiResponse<int>(message, id));
         }
     }
 }

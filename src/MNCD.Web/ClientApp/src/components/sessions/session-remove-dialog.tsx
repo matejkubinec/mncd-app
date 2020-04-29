@@ -10,21 +10,21 @@ import {
   Spinner,
   SpinnerSize,
   MessageBar,
-  MessageBarType
+  MessageBarType,
 } from "office-ui-fabric-react";
 import {
   removeSession,
   closeRemoveDialog,
-  clearRemoveDialogError
+  clearRemoveDialogError,
 } from "../../slices/session-slice";
 
 class SessionListRemoveDialog extends React.Component<ReduxProps> {
-  onSubmit = (ev: React.FormEvent | React.MouseEvent<any>) => {
-    this.props.removeSession();
+  handleSubmit = (ev: React.FormEvent | React.MouseEvent<any>) => {
+    this.props.removeSession(this.props.session.id);
     ev.preventDefault();
   };
 
-  onDismiss = () => {
+  handleDismiss = () => {
     this.props.closeRemoveDialog();
   };
 
@@ -37,9 +37,9 @@ class SessionListRemoveDialog extends React.Component<ReduxProps> {
       <Dialog
         isOpen={this.props.isOpen}
         dialogContentProps={{ title: "Analysis Session" }}
-        onDismiss={this.onDismiss}
+        onDismiss={this.handleDismiss}
       >
-        <form onSubmit={this.onSubmit}>
+        <form onSubmit={this.handleSubmit}>
           {this.props.error ? (
             <MessageBar
               styles={{ root: { marginBottom: 10 } }}
@@ -60,19 +60,19 @@ class SessionListRemoveDialog extends React.Component<ReduxProps> {
             analyses?
           </Text>
           <DialogFooter>
-            <DefaultButton onClick={this.onDismiss}>Cancel</DefaultButton>
+            <DefaultButton onClick={this.handleDismiss}>Cancel</DefaultButton>
             <DefaultButton
               styles={{
                 root: {
                   backgroundColor: this.props.theme.palette.red,
-                  color: this.props.theme.palette.white
+                  color: this.props.theme.palette.white,
                 },
                 rootHovered: {
                   backgroundColor: this.props.theme.palette.redDark,
-                  color: this.props.theme.palette.white
-                }
+                  color: this.props.theme.palette.white,
+                },
               }}
-              onClick={this.onSubmit}
+              onClick={this.handleSubmit}
             >
               {this.props.isRemoving ? (
                 <Stack padding={5}>
@@ -90,13 +90,13 @@ class SessionListRemoveDialog extends React.Component<ReduxProps> {
 
 const mapProps = (state: RootState) => ({
   ...state.session.removeDialog,
-  theme: state.theme.current
+  theme: state.theme.current,
 });
 
 const mapDispatch = {
   removeSession,
   closeRemoveDialog,
-  clearRemoveDialogError
+  clearRemoveDialogError,
 };
 
 const connector = connect(mapProps, mapDispatch);

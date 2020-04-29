@@ -103,7 +103,11 @@ class SessionList extends React.Component<ReduxProps> {
     }
 
     if (this.props.items.length <= 0) {
-      return <Text>No sessions to display.</Text>;
+      return (
+        <div style={{ padding: 20 }}>
+          <Text>No sessions to display.</Text>
+        </div>
+      );
     }
 
     return (

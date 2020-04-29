@@ -107,11 +107,7 @@ namespace MNCD.Services.Impl
                 request.DataSet = null;
             }
 
-            _ctx.AnalysisRequests.RemoveRange(session.Analyses.Select(a => a.Request));
-            _ctx.AnalysisResult.RemoveRange(session.Analyses.Select(a => a.Result));
-            _ctx.Visualizations.RemoveRange(session.Analyses.SelectMany(a => a.Visualizations));
-            _ctx.Analyses.RemoveRange(session.Analyses);
-            _ctx.AnalysisSessions.Remove(session);
+            _ctx.Remove(session);
 
             await _ctx.SaveChangesAsync();
         }

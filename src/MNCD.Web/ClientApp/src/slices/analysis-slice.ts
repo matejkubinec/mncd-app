@@ -1,4 +1,4 @@
-import axios from "../axios";
+import axios, { handleError } from "../axios";
 import {
   AnalysisRequestViewModel,
   AnalysisApproach,
@@ -10,8 +10,18 @@ import {
   ApiResponse,
   Response,
 } from "../types";
-import { createSlice, PayloadAction, Dispatch } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  PayloadAction,
+  Dispatch,
+  createAsyncThunk,
+} from "@reduxjs/toolkit";
 import { RootState } from "../store";
+
+export enum AnalysesLayout {
+  All,
+  SideBySide,
+}
 
 export type AnalysisState = {
   isSessionLoading: boolean;
@@ -24,10 +34,16 @@ export type AnalysisState = {
   dataSet: DataSetRowViewModel | null;
   success: string | null;
   error: string | null;
-  layout: "all" | "side-by-side";
+  layout: AnalysesLayout;
   sideBySide: {
     index1: number;
     index2: number;
+  };
+  deleteDialog: {
+    isOpen: boolean;
+    isDeleting: boolean;
+    id: number;
+    error: string;
   };
 };
 
@@ -54,12 +70,53 @@ const initialState: AnalysisState = {
   dataSet: null,
   success: null,
   error: null,
-  layout: "all",
+  layout: AnalysesLayout.All,
   sideBySide: {
     index1: 0,
     index2: 0,
   },
+  deleteDialog: {
+    isOpen: false,
+    isDeleting: false,
+    id: 0,
+    error: "",
+  },
 };
+
+export const fetchSessionById = createAsyncThunk(
+  "/api/session/:id",
+  async (id: number | string, thunkAPI) => {
+    try {
+      const url = `/api/session/${id}`;
+      const res = await axios.get<ApiResponse<AnalysisSessionViewModel>>(url);
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(handleError(error));
+    }
+  }
+);
+
+export const toggleVisibility = createAsyncThunk(
+  "api/analysis/toggle-visibility/:id",
+  async (id: number, thunkAPI) => {
+    thunkAPI.dispatch(toggleVisibilityStart(id));
+    const url = `api/analysis/${id}/toggle-visibility`;
+    await axios.post(url);
+  }
+);
+
+export const deleteAnalysisById = createAsyncThunk(
+  "deleteAnalysis",
+  async (id: number | string, thunkAPI) => {
+    try {
+      const url = `/api/analysis/${id}`;
+      const res = await axios.delete<number>(url);
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(handleError(error));
+    }
+  }
+);
 
 const slice = createSlice({
   name: "analysis-state",
@@ -287,8 +344,21 @@ const slice = createSlice({
     setRightSide: (state, action: PayloadAction<number>) => {
       state.sideBySide.index2 = action.payload;
     },
-    setLayout: (state, action: PayloadAction<"all" | "side-by-side">) => {
+    setLayout: (state, action: PayloadAction<AnalysesLayout>) => {
       state.layout = action.payload;
+    },
+    openDeleteDialog: (state, action: PayloadAction<number>) => {
+      state.deleteDialog.id = action.payload;
+      state.deleteDialog.isOpen = true;
+      state.deleteDialog.error = "";
+    },
+    closeDeleteDialog: (state) => {
+      state.deleteDialog.id = 0;
+      state.deleteDialog.isOpen = false;
+      state.deleteDialog.error = "";
+    },
+    dismissDeleteDialogError: (state) => {
+      state.deleteDialog.error = "";
     },
     showSuccessMessage: (state, action: PayloadAction<string>) => {
       state.success = action.payload;
@@ -303,12 +373,54 @@ const slice = createSlice({
       state.error = null;
     },
   },
+  extraReducers: {
+    [fetchSessionById.pending.toString()]: (state) => {
+      state.isSessionLoading = true;
+    },
+    [fetchSessionById.fulfilled.toString()]: (
+      state,
+      action: PayloadAction<ApiResponse<AnalysisSessionViewModel>>
+    ) => {
+      state.isSessionLoading = false;
+      state.request.sessionId = action.payload.data.id;
+      state.session = action.payload.data;
+      state.error = null;
+    },
+    [fetchSessionById.rejected.toString()]: (
+      state,
+      action: PayloadAction<ApiResponse<AnalysisSessionViewModel>>
+    ) => {
+      state.isSessionLoading = false;
+      state.session = null;
+      state.error = action.payload.message;
+    },
+    [deleteAnalysisById.pending.toString()]: (state) => {
+      state.deleteDialog.isDeleting = true;
+    },
+    [deleteAnalysisById.fulfilled.toString()]: (
+      state,
+      action: PayloadAction<ApiResponse<number>>
+    ) => {
+      state.deleteDialog.isDeleting = false;
+      state.deleteDialog.isOpen = false;
+
+      if (state.session) {
+        state.session.analyses = state.session.analyses.filter(
+          (a) => a.id !== action.payload.data
+        );
+      }
+    },
+    [deleteAnalysisById.rejected.toString()]: (
+      state,
+      action: PayloadAction<Response>
+    ) => {
+      state.deleteDialog.isDeleting = false;
+      state.deleteDialog.error = action.payload.message;
+    },
+  },
 });
 
 export const {
-  fetchAnalysisSessionStart,
-  fetchAnalysisSessionSuccess,
-  fetchAnalysisSessionError,
   setApproach,
   setFlatteningAlgorithm,
   updateFlatteningParameters,
@@ -330,6 +442,9 @@ export const {
   setLeftSide,
   setRightSide,
   setLayout,
+  openDeleteDialog,
+  closeDeleteDialog,
+  dismissDeleteDialogError,
 } = slice.actions;
 
 export const setAnalysisApproach = (approach: AnalysisApproach) => (
@@ -353,29 +468,6 @@ export const setAnalysisApproach = (approach: AnalysisApproach) => (
   }
 };
 
-export const fetchAnalysisSession = (id: string) => (dispatch: Dispatch) => {
-  dispatch(fetchAnalysisSessionStart());
-
-  axios
-    .get<ApiResponse<AnalysisSessionViewModel>>("/api/session/" + id)
-    .then(({ data }) => {
-      dispatch(fetchAnalysisSessionSuccess(data));
-    })
-    .catch(({ response, message }) => {
-      if (response) {
-        const { data, status } = response;
-
-        if (status !== 500) {
-          dispatch(fetchAnalysisSessionError(data));
-        } else {
-          dispatch(fetchAnalysisSessionError({ message }));
-        }
-      } else {
-        dispatch(fetchAnalysisSessionError({ message }));
-      }
-    });
-};
-
 export const analyzeDataSet = () => (
   dispatch: Dispatch,
   getState: () => RootState
@@ -390,24 +482,9 @@ export const analyzeDataSet = () => (
     .then(({ data }) => {
       dispatch(analysisSuccess(data));
     })
-    .catch(({ response, message }) => {
-      if (response) {
-        const { data, status } = response;
-
-        if (status !== 500) {
-          dispatch(analysisError(data));
-        } else {
-          dispatch(analysisError({ message }));
-        }
-      } else {
-        dispatch(analysisError({ message }));
-      }
+    .catch((error) => {
+      dispatch(analysisError(handleError(error)));
     });
-};
-
-export const toggleVisibility = (id: number) => (dispatch: Dispatch) => {
-  dispatch(toggleVisibilityStart(id));
-  axios.post(`api/analysis/${id}/toggle-visibility`);
 };
 
 export default slice.reducer;

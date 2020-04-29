@@ -4,7 +4,7 @@ import {
   editSession,
   updateAddEditDialogName,
   closeAddEditDialog,
-  clearAddEditEdialogError
+  clearAddEditEdialogError,
 } from "../../slices/session-slice";
 import { connect, ConnectedProps } from "react-redux";
 import {
@@ -17,7 +17,7 @@ import {
   Dialog,
   DialogFooter,
   MessageBar,
-  MessageBarType
+  MessageBarType,
 } from "office-ui-fabric-react";
 import { RootState } from "../../store";
 
@@ -32,9 +32,9 @@ class SessionListAddEditDialog extends Component<ReduxProps> {
 
   handleSave = (e: React.FormEvent<any>) => {
     if (this.props.isEditing) {
-      this.props.editSession();
+      this.props.editSession(this.props.id, this.props.name);
     } else {
-      this.props.saveSession();
+      this.props.saveSession(this.props.name);
     }
     e.preventDefault();
   };
@@ -102,7 +102,7 @@ const mapDisptach = {
   editSession,
   closeAddEditDialog,
   updateAddEditDialogName,
-  clearAddEditEdialogError
+  clearAddEditEdialogError,
 };
 
 const connector = connect(mapState, mapDisptach);

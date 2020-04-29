@@ -2,6 +2,7 @@ import axios from "axios";
 import { SessionRowViewModel, ApiResponse, Response } from "../types";
 import { createSlice, Dispatch, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
+import { handleError } from "../axios";
 
 export type SessionListState = {
   isLoading: boolean;
@@ -202,107 +203,49 @@ export const fetchSessionsList = () => (dispatch: Dispatch) => {
     .then(({ data }) => {
       dispatch(fetchSessionsListSuccess(data));
     })
-    .catch(({ response, message }) => {
-      if (response) {
-        const { data, status } = response;
-
-        if (status !== 500) {
-          dispatch(fetchSessionsListError(data));
-        } else {
-          dispatch(fetchSessionsListError({ message }));
-        }
-      } else {
-        dispatch(fetchSessionsListError({ message }));
-      }
+    .catch((error) => {
+      dispatch(fetchSessionsListError(handleError(error)));
     });
 };
 
-export const saveSession = () => (
-  dispatch: Dispatch,
-  getState: () => RootState
-) => {
-  const state = getState();
-  const { name } = state.session.addEditDialog;
-  const data = { name };
-
+export const saveSession = (name: string) => (dispatch: Dispatch) => {
   dispatch(saveSessionStart());
 
   axios
-    .post<ApiResponse<SessionRowViewModel>>("api/session", data)
+    .post<ApiResponse<SessionRowViewModel>>("api/session", { name })
     .then(({ data }) => {
       dispatch(saveSessionSuccess(data));
     })
-    .catch(({ response, message }) => {
-      if (response) {
-        const { data, status } = response;
-
-        if (status !== 500) {
-          dispatch(saveSessionError(data));
-        } else {
-          dispatch(saveSessionError({ message }));
-        }
-      } else {
-        dispatch(saveSessionError({ message }));
-      }
+    .catch((error) => {
+      dispatch(saveSessionError(handleError(error)));
     });
 };
 
-export const editSession = () => (
-  dispatch: Dispatch,
-  getState: () => RootState
+export const editSession = (id: number, name: string) => (
+  dispatch: Dispatch
 ) => {
-  const state = getState();
-  const { id, name } = state.session.addEditDialog;
-  const data = { id, name };
-
   dispatch(saveSessionStart());
 
   axios
-    .patch<ApiResponse<SessionRowViewModel>>("api/session", data)
+    .patch<ApiResponse<SessionRowViewModel>>("api/session", { id, name })
     .then(({ data }) => {
       dispatch(saveSessionSuccess(data));
     })
-    .catch(({ response, message }) => {
-      if (response) {
-        const { data, status } = response;
-
-        if (status !== 500) {
-          dispatch(saveSessionError(data));
-        } else {
-          dispatch(saveSessionError({ message }));
-        }
-      } else {
-        dispatch(saveSessionError({ message }));
-      }
+    .catch((error) => {
+      dispatch(saveSessionError(handleError(error)));
     });
 };
 
-export const removeSession = () => (
-  dispatch: Dispatch,
-  getState: () => RootState
-) => {
-  const state = getState();
-  const { id } = state.session.removeDialog.session;
-
+export const removeSession = (id: number) => (dispatch: Dispatch) => {
   dispatch(removeSessionStart());
 
   axios
-    .delete<ApiResponse<number>>("api/session/" + id)
+    .delete<ApiResponse<number>>(`api/session/${id}`)
     .then(({ data }) => {
       dispatch(removeSessionSuccess(data));
     })
-    .catch(({ response, message }) => {
-      if (response) {
-        const { data, status } = response;
-
-        if (status !== 500) {
-          dispatch(removeSessionError(data));
-        } else {
-          dispatch(removeSessionError({ message }));
-        }
-      } else {
-        dispatch(removeSessionError({ message }));
-      }
+    .catch((error) => {
+      dispatch(removeSessionError(handleError(error)));
     });
 };
 

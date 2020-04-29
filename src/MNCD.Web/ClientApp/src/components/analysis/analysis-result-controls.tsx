@@ -20,6 +20,8 @@ import {
   toggleVisibility,
   toggleResultControls,
   setLayout,
+  AnalysesLayout,
+  openDeleteDialog,
 } from "../../slices/analysis-slice";
 
 interface IListItem {
@@ -94,17 +96,19 @@ export class AnalysisResultControls extends Component<ReduxProps> {
               </Stack>
             </Stack>
           </Stack.Item>
+          <Stack.Item>
+            <VerticalDivider />
+          </Stack.Item>
+          <Stack.Item align="center">
+            <IconButton
+              iconProps={{ iconName: "Delete" }}
+              onClick={() => this.props.openDeleteDialog(item.id)}
+            />
+          </Stack.Item>
         </Stack>
       );
-      // TODO: add delete analysis
-      //<Stack.Item>
-      //  <VerticalDivider />
-      //</Stack.Item>
-      //<Stack.Item align="center">
-      //<IconButton iconProps={{ iconName: "Delete" }} />
-      //</Stack.Item>
     }
-    return "";
+    return null;
   };
 
   render() {
@@ -181,7 +185,11 @@ export class AnalysisResultControls extends Component<ReduxProps> {
 
   private handleLayoutChange = (_: any, checked?: boolean) => {
     if (checked !== undefined) {
-      this.props.setLayout(checked ? "side-by-side" : "all");
+      if (checked) {
+        this.props.setLayout(AnalysesLayout.SideBySide);
+      } else {
+        this.props.setLayout(AnalysesLayout.All);
+      }
     }
   };
 }
@@ -192,13 +200,14 @@ const mapStateToProps = (state: RootState) => {
     showControls: areResultControlsVisible,
     items: session ? session.analyses : [],
     theme: state.theme.current,
-    isSideBySide: layout === "side-by-side",
+    isSideBySide: layout === AnalysesLayout.SideBySide,
   };
 };
 
 const mapDispatchToProps = {
   toggleVisibility,
   toggleResultControls,
+  openDeleteDialog,
   setLayout,
 };
 

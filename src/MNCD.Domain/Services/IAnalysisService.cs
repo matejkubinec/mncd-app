@@ -15,7 +15,7 @@ namespace MNCD.Domain.Services
 
         Task ToggleVisibility(int id);
 
-        Task RemoveFromSession(int sessionId, int analysisId);
+        Task Delete(int analysisId);
 
         Task ArchiveAnalysis(int analysisId, Stream outStream);
     }

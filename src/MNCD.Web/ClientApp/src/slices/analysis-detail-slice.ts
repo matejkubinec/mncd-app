@@ -1,4 +1,4 @@
-import axios from "../axios";
+import axios, { handleError } from "../axios";
 import { ApiResponse, AnalysisViewModel } from "../types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -34,18 +34,7 @@ export const fetchAnalysisDetailById = createAsyncThunk(
       const response = await axios.get<ApiResponse<AnalysisViewModel>>(url);
       return response.data;
     } catch (error) {
-      const { response, message } = error;
-      if (response) {
-        const { data, status } = response;
-
-        if (status !== 500) {
-          return thunkAPI.rejectWithValue(data);
-        } else {
-          return thunkAPI.rejectWithValue({ message });
-        }
-      } else {
-        return thunkAPI.rejectWithValue({ message });
-      }
+      return thunkAPI.rejectWithValue(handleError(error));
     }
   }
 );

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Stack, TooltipHost, Icon } from "office-ui-fabric-react";
+import { Stack, TooltipHost, Icon, IStyle } from "office-ui-fabric-react";
 import { AnalysisResultViewModel } from "../../../types";
 
 interface IRow {
@@ -11,15 +11,20 @@ interface IRow {
 
 interface IProps {
   result: AnalysisResultViewModel;
+  useMinMaxHeight: boolean;
 }
 
 export default class Evaluation extends Component<IProps> {
+  public static defaultProps = {
+    useMinMaxHeight: false,
+  };
+
   formatArray = (data: number[], prefix: string) => (
     <table>
       <thead>
         <tr>
           {data.map((_, i) => (
-            <th align="center" style={{ fontWeight: 600 }}>
+            <th key={i} align="center">
               {prefix}
               {i}
             </th>
@@ -28,8 +33,10 @@ export default class Evaluation extends Component<IProps> {
       </thead>
       <tbody>
         <tr>
-          {data.map(d => (
-            <td align="left">{d.toFixed(2)}</td>
+          {data.map((d, i) => (
+            <td key={i} align="left">
+              {d.toFixed(2)}
+            </td>
           ))}
         </tr>
       </tbody>
@@ -47,7 +54,7 @@ export default class Evaluation extends Component<IProps> {
         tooltipId: `${id}-coverage-tooltip`,
         tooltip:
           "The coverage of a partition is the ratio of the number of intra-community edges to the total number of edges in the graph.",
-        value: res.coverage.toFixed(2)
+        value: res.coverage.toFixed(2),
       });
     }
 
@@ -57,7 +64,7 @@ export default class Evaluation extends Component<IProps> {
         tooltipId: `${id}-coverage-tooltip`,
         tooltip:
           "The coverage of a partition is the ratio of the number of intra-community edges to the total number of edges in the graph.",
-        value: res.averageCoverage.toFixed(2)
+        value: res.averageCoverage.toFixed(2),
       });
     }
 
@@ -66,7 +73,7 @@ export default class Evaluation extends Component<IProps> {
         name: "Coverages",
         tooltipId: `${id}-coverage-tooltip`,
         tooltip: "Coverage of communities in each layer.",
-        value: this.formatArray(res.coverages, "L")
+        value: this.formatArray(res.coverages, "L"),
       });
     }
 
@@ -76,7 +83,7 @@ export default class Evaluation extends Component<IProps> {
         tooltipId: `${id}-performance-tooltip`,
         tooltip:
           "The performance of a partition is the ratio of the number of intra-community edges plus inter-community non-edges with the total number of potential edges.",
-        value: res.performance.toFixed(2)
+        value: res.performance.toFixed(2),
       });
     }
 
@@ -86,7 +93,7 @@ export default class Evaluation extends Component<IProps> {
         tooltipId: `${id}-performance-tooltip`,
         tooltip:
           "The performance of a partition is the ratio of the number of intra-community edges plus inter-community non-edges with the total number of potential edges.",
-        value: res.averagePerformance.toFixed(2)
+        value: res.averagePerformance.toFixed(2),
       });
     }
 
@@ -95,7 +102,7 @@ export default class Evaluation extends Component<IProps> {
         name: "Performances",
         tooltipId: `${id}-performance-tooltip`,
         tooltip: "Performances of communities individual layers.",
-        value: this.formatArray(res.performances, "L")
+        value: this.formatArray(res.performances, "L"),
       });
     }
 
@@ -105,7 +112,7 @@ export default class Evaluation extends Component<IProps> {
         tooltipId: `${id}-modularity-tooltip`,
         tooltip:
           "Modularity is the fraction of the edges that fall within the given groups minus the expected fraction if edges were distributed at random.",
-        value: res.modularity.toFixed(2)
+        value: res.modularity.toFixed(2),
       });
     }
 
@@ -115,7 +122,7 @@ export default class Evaluation extends Component<IProps> {
         tooltipId: `${id}-modularity-tooltip`,
         tooltip:
           "Modularity is the fraction of the edges that fall within the given groups minus the expected fraction if edges were distributed at random.",
-        value: res.averageModularity.toFixed(2)
+        value: res.averageModularity.toFixed(2),
       });
     }
 
@@ -124,7 +131,7 @@ export default class Evaluation extends Component<IProps> {
         name: "Modularities",
         tooltipId: `${id}-modularity-tooltip`,
         tooltip: "Modularity of communities in each layer.",
-        value: this.formatArray(res.modularities, "L")
+        value: this.formatArray(res.modularities, "L"),
       });
     }
 
@@ -156,7 +163,10 @@ export default class Evaluation extends Component<IProps> {
   render() {
     const rows = this.getRows();
     return (
-      <Stack tokens={{ padding: 10, childrenGap: 5 }}>
+      <Stack
+        tokens={{ padding: 10, childrenGap: 5 }}
+        styles={this.getStackStyle()}
+      >
         <Stack.Item>
           <h2>Evaluation</h2>
         </Stack.Item>
@@ -164,4 +174,16 @@ export default class Evaluation extends Component<IProps> {
       </Stack>
     );
   }
+
+  private getStackStyle = () => {
+    const { useMinMaxHeight } = this.props;
+    const styles: IStyle = {};
+
+    if (useMinMaxHeight) {
+      styles.minHeight = 300;
+      styles.maxHeight = 300;
+    }
+
+    return { root: styles };
+  };
 }

@@ -4,64 +4,61 @@ import {
   Dropdown,
   IDropdownOption,
   List,
-  Separator
+  Separator,
+  IStyle,
 } from "office-ui-fabric-react";
 import { AnalysisResultViewModel, ActorItem } from "../../../types";
 
 interface IProps {
   result: AnalysisResultViewModel;
+  useMinMaxHeight: boolean;
 }
 
 interface IState {
-  selectedCommunity: number;
+  idx: number;
 }
 
 export default class CommunitiesDetails extends Component<IProps, IState> {
+  public static defaultProps = {
+    useMinMaxHeight: false,
+  };
+
   constructor(props: IProps) {
     super(props);
+
     this.state = {
-      selectedCommunity: 0
+      idx: 0,
     };
   }
 
   handleCommunityChange = (_: any, option?: IDropdownOption) => {
     if (option) {
-      this.setState({ selectedCommunity: Number(option.key) });
+      const selectedCommunity = Number(option.key);
+      this.setState({ idx: selectedCommunity });
     }
   };
 
   getOptions = (): IDropdownOption[] => {
-    return this.props.result.communityDetails.map(
-      (cd, i) =>
-        ({
-          key: i,
-          text: `${cd.name} (Size: ${cd.actorCount})`
-        } as IDropdownOption)
-    );
-  };
+    const { communityDetails } = this.props.result;
 
-  renderCell = (item?: ActorItem) => {
-    if (item !== undefined) {
-      return (
-        <Stack horizontal tokens={{ childrenGap: 5 }} horizontalAlign="stretch">
-          <Stack.Item grow={1} styles={{ root: { width: "50%" } }}>
-            <label style={{ fontWeight: 600 }}>{item.idx}</label>
-          </Stack.Item>
-          <Stack.Item grow={1} styles={{ root: { width: "50%" } }}>
-            {item.name}
-          </Stack.Item>
-        </Stack>
-      );
-    }
+    return communityDetails.map((cd, i) => ({
+      key: i,
+      text: `${cd.name} (Size: ${cd.actorCount})`,
+    }));
   };
-
-  getItems() {}
 
   render() {
-    const cd = this.props.result.communityDetails;
-    const i = this.state.selectedCommunity;
+    const { communityDetails } = this.props.result;
+    const actors = communityDetails
+      ? communityDetails[this.state.idx].actors
+      : [];
+    const columns = Math.ceil(actors.length / 15);
+
     return (
-      <Stack tokens={{ padding: 10, childrenGap: 5 }}>
+      <Stack
+        tokens={{ padding: 10, childrenGap: 5 }}
+        styles={this.getStackStyle()}
+      >
         <Stack.Item>
           <h2>Communities Details</h2>
         </Stack.Item>
@@ -69,22 +66,40 @@ export default class CommunitiesDetails extends Component<IProps, IState> {
           <Dropdown
             label="Community"
             options={this.getOptions()}
-            selectedKey={i}
+            selectedKey={this.state.idx}
             onChange={this.handleCommunityChange}
           />
         </Stack.Item>
-        {cd ? (
-          <React.Fragment>
-            <Stack.Item></Stack.Item>
-            <Stack.Item>
-              <Separator />
-            </Stack.Item>
-            <Stack.Item>
-              <List items={cd[i].actors} onRenderCell={this.renderCell} />
-            </Stack.Item>
-          </React.Fragment>
-        ) : null}
+        <Separator />
+        <ul style={{ columns }}>
+          <List items={actors} onRenderCell={this.renderListItem} />
+        </ul>
       </Stack>
     );
   }
+
+  private renderListItem = (item?: ActorItem) => {
+    if (!item) {
+      return null;
+    }
+    const { idx, name } = item;
+
+    return (
+      <li key={idx}>
+        {idx > 9 ? idx : "0" + idx} {name}
+      </li>
+    );
+  };
+
+  private getStackStyle = () => {
+    const { useMinMaxHeight } = this.props;
+    const styles: IStyle = {};
+
+    if (useMinMaxHeight) {
+      styles.minHeight = 425;
+      styles.maxHeight = 425;
+    }
+
+    return { root: styles };
+  };
 }

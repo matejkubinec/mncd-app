@@ -9,7 +9,7 @@ import {
   analysisToString,
   flatteningToString,
 } from "../../../utils";
-import { Stack, Separator } from "office-ui-fabric-react";
+import { Stack, Separator, IStyle } from "office-ui-fabric-react";
 
 interface AnalysisRequestRow {
   name: string;
@@ -22,9 +22,14 @@ interface IProps {
   request: AnalysisRequestViewModel;
   showDepth: boolean;
   showHeader: boolean;
+  useMinMaxHeight: boolean;
 }
 
 export default class AnalysisRequest extends Component<IProps> {
+  public static defaultProps = {
+    useMinMaxHeight: false,
+  };
+
   get flatteningAlgorithm(): string {
     return flatteningToString(this.props.request.flatteningAlgorithm);
   }
@@ -153,7 +158,10 @@ export default class AnalysisRequest extends Component<IProps> {
   render() {
     const rows = this.getRows();
     return (
-      <Stack tokens={{ padding: 10, childrenGap: 5 }}>
+      <Stack
+        tokens={{ padding: 10, childrenGap: 5 }}
+        styles={this.getStackStyle()}
+      >
         {this.props.showHeader ? (
           <Stack.Item>
             <h2>Request</h2>
@@ -163,4 +171,16 @@ export default class AnalysisRequest extends Component<IProps> {
       </Stack>
     );
   }
+
+  private getStackStyle = () => {
+    const { useMinMaxHeight } = this.props;
+    const styles: IStyle = {};
+
+    if (useMinMaxHeight) {
+      styles.minHeight = 330;
+      styles.maxHeight = 330;
+    }
+
+    return { root: styles };
+  };
 }

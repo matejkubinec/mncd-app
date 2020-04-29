@@ -124,17 +124,7 @@ namespace MNCD.Services.Impl
                 Result = result
             };
 
-            if (session.Analyses == null)
-            {
-                session.Analyses = new List<Analysis>
-                {
-                    analysis
-                };
-            }
-            else
-            {
-                session.Analyses.Add(analysis);
-            }
+            session.Analyses.Add(analysis);
 
             await _ctx.SaveChangesAsync();
 
@@ -153,33 +143,26 @@ namespace MNCD.Services.Impl
             await _ctx.SaveChangesAsync();
         }
 
-        public async Task RemoveFromSession(int sessionId, int analysisId)
+        public async Task Delete(int analysisId)
         {
-            if (sessionId <= 0)
-            {
-                throw new ArgumentException("Session id must be greater than zero.", nameof(sessionId));
-            }
-
             if (analysisId <= 0)
             {
                 throw new ArgumentException("Analysis id must be greater than zero.", nameof(analysisId));
             }
 
-            var session = await _sessions.GetAnalysisSession(sessionId);
-
-            if (session is null)
-            {
-                throw new AnalysisSessionNotFoundException($"Analysis sesion with id '{sessionId}' doesn't exist.");
-            }
-
-            var analysis = session.Analyses.FirstOrDefault(a => a.Id == analysisId);
+            var analysis = await _ctx.Analyses
+                .Include(a => a.Visualizations)
+                .Include(a => a.Request)
+                .Include(a => a.Result)
+                .FirstOrDefaultAsync(a => a.Id == analysisId)
+                .ConfigureAwait(false);
 
             if (analysis is null)
             {
-                throw new AnalysisNotFoundException($"Analysis with id '{analysisId}' doesn't exist in sesion with id '{sessionId}'.");
+                throw new AnalysisNotFoundException($"Analysis with id '{analysisId}' doesn't exist.");
             }
 
-            _ctx.Analyses.Remove(analysis);
+            _ctx.Remove(analysis);
 
             await _ctx.SaveChangesAsync();
         }

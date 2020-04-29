@@ -1,9 +1,19 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../store";
-import { Stack, ProgressIndicator } from "office-ui-fabric-react";
-import { fetchAnalysisSession } from "../../slices/analysis-slice";
-import { AnalysisPageHeader, AnalysisControls, AnalysisResult } from "./index";
+import {
+  Stack,
+  ProgressIndicator,
+  MessageBar,
+  MessageBarType,
+} from "office-ui-fabric-react";
+import { fetchSessionById } from "../../slices/analysis-slice";
+import {
+  AnalysisPageHeader,
+  AnalysisControls,
+  AnalysisResult,
+  AnalysisDeleteDialog,
+} from "./index";
 import { RouteComponentProps } from "react-router";
 
 interface MatchParams {
@@ -15,28 +25,41 @@ interface IProps extends RouteComponentProps<MatchParams>, ReduxProps {}
 class AnalysisPage extends React.Component<IProps> {
   componentDidMount() {
     const { id } = this.props.match.params;
-    this.props.fetchAnalysisSession(id);
+    this.props.fetchSessionById(id);
   }
 
   render() {
     return (
       <Stack>
-        <Stack.Item>
-          <AnalysisPageHeader />
-        </Stack.Item>
-        {this.props.isLoading ? (
-          <ProgressIndicator />
-        ) : (
-          <React.Fragment>
-            <AnalysisControls />
-            <Stack.Item>
-              <AnalysisResult />
-            </Stack.Item>
-          </React.Fragment>
-        )}
+        <AnalysisPageHeader />
+        {this.renderBody()}
       </Stack>
     );
   }
+
+  private renderBody = () => {
+    const { isLoading, error } = this.props;
+
+    if (isLoading) {
+      return <ProgressIndicator />;
+    }
+
+    if (error) {
+      return (
+        <div style={{ padding: 20 }}>
+          <MessageBar messageBarType={MessageBarType.error}>{error}</MessageBar>
+        </div>
+      );
+    }
+
+    return (
+      <Fragment>
+        <AnalysisDeleteDialog />
+        <AnalysisControls />
+        <AnalysisResult />
+      </Fragment>
+    );
+  };
 }
 
 const mapProps = (state: RootState) => ({
@@ -45,9 +68,7 @@ const mapProps = (state: RootState) => ({
   isLoading: state.analysis.isSessionLoading,
 });
 
-const mapDispatch = {
-  fetchAnalysisSession,
-};
+const mapDispatch = { fetchSessionById };
 
 const connector = connect(mapProps, mapDispatch);
 

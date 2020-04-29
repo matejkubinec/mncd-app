@@ -4,7 +4,13 @@ import {
   AnalysisVisualizationItemViewModel,
   AnalysisApproach,
 } from "../../types";
-import { Stack, ITheme } from "office-ui-fabric-react";
+import {
+  Stack,
+  ITheme,
+  IconButton,
+  Separator,
+  TooltipHost,
+} from "office-ui-fabric-react";
 import {
   Evaluation,
   Request,
@@ -15,9 +21,18 @@ import {
 interface IProps {
   analysis: AnalysisViewModel;
   theme: ITheme;
+  showControls: boolean;
+  onMinimize: (id: number) => void;
+  onDelete: (id: number) => void;
 }
 
 class AnalysisResultItem extends Component<IProps> {
+  public static defaultProps = {
+    showControls: true,
+    onDelete: null,
+    onMinimize: null,
+  };
+
   getSingleLayerCommuntiesViz(): AnalysisVisualizationItemViewModel[] {
     const viz = this.props.analysis.visualization;
     return viz ? viz.singleLayerCommunities : [];
@@ -44,7 +59,7 @@ class AnalysisResultItem extends Component<IProps> {
   }
 
   render() {
-    const analysis = this.props.analysis;
+    const { showControls, analysis } = this.props;
     const { approach } = analysis.request;
     const multiLayerViz = this.getMultiLayerViz();
     const singleLayerViz = this.getSingleLayerViz();
@@ -61,54 +76,67 @@ class AnalysisResultItem extends Component<IProps> {
       },
     };
 
-    const headerStyle = {
-      root: {
-        padding: 10,
-        borderRadius: this.props.theme.effects.roundedCorner2,
-        backgroundColor: this.props.theme.palette.accent,
-        color: this.props.theme.palette.white,
-        textAlign: "center",
-      },
-    };
-
     return (
       <Stack
         tokens={{ padding: 10, childrenGap: 15 }}
-        style={{
-          minWidth: 500,
-          borderRadius: this.props.theme.effects.roundedCorner2,
-          boxShadow: this.props.theme.effects.elevation16,
-          backgroundColor: this.props.theme.palette.neutralLighterAlt,
-        }}
+        style={{ minWidth: 500 }}
       >
-        <Stack.Item styles={headerStyle}>
-          <h2>Analysis {analysis.id}</h2>
-        </Stack.Item>
         <Stack.Item styles={itemStyles}>
-          <div style={{ textAlign: "center", padding: 5 }}>
-            Click{" "}
-            <a
-              href={`/analysis/${analysis.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              here
-            </a>{" "}
-            to view a more detailed version.
-          </div>
+          <Stack tokens={{ padding: 10 }}>
+            <Stack horizontal>
+              <Stack.Item grow={10}>
+                <h1>Analysis {analysis.id}</h1>
+              </Stack.Item>
+              {showControls ? (
+                <Stack.Item grow={2} align="end">
+                  <Stack horizontal horizontalAlign="end">
+                    <TooltipHost content="Minimize">
+                      <IconButton
+                        iconProps={{
+                          iconName: "Remove",
+                        }}
+                        onClick={this.handleMinimize}
+                      />
+                    </TooltipHost>
+                    <TooltipHost content="Delete">
+                      <IconButton
+                        iconProps={{
+                          iconName: "Delete",
+                        }}
+                        onClick={this.handleDelete}
+                      />
+                    </TooltipHost>
+                  </Stack>
+                </Stack.Item>
+              ) : null}
+            </Stack>
+            <Separator />
+            <div>
+              Click{" "}
+              <a
+                href={`/analysis/${analysis.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                here
+              </a>{" "}
+              to view a more detailed version.
+            </div>
+          </Stack>
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
           <Request
             request={analysis.request}
-            showHeader={true}
-            showDepth={true}
+            useMinMaxHeight
+            showHeader
+            showDepth
           />
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
-          <Evaluation result={analysis.result} />
+          <Evaluation result={analysis.result} useMinMaxHeight />
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
-          <CommunitiesDetails result={analysis.result} />
+          <CommunitiesDetails result={analysis.result} useMinMaxHeight />
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
           <Visualization
@@ -155,6 +183,14 @@ class AnalysisResultItem extends Component<IProps> {
       </Stack>
     );
   }
+
+  private handleMinimize = () => {
+    this.props.onMinimize(this.props.analysis.id);
+  };
+
+  private handleDelete = () => {
+    this.props.onDelete(this.props.analysis.id);
+  };
 }
 
 export default AnalysisResultItem;
