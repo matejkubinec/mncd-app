@@ -9,15 +9,8 @@ import {
   analysisToString,
   flatteningToString,
 } from "../../../utils";
-import {
-  Stack,
-  Separator,
-  IStyle,
-  IconButton,
-  ITheme,
-  DefaultButton,
-  Icon,
-} from "office-ui-fabric-react";
+import { Stack, Separator, ITheme } from "office-ui-fabric-react";
+import AnalysisResultCard from "./result-card";
 
 interface AnalysisRequestRow {
   name: string;
@@ -31,19 +24,7 @@ interface IProps {
   request: AnalysisRequestViewModel;
 }
 
-interface IState {
-  minimized: boolean;
-}
-
-export default class AnalysisRequest extends Component<IProps, IState> {
-  constructor(props: IProps) {
-    super(props);
-
-    this.state = {
-      minimized: false,
-    };
-  }
-
+export default class AnalysisRequest extends Component<IProps> {
   get flatteningAlgorithm(): string {
     return flatteningToString(this.props.request.flatteningAlgorithm);
   }
@@ -140,7 +121,13 @@ export default class AnalysisRequest extends Component<IProps, IState> {
     return rows;
   }
 
-  renderRows(rows: AnalysisRequestRow[]) {
+  render = () => (
+    <AnalysisResultCard title="Request" theme={this.props.theme}>
+      {this.renderBody(this.getRows())}
+    </AnalysisResultCard>
+  );
+
+  renderBody(rows: AnalysisRequestRow[]) {
     return rows.map((r, i) => {
       const fontWeight = r.isParam ? 400 : 600;
 
@@ -168,32 +155,4 @@ export default class AnalysisRequest extends Component<IProps, IState> {
       );
     });
   }
-
-  render() {
-    const { s1 } = this.props.theme.spacing;
-    const { minimized } = this.state;
-    const rows = this.getRows();
-    return (
-      <Stack tokens={{ padding: s1, childrenGap: s1 }}>
-        {this.renderHeader(minimized)}
-        {this.state.minimized ? null : this.renderRows(rows)}
-      </Stack>
-    );
-  }
-
-  private renderHeader = (minimized: boolean) => (
-    <Stack horizontal>
-      <Stack.Item grow={1}>
-        <h2>Request</h2>
-      </Stack.Item>
-      <Stack.Item>
-        <IconButton
-          iconProps={{
-            iconName: minimized ? "ChevronDown" : "ChevronUp",
-          }}
-          onClick={() => this.setState({ minimized: !minimized })}
-        />
-      </Stack.Item>
-    </Stack>
-  );
 }

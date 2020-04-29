@@ -20,10 +20,7 @@ namespace MNCD.Web.Mappings
                         MultiLayerCommunities = MapMultiLayerCommunities(src),
                         SingleLayer = MapSingleLayer(src),
                         SingleLayerCommunities = MapSingleLayerCommunities(src),
-                        CommunitiesBarplot = MapBarplot(src),
-                        CommunitiesTreemap = MapTreemap(src),
-                        Slices = MapSlices(src),
-                        SlicesCommunities = MapSlicesCommunities(src),
+                        CommunitySizes = MapCommunitySizes(src),
                     })
                 );
         }
@@ -32,7 +29,8 @@ namespace MNCD.Web.Mappings
         {
             var types = new List<VisualizationType>
             {
-                VisualizationType.MultiLayer_Diagonal
+                VisualizationType.MultiLayer_Diagonal,
+                VisualizationType.MultiLayer_Slices,
             };
             var items = new List<AnalysisVisualizationItemViewModel>();
             foreach (var type in types)
@@ -44,6 +42,7 @@ namespace MNCD.Web.Mappings
                     Url = GetUrl(analysis, type)
                 });
             }
+
             return items;
         }
 
@@ -51,7 +50,8 @@ namespace MNCD.Web.Mappings
         {
             var types = new List<VisualizationType>
             {
-                VisualizationType.MultiLayerHairball
+                VisualizationType.MultiLayerHairball,
+                VisualizationType.MultiLayerSlicesCommunities
             };
             var items = new List<AnalysisVisualizationItemViewModel>();
             foreach (var type in types)
@@ -63,6 +63,7 @@ namespace MNCD.Web.Mappings
                     Url = GetUrl(analysis, type)
                 });
             }
+
             return items;
         }
 
@@ -84,6 +85,7 @@ namespace MNCD.Web.Mappings
                     Url = GetUrl(analysis, type)
                 });
             }
+
             return items;
         }
 
@@ -105,51 +107,29 @@ namespace MNCD.Web.Mappings
                     Url = GetUrl(analysis, type)
                 });
             }
+
             return items;
         }
 
-        private AnalysisVisualizationItemViewModel MapBarplot(Analysis analysis)
+        private List<AnalysisVisualizationItemViewModel> MapCommunitySizes(Analysis analysis)
         {
-            var type = VisualizationType.Barplot;
-            var visualization = analysis.Visualizations.FirstOrDefault(v => v.Type == type);
-            return new AnalysisVisualizationItemViewModel
+            var types = new List<VisualizationType>
             {
-                Title = visualization?.Title ?? type.ToTitle(),
-                Url = GetUrl(analysis, type)
+                VisualizationType.Barplot,
+                VisualizationType.Treemap,
             };
-        }
+            var items = new List<AnalysisVisualizationItemViewModel>();
+            foreach (var type in types)
+            {
+                var visualization = analysis.Visualizations.FirstOrDefault(v => v.Type == type);
+                items.Add(new AnalysisVisualizationItemViewModel
+                {
+                    Title = visualization?.Title ?? type.ToTitle(),
+                    Url = GetUrl(analysis, type)
+                });
+            }
 
-        private AnalysisVisualizationItemViewModel MapTreemap(Analysis analysis)
-        {
-            var type = VisualizationType.Treemap;
-            var visualization = analysis.Visualizations.FirstOrDefault(v => v.Type == type);
-            return new AnalysisVisualizationItemViewModel
-            {
-                Title = visualization?.Title ?? type.ToTitle(),
-                Url = GetUrl(analysis, type)
-            };
-        }
-
-        private AnalysisVisualizationItemViewModel MapSlices(Analysis analysis)
-        {
-            var type = VisualizationType.MultiLayer_Slices;
-            var visualization = analysis.Visualizations.FirstOrDefault(v => v.Type == type);
-            return new AnalysisVisualizationItemViewModel
-            {
-                Title = visualization?.Title ?? type.ToTitle(),
-                Url = GetUrl(analysis, type)
-            };
-        }
-
-        private AnalysisVisualizationItemViewModel MapSlicesCommunities(Analysis analysis)
-        {
-            var type = VisualizationType.MultiLayerSlicesCommunities;
-            var visualization = analysis.Visualizations.FirstOrDefault(v => v.Type == type);
-            return new AnalysisVisualizationItemViewModel
-            {
-                Title = visualization?.Title ?? type.ToTitle(),
-                Url = GetUrl(analysis, type)
-            };
+            return items;
         }
 
         private string GetUrl(Analysis analysis, VisualizationType type)

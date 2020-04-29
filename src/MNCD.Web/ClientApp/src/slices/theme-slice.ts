@@ -4,21 +4,21 @@ import { loadTheme } from "office-ui-fabric-react";
 
 const initialState = {
   name: "light",
-  current: loadTheme(light)
+  current: loadTheme(light),
 };
 
 const slice = createSlice({
   name: "theme-slice",
   initialState: initialState,
   reducers: {
-    toggleTheme: state => {
+    toggleTheme: (state) => {
       if (state.name === "dark") {
         state = { name: "light", current: loadTheme(light) };
       } else {
         state = { name: "dark", current: loadTheme(dark) };
       }
-    }
-  }
+    },
+  },
 });
 
 export const { toggleTheme } = slice.actions;

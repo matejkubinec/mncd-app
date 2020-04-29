@@ -4,11 +4,11 @@ import {
   IDropdownOption,
   List,
   ITheme,
-  IconButton,
   Dropdown,
   Separator,
 } from "office-ui-fabric-react";
 import { AnalysisResultViewModel, ActorItem } from "../../../types";
+import AnalysisResultCard from "./result-card";
 
 interface IProps {
   theme: ITheme;
@@ -17,20 +17,14 @@ interface IProps {
 
 interface IState {
   idx: number;
-  minimized: boolean;
 }
 
 export default class CommunitiesDetails extends Component<IProps, IState> {
-  public static defaultProps = {
-    useMinMaxHeight: false,
-  };
-
   constructor(props: IProps) {
     super(props);
 
     this.state = {
       idx: 0,
-      minimized: false,
     };
   }
 
@@ -51,8 +45,6 @@ export default class CommunitiesDetails extends Component<IProps, IState> {
   };
 
   render() {
-    const { s1 } = this.props.theme.spacing;
-    const { minimized } = this.state;
     const { communityDetails } = this.props.result;
     const actors = communityDetails
       ? communityDetails[this.state.idx].actors
@@ -60,28 +52,14 @@ export default class CommunitiesDetails extends Component<IProps, IState> {
     const columns = Math.ceil(actors.length / 15);
 
     return (
-      <Stack tokens={{ padding: s1, childrenGap: s1 }}>
-        {this.renderHeader(minimized)}
-        {minimized ? null : this.renderBody(columns, actors)}
-      </Stack>
+      <AnalysisResultCard
+        title={"Communities Details"}
+        theme={this.props.theme}
+      >
+        {this.renderBody(columns, actors)}
+      </AnalysisResultCard>
     );
   }
-
-  private renderHeader = (minimized: boolean) => (
-    <Stack horizontal>
-      <Stack.Item grow={1}>
-        <h2>Communities Details</h2>
-      </Stack.Item>
-      <Stack.Item>
-        <IconButton
-          iconProps={{
-            iconName: minimized ? "ChevronDown" : "ChevronUp",
-          }}
-          onClick={() => this.setState({ minimized: !minimized })}
-        />
-      </Stack.Item>
-    </Stack>
-  );
 
   private renderBody = (columns: number, actors: ActorItem[]) => (
     <Stack>

@@ -1,12 +1,7 @@
 import React, { Component } from "react";
-import {
-  Stack,
-  TooltipHost,
-  Icon,
-  ITheme,
-  IconButton,
-} from "office-ui-fabric-react";
+import { Stack, TooltipHost, Icon, ITheme } from "office-ui-fabric-react";
 import { AnalysisResultViewModel } from "../../../types";
+import { AnalysisResultCard } from ".";
 
 interface IRow {
   name: string;
@@ -21,11 +16,7 @@ interface IProps {
   useMinMaxHeight: boolean;
 }
 
-interface IState {
-  minimized: boolean;
-}
-
-export default class Evaluation extends Component<IProps, IState> {
+export default class Evaluation extends Component<IProps> {
   public static defaultProps = {
     useMinMaxHeight: false,
   };
@@ -157,7 +148,13 @@ export default class Evaluation extends Component<IProps, IState> {
     return rows;
   }
 
-  renderRows(rows: IRow[]) {
+  render = () => (
+    <AnalysisResultCard title={"Evaluation"} theme={this.props.theme}>
+      {this.renderRows(this.getRows())}
+    </AnalysisResultCard>
+  );
+
+  private renderRows(rows: IRow[]) {
     return rows.map((r, i) => (
       <Stack horizontal horizontalAlign="center" key={i}>
         <Stack.Item styles={{ root: { width: "50%" } }}>
@@ -178,32 +175,4 @@ export default class Evaluation extends Component<IProps, IState> {
       </Stack>
     ));
   }
-
-  render() {
-    const { s1 } = this.props.theme.spacing;
-    const { minimized } = this.state;
-    const rows = this.getRows();
-    return (
-      <Stack tokens={{ padding: s1, childrenGap: s1 }}>
-        {this.renderHeader(minimized)}
-        {minimized ? null : this.renderRows(rows)}
-      </Stack>
-    );
-  }
-
-  private renderHeader = (minimized: boolean) => (
-    <Stack horizontal>
-      <Stack.Item grow={1}>
-        <h2>Evaluation</h2>
-      </Stack.Item>
-      <Stack.Item>
-        <IconButton
-          iconProps={{
-            iconName: minimized ? "ChevronDown" : "ChevronUp",
-          }}
-          onClick={() => this.setState({ minimized: !minimized })}
-        />
-      </Stack.Item>
-    </Stack>
-  );
 }

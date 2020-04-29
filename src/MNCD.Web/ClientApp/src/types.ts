@@ -105,15 +105,9 @@ export interface AnalysisVisualizationItemViewModel {
 export interface AnalysisVisualizationViewModel {
   multiLayer: AnalysisVisualizationItemViewModel[];
   multiLayerCommunities: AnalysisVisualizationItemViewModel[];
-
   singleLayer: AnalysisVisualizationItemViewModel[];
   singleLayerCommunities: AnalysisVisualizationItemViewModel[];
-
-  communitiesBarplot: AnalysisVisualizationItemViewModel;
-  communitiesTreemap: AnalysisVisualizationItemViewModel;
-
-  slices: AnalysisVisualizationItemViewModel;
-  slicesCommunities: AnalysisVisualizationItemViewModel;
+  communitySizes: AnalysisVisualizationItemViewModel[];
 }
 
 export interface AnalysisViewModel {

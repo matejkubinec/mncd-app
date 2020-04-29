@@ -5,11 +5,8 @@ import { RouteComponentProps } from "react-router";
 import {
   Stack,
   Separator,
-  Dropdown,
-  IDropdownOption,
   PrimaryButton,
   TextField,
-  IconButton,
   MessageBar,
   MessageBarType,
   Spinner,
@@ -17,17 +14,18 @@ import {
 } from "office-ui-fabric-react";
 import {
   fetchAnalysisDetailById,
-  setVisualizationType,
-  VisualizationType,
   downloadAnalysisById,
-  toggleVisualizations,
   editAnalysisById,
   dismissEditError,
   editNotes,
 } from "../../slices/analysis-detail-slice";
-import { AnalysisApproach, AnalysisViewModel } from "../../types";
-import { Request, Evaluation, CommunitiesDetails } from "./result";
-import { ImageGallery } from "../common";
+import { AnalysisViewModel } from "../../types";
+import {
+  Request,
+  Evaluation,
+  CommunitiesDetails,
+  Visualization,
+} from "./result";
 
 interface MatchParams {
   id: string;
@@ -89,11 +87,12 @@ class AnalysisDetail extends React.Component<IProps> {
       return this.renderError();
     }
 
-    const { analysis, theme } = this.props;
-
-    if (!analysis) {
+    if (!this.props.analysis) {
       return null;
     }
+
+    const { analysis, theme } = this.props;
+    const { visualization, request, result } = analysis;
 
     const cardStyle = {
       border: "1px solid",
@@ -111,16 +110,16 @@ class AnalysisDetail extends React.Component<IProps> {
       >
         <Stack grow={2} tokens={{ childrenGap: theme.spacing.l1 }}>
           <Stack style={cardStyle}>
-            <Stack>{this.renderVisualizations(analysis)}</Stack>
+            <Visualization theme={theme} visualizations={visualization} />
           </Stack>
           <Stack style={cardStyle}>
-            <Request theme={theme} request={analysis.request} />
+            <Request theme={theme} request={request} />
           </Stack>
           <Stack style={cardStyle}>
-            <Evaluation theme={theme} result={analysis.result} />
+            <Evaluation theme={theme} result={result} />
           </Stack>
           <Stack style={cardStyle}>
-            <CommunitiesDetails theme={theme} result={analysis.result} />
+            <CommunitiesDetails theme={theme} result={result} />
           </Stack>
           <Stack.Item align="stretch" verticalFill>
             <Stack verticalAlign="end" verticalFill>
@@ -182,116 +181,11 @@ class AnalysisDetail extends React.Component<IProps> {
     );
   };
 
-  private renderVisualizations = (analysis: AnalysisViewModel) => {
-    const { showVisualizations, theme } = this.props;
-    const {
-      multiLayer,
-      multiLayerCommunities,
-      singleLayer,
-      singleLayerCommunities,
-      slices,
-      slicesCommunities,
-    } = analysis.visualization;
-
-    const options: IDropdownOption[] = [
-      {
-        key: VisualizationType.MultiLayer,
-        text: "Multi Layer",
-      },
-      {
-        key: VisualizationType.MultiLayerCommunities,
-        text: "Multi Layer Communities",
-      },
-    ];
-
-    if (analysis.request.approach !== AnalysisApproach.MultiLayer) {
-      options.push({
-        key: VisualizationType.SingleLayer,
-        text: "Single Layer",
-      });
-      options.push({
-        key: VisualizationType.SingleLayerCommunities,
-        text: "Single Layer Communities",
-      });
-    }
-
-    let titles: string[] = [];
-    let urls: string[] = [];
-
-    switch (this.props.visualization) {
-      case VisualizationType.MultiLayer:
-        titles = multiLayer.map((m) => m.title).concat(slices.title);
-        urls = multiLayer.map((m) => m.url).concat(slices.url);
-        break;
-      case VisualizationType.MultiLayerCommunities:
-        titles = multiLayerCommunities
-          .map((m) => m.title)
-          .concat(slicesCommunities.title);
-        urls = multiLayerCommunities
-          .map((m) => m.url)
-          .concat(slicesCommunities.url);
-        break;
-      case VisualizationType.SingleLayer:
-        titles = singleLayer.map((m) => m.title);
-        urls = singleLayer.map((m) => m.url);
-        break;
-      case VisualizationType.SingleLayerCommunities:
-        titles = singleLayerCommunities.map((m) => m.title);
-        urls = singleLayerCommunities.map((m) => m.url);
-        break;
-    }
-
-    const iconStyle = { color: this.props.theme.palette.black };
-    const iconName = showVisualizations ? "ChevronDown" : "ChevronUp";
-
-    return (
-      <Stack tokens={{ padding: 10 }}>
-        <Stack horizontal tokens={{ childrenGap: theme.spacing.s1 }}>
-          <h2>Visualizations</h2>
-          <IconButton
-            onClick={this.handleToggleVisualizations}
-            iconProps={{ iconName, style: iconStyle }}
-          />
-        </Stack>
-        {showVisualizations ? (
-          <Stack tokens={{ childrenGap: 5 }}>
-            <Dropdown
-              options={options}
-              selectedKey={this.props.visualization}
-              onChange={this.handleVisualizationTypeChange}
-            />
-            <Stack.Item
-              styles={{
-                root: {
-                  padding: 10,
-                  boxShadow: this.props.theme.effects.elevation4,
-                },
-              }}
-            >
-              <ImageGallery titles={titles} urls={urls} height={500} />
-            </Stack.Item>
-          </Stack>
-        ) : null}
-      </Stack>
-    );
-  };
-
-  private handleToggleVisualizations = () => {
-    this.props.toggleVisualizations();
-  };
-
   private handleDownload = () => {
     const { analysis } = this.props;
     if (analysis) {
       const { id } = analysis;
       this.props.downloadAnalysisById(id);
-    }
-  };
-
-  private handleVisualizationTypeChange = (_: any, opt?: IDropdownOption) => {
-    if (opt) {
-      const type = opt.key as VisualizationType;
-      this.props.setVisualizationType(type);
     }
   };
 }
@@ -303,9 +197,7 @@ const mapProps = (rootState: RootState) => ({
 
 const mapDispatch = {
   fetchAnalysisDetailById,
-  setVisualizationType,
   downloadAnalysisById,
-  toggleVisualizations,
   editAnalysisById,
   dismissEditError,
   editNotes,

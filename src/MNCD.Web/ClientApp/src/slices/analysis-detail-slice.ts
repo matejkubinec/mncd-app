@@ -2,20 +2,11 @@ import axios, { handleError } from "../axios";
 import { ApiResponse, AnalysisViewModel, Response } from "../types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export enum VisualizationType {
-  MultiLayer,
-  MultiLayerCommunities,
-  SingleLayer,
-  SingleLayerCommunities,
-}
-
 interface State {
   id: number;
   isLoading: boolean;
   error: string;
   analysis: AnalysisViewModel | null;
-  visualization: VisualizationType;
-  showVisualizations: boolean;
   edit: {
     notes: string;
     isSaving: boolean;
@@ -28,8 +19,6 @@ const initialState: State = {
   isLoading: false,
   error: "",
   analysis: null,
-  visualization: VisualizationType.MultiLayer,
-  showVisualizations: true,
   edit: {
     notes: "",
     isSaving: false,
@@ -69,14 +58,8 @@ const slice = createSlice({
   name: "analysis-detail",
   initialState,
   reducers: {
-    setVisualizationType: (state, action: PayloadAction<VisualizationType>) => {
-      state.visualization = action.payload;
-    },
     downloadAnalysisById: (_, action: PayloadAction<string | number>) => {
       window.open(`/api/analysis/download/${action.payload}`);
-    },
-    toggleVisualizations: (state) => {
-      state.showVisualizations = !state.showVisualizations;
     },
     dismissEditError: (state) => {
       state.edit.error = "";
@@ -124,9 +107,7 @@ const slice = createSlice({
 });
 
 export const {
-  setVisualizationType,
   downloadAnalysisById,
-  toggleVisualizations,
   dismissEditError,
   editNotes,
 } = slice.actions;

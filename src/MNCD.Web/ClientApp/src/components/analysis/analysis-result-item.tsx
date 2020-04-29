@@ -1,9 +1,5 @@
 import React, { Component } from "react";
-import {
-  AnalysisViewModel,
-  AnalysisVisualizationItemViewModel,
-  AnalysisApproach,
-} from "../../types";
+import { AnalysisViewModel } from "../../types";
 import {
   Stack,
   ITheme,
@@ -33,39 +29,9 @@ class AnalysisResultItem extends Component<IProps> {
     onMinimize: null,
   };
 
-  getSingleLayerCommuntiesViz(): AnalysisVisualizationItemViewModel[] {
-    const viz = this.props.analysis.visualization;
-    return viz ? viz.singleLayerCommunities : [];
-  }
-
-  getSingleLayerViz(): AnalysisVisualizationItemViewModel[] {
-    const viz = this.props.analysis.visualization;
-    return viz ? viz.singleLayer : [];
-  }
-
-  getMultiLayerViz(): AnalysisVisualizationItemViewModel[] {
-    const viz = this.props.analysis.visualization;
-    return viz ? viz.multiLayer.concat(viz.multiLayerCommunities) : [];
-  }
-
-  renderCommunitySizesVisualization() {
-    const header = "Community Count Visualization";
-    const titles = ["Barplot", "Treemap"];
-    const viz = this.props.analysis.visualization;
-    const urls = viz
-      ? [viz.communitiesBarplot.url, viz.communitiesTreemap.url]
-      : [];
-    return <Visualization header={header} titles={titles} urls={urls} />;
-  }
-
   render() {
     const { showControls, analysis, theme } = this.props;
-    const { approach } = analysis.request;
-    const multiLayerViz = this.getMultiLayerViz();
-    const singleLayerViz = this.getSingleLayerViz();
-    const singleLayerCommunitiesViz = this.getSingleLayerCommuntiesViz();
-    const slices = [analysis.visualization.slices];
-    const slicesCommunities = [analysis.visualization.slicesCommunities];
+    const { id, result, request, visualization } = analysis;
 
     const itemStyles = {
       root: {
@@ -114,7 +80,7 @@ class AnalysisResultItem extends Component<IProps> {
             <div>
               Click{" "}
               <a
-                href={`/analysis/${analysis.id}`}
+                href={`/analysis/${id}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -125,55 +91,16 @@ class AnalysisResultItem extends Component<IProps> {
           </Stack>
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
-          <Request theme={theme} request={analysis.request} />
+          <Request theme={theme} request={request} />
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
-          <Evaluation theme={theme} result={analysis.result} />
+          <Evaluation theme={theme} result={result} />
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
-          <CommunitiesDetails theme={theme} result={analysis.result} />
+          <CommunitiesDetails theme={theme} result={result} />
         </Stack.Item>
         <Stack.Item styles={itemStyles}>
-          <Visualization
-            header="Multi Layer Visualization"
-            titles={multiLayerViz.map((v) => v.title)}
-            urls={multiLayerViz.map((v) => v.url)}
-          />
-        </Stack.Item>
-        <Stack.Item styles={itemStyles}>
-          <Visualization
-            header="Layers"
-            titles={slices.map((v) => v.title)}
-            urls={slices.map((v) => v.url)}
-          />
-        </Stack.Item>
-        <Stack.Item styles={itemStyles}>
-          <Visualization
-            header="Communities in layers"
-            titles={slicesCommunities.map((v) => v.title)}
-            urls={slicesCommunities.map((v) => v.url)}
-          />
-        </Stack.Item>
-        {approach !== AnalysisApproach.MultiLayer ? (
-          <React.Fragment>
-            <Stack.Item styles={itemStyles}>
-              <Visualization
-                header="Single Layer Visualization"
-                titles={singleLayerViz.map((v) => v.title)}
-                urls={singleLayerViz.map((v) => v.url)}
-              />
-            </Stack.Item>
-            <Stack.Item styles={itemStyles}>
-              <Visualization
-                header="Single Layer Communities Visualization"
-                titles={singleLayerCommunitiesViz.map((v) => v.title)}
-                urls={singleLayerCommunitiesViz.map((v) => v.url)}
-              />
-            </Stack.Item>
-          </React.Fragment>
-        ) : null}
-        <Stack.Item styles={itemStyles}>
-          {this.renderCommunitySizesVisualization()}
+          <Visualization theme={theme} visualizations={visualization} />
         </Stack.Item>
       </Stack>
     );
