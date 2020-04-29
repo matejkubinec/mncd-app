@@ -104,6 +104,7 @@ interface ICProps {
 interface ICState {
   isLoading: boolean;
   isError: boolean;
+  hideImage: boolean;
 }
 
 class ImageContainer extends React.Component<ICProps, ICState> {
@@ -114,26 +115,9 @@ class ImageContainer extends React.Component<ICProps, ICState> {
     this.state = {
       isLoading: true,
       isError: false,
+      hideImage: false,
     };
   }
-
-  handleLoadingStateChange = (loadState: ImageLoadState) => {
-    if (loadState === ImageLoadState.notLoaded) {
-      this.setState({ isLoading: true });
-    }
-
-    if (loadState === ImageLoadState.error) {
-      this.setState({ isLoading: false, isError: true });
-    }
-
-    if (loadState === ImageLoadState.loaded) {
-      this.setState({ isLoading: false });
-
-      setTimeout(() => {
-        this.forceUpdate();
-      }, 10);
-    }
-  };
 
   componentDidMount = () => {
     window.addEventListener("resize", this.handleWindowResize);
@@ -143,30 +127,8 @@ class ImageContainer extends React.Component<ICProps, ICState> {
     window.removeEventListener("resize", this.handleWindowResize);
   };
 
-  renderError = () => {
-    return (
-      <Stack verticalFill verticalAlign="center" horizontalAlign="center">
-        <Text variant="xLargePlus">
-          <span role="img" aria-labelledby="Error loading image">
-            ❌
-          </span>
-        </Text>
-        <Text>There was an error loading the image.</Text>
-      </Stack>
-    );
-  };
-
-  renderLoading = () => {
-    return (
-      <Stack verticalFill verticalAlign="center" horizontalAlign="center">
-        <Spinner size={SpinnerSize.large} />
-        <Text>Loading ...</Text>
-      </Stack>
-    );
-  };
-
   render() {
-    const { isLoading, isError } = this.state;
+    const { isLoading, isError, hideImage } = this.state;
     const display = isLoading || isError ? "none" : "unset";
 
     return (
@@ -183,6 +145,47 @@ class ImageContainer extends React.Component<ICProps, ICState> {
       </Stack>
     );
   }
+
+  private renderError = () => {
+    return (
+      <Stack verticalFill verticalAlign="center" horizontalAlign="center">
+        <Text variant="xLargePlus">
+          <span role="img" aria-labelledby="Error loading image">
+            ❌
+          </span>
+        </Text>
+        <Text>There was an error loading the image.</Text>
+      </Stack>
+    );
+  };
+
+  private renderLoading = () => {
+    return (
+      <Stack verticalFill verticalAlign="center" horizontalAlign="center">
+        <Spinner size={SpinnerSize.large} />
+        <Text>Loading ...</Text>
+      </Stack>
+    );
+  };
+
+  private handleLoadingStateChange = (loadState: ImageLoadState) => {
+    if (loadState === ImageLoadState.notLoaded) {
+      this.setState({ isLoading: true, isError: false });
+    }
+
+    if (loadState === ImageLoadState.error) {
+      this.setState({ isLoading: false, isError: true });
+    }
+
+    if (loadState === ImageLoadState.loaded) {
+      this.setState({ isLoading: false, isError: false });
+
+      // Rerender image
+      setTimeout(() => {
+        this.forceUpdate();
+      }, 10);
+    }
+  };
 
   private handleWindowResize = () => {
     clearTimeout(this.resizeHandle);

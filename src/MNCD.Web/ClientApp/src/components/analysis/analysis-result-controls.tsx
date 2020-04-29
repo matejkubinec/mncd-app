@@ -168,12 +168,12 @@ export class AnalysisResultControls extends Component<ReduxProps> {
                     onChange={this.handleLayoutChange}
                   />
                 </Stack.Item>
-                {this.props.isSideBySide ? (
+                {this.props.isSideBySide ? null : (
                   <List
                     items={listItems}
                     onRenderCell={this.handleRenderCell}
                   />
-                ) : null}
+                )}
               </Stack>
             </Stack.Item>
           ) : null}
