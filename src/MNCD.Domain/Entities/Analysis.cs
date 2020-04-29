@@ -17,5 +17,7 @@ namespace MNCD.Domain.Entities
         public List<Visualization> Visualizations { get; set; } = new List<Visualization>();
 
         public bool IsOpen { get; set; }
+
+        public string Notes { get; set; }
     }
 }

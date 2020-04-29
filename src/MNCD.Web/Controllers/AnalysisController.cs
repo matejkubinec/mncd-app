@@ -94,5 +94,19 @@ namespace MNCD.Web.Controllers
             var message = $"Analysis with id '{id}' deleted.";
             return new OkObjectResult(new ApiResponse<int>(message, id));
         }
+
+        [HttpPatch]
+        [Route("{id}")]
+        public async Task<IActionResult> Edit(int id, [FromBody]AnalysisEditViewModel model)
+        {
+            if (id <= 0)
+            {
+                return new BadRequestObjectResult(new Response("Invalid analysis id."));
+            }
+
+            await _analysisService.EditNotes(id, model.Notes);
+
+            return new OkObjectResult(new Response("Notes edited."));
+        }
     }
 }

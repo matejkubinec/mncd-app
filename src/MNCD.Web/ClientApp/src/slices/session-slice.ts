@@ -1,7 +1,6 @@
 import axios from "axios";
 import { SessionRowViewModel, ApiResponse, Response } from "../types";
 import { createSlice, Dispatch, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../store";
 import { handleError } from "../axios";
 
 export type SessionListState = {

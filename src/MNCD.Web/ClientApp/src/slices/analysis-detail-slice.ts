@@ -1,5 +1,5 @@
 import axios, { handleError } from "../axios";
-import { ApiResponse, AnalysisViewModel } from "../types";
+import { ApiResponse, AnalysisViewModel, Response } from "../types";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export enum VisualizationType {
@@ -15,6 +15,12 @@ interface State {
   error: string;
   analysis: AnalysisViewModel | null;
   visualization: VisualizationType;
+  showVisualizations: boolean;
+  edit: {
+    notes: string;
+    isSaving: boolean;
+    error: string;
+  };
 }
 
 const initialState: State = {
@@ -23,6 +29,12 @@ const initialState: State = {
   error: "",
   analysis: null,
   visualization: VisualizationType.MultiLayer,
+  showVisualizations: true,
+  edit: {
+    notes: "",
+    isSaving: false,
+    error: "",
+  },
 };
 
 export const fetchAnalysisDetailById = createAsyncThunk(
@@ -39,6 +51,20 @@ export const fetchAnalysisDetailById = createAsyncThunk(
   }
 );
 
+export const editAnalysisById = createAsyncThunk(
+  "editAnalysisById",
+  async (arg: { id: number; notes: string }, thunkAPI) => {
+    try {
+      const { id, notes } = arg;
+      const url = `/api/analysis/${id}`;
+      const res = await axios.patch<Response>(url, { notes });
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(handleError(error));
+    }
+  }
+);
+
 const slice = createSlice({
   name: "analysis-detail",
   initialState,
@@ -48,6 +74,15 @@ const slice = createSlice({
     },
     downloadAnalysisById: (_, action: PayloadAction<string | number>) => {
       window.open(`/api/analysis/download/${action.payload}`);
+    },
+    toggleVisualizations: (state) => {
+      state.showVisualizations = !state.showVisualizations;
+    },
+    dismissEditError: (state) => {
+      state.edit.error = "";
+    },
+    editNotes: (state, action: PayloadAction<string>) => {
+      state.edit.notes = action.payload;
     },
   },
   extraReducers: {
@@ -60,6 +95,7 @@ const slice = createSlice({
     ) => {
       state.isLoading = false;
       state.analysis = action.payload.data;
+      state.edit.notes = state.analysis.notes;
     },
     [fetchAnalysisDetailById.rejected.toString()]: (
       state,
@@ -68,9 +104,31 @@ const slice = createSlice({
       state.error = action.payload.message;
       state.isLoading = false;
     },
+    [editAnalysisById.pending.toString()]: (state) => {
+      state.edit.isSaving = true;
+    },
+    [editAnalysisById.fulfilled.toString()]: (
+      state,
+      action: PayloadAction<Response>
+    ) => {
+      state.edit.isSaving = false;
+    },
+    [editAnalysisById.rejected.toString()]: (
+      state,
+      action: PayloadAction<Response>
+    ) => {
+      state.edit.isSaving = false;
+      state.edit.error = action.payload.message;
+    },
   },
 });
 
-export const { setVisualizationType, downloadAnalysisById } = slice.actions;
+export const {
+  setVisualizationType,
+  downloadAnalysisById,
+  toggleVisualizations,
+  dismissEditError,
+  editNotes,
+} = slice.actions;
 
 export default slice.reducer;
