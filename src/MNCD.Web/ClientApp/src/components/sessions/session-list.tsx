@@ -59,6 +59,7 @@ class SessionList extends React.Component<ReduxProps> {
       minWidth: 270,
       isRowHeader: false,
       onRender: (item: SessionRowViewModel) => {
+        const { s1 } = this.props.theme.spacing;
         const onRemove = () => this.props.openRemoveDialog(item);
         const onEdit = () => this.props.openAddEditDialog(item);
         const onOpen = () => {
@@ -67,7 +68,7 @@ class SessionList extends React.Component<ReduxProps> {
           history.push(`/session/${item.id}`);
         };
         return (
-          <Stack horizontal tokens={{ childrenGap: 5 }}>
+          <Stack horizontal tokens={{ childrenGap: s1 }}>
             <DefaultButton
               iconProps={{ iconName: "Cancel" }}
               onClick={onRemove}
@@ -104,7 +105,7 @@ class SessionList extends React.Component<ReduxProps> {
 
     if (this.props.items.length <= 0) {
       return (
-        <div style={{ padding: 20 }}>
+        <div style={{ padding: this.props.theme.spacing.m }}>
           <Text>No sessions to display.</Text>
         </div>
       );
@@ -129,41 +130,44 @@ class SessionList extends React.Component<ReduxProps> {
   };
 
   render() {
+    const { error, success, theme } = this.props;
+    const { s1, m } = theme.spacing;
+
     return (
-      <Stack tokens={{ padding: 25 }}>
+      <Stack tokens={{ padding: m }}>
         <Stack
           style={{
-            borderRadius: this.props.theme.effects.roundedCorner2,
-            boxShadow: this.props.theme.effects.elevation16,
-            background: this.props.theme.palette.white,
+            borderRadius: theme.effects.roundedCorner2,
+            boxShadow: theme.effects.elevation16,
+            background: theme.palette.white,
           }}
-          tokens={{ padding: 25 }}
+          tokens={{ padding: m }}
         >
           <SessionAddEditDialog />
           <SessionRemoveDialog />
           <h1>Sessions</h1>
           <Separator></Separator>
-          {this.props.error ? (
+          {error ? (
             <MessageBar
-              styles={{ root: { marginBottom: 10 } }}
+              styles={{ root: { marginBottom: s1 } }}
               messageBarType={MessageBarType.error}
               onDismiss={this.handleErrorDismiss}
             >
-              {this.props.error}
+              {error}
             </MessageBar>
           ) : null}
           {this.props.success ? (
             <MessageBar
-              styles={{ root: { marginBottom: 10 } }}
+              styles={{ root: { marginBottom: s1 } }}
               messageBarType={MessageBarType.success}
               onDismiss={this.handleSuccessDismiss}
             >
-              {this.props.success}
+              {success}
             </MessageBar>
           ) : null}
           <Stack>
             {this.renderTable()}
-            <Stack horizontalAlign="end" tokens={{ padding: "25px 0 0 0" }}>
+            <Stack horizontalAlign="end" tokens={{ padding: s1 }}>
               <StackItem>
                 <PrimaryButton
                   iconProps={{ iconName: "Add" }}

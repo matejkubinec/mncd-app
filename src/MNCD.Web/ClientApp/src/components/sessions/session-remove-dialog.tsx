@@ -19,44 +19,29 @@ import {
 } from "../../slices/session-slice";
 
 class SessionListRemoveDialog extends React.Component<ReduxProps> {
-  handleSubmit = (ev: React.FormEvent | React.MouseEvent<any>) => {
-    this.props.removeSession(this.props.session.id);
-    ev.preventDefault();
-  };
-
-  handleDismiss = () => {
-    this.props.closeRemoveDialog();
-  };
-
-  handleErrorMessageDismiss = () => {
-    this.props.clearRemoveDialogError();
-  };
-
   render() {
+    const { error, isOpen, session, theme } = this.props;
+    const { s1, m } = theme.spacing;
     return (
       <Dialog
-        isOpen={this.props.isOpen}
+        hidden={!isOpen}
         dialogContentProps={{ title: "Analysis Session" }}
         onDismiss={this.handleDismiss}
       >
         <form onSubmit={this.handleSubmit}>
-          {this.props.error ? (
+          {error ? (
             <MessageBar
-              styles={{ root: { marginBottom: 10 } }}
+              styles={{ root: { marginBottom: m } }}
               messageBarType={MessageBarType.error}
               onDismiss={this.handleErrorMessageDismiss}
             >
-              {this.props.error}
+              {error}
             </MessageBar>
           ) : null}
           <Text>
-            Dou you really want to delete "<b>{this.props.session.name}</b>"
-            session, along with all
-            {this.props.session.analysesCount > 0 ? (
-              <b> {this.props.session.analysesCount} </b>
-            ) : (
-              " "
-            )}
+            Dou you really want to delete "<b>{session.name}</b>" session, along
+            with all
+            {session.analysesCount > 0 ? <b> {session.analysesCount} </b> : " "}
             analyses?
           </Text>
           <DialogFooter>
@@ -64,18 +49,18 @@ class SessionListRemoveDialog extends React.Component<ReduxProps> {
             <DefaultButton
               styles={{
                 root: {
-                  backgroundColor: this.props.theme.palette.red,
-                  color: this.props.theme.palette.white,
+                  backgroundColor: theme.palette.red,
+                  color: theme.palette.white,
                 },
                 rootHovered: {
-                  backgroundColor: this.props.theme.palette.redDark,
-                  color: this.props.theme.palette.white,
+                  backgroundColor: theme.palette.redDark,
+                  color: theme.palette.white,
                 },
               }}
               onClick={this.handleSubmit}
             >
               {this.props.isRemoving ? (
-                <Stack tokens={{ padding: 5 }}>
+                <Stack tokens={{ padding: s1 }}>
                   <Spinner size={SpinnerSize.xSmall} />
                 </Stack>
               ) : null}
@@ -86,6 +71,19 @@ class SessionListRemoveDialog extends React.Component<ReduxProps> {
       </Dialog>
     );
   }
+
+  private handleSubmit = (ev: React.FormEvent | React.MouseEvent<any>) => {
+    this.props.removeSession(this.props.session.id);
+    ev.preventDefault();
+  };
+
+  private handleDismiss = () => {
+    this.props.closeRemoveDialog();
+  };
+
+  private handleErrorMessageDismiss = () => {
+    this.props.clearRemoveDialogError();
+  };
 }
 
 const mapProps = (state: RootState) => ({
