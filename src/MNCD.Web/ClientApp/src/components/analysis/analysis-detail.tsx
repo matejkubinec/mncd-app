@@ -89,30 +89,38 @@ class AnalysisDetail extends React.Component<IProps> {
       return this.renderError();
     }
 
-    const { analysis } = this.props;
+    const { analysis, theme } = this.props;
 
     if (!analysis) {
       return null;
     }
 
+    const cardStyle = {
+      border: "1px solid",
+      borderColor: theme.palette.blackTranslucent40,
+      borderRadius: theme.effects.roundedCorner2,
+    };
+
+    const bodyStyle = {};
+
     return (
-      <Stack horizontal>
-        <Stack grow={2}>
-          <Stack>
+      <Stack
+        horizontal
+        tokens={{ childrenGap: theme.spacing.l1 }}
+        style={bodyStyle}
+      >
+        <Stack grow={2} tokens={{ childrenGap: theme.spacing.l1 }}>
+          <Stack style={cardStyle}>
             <Stack>{this.renderVisualizations(analysis)}</Stack>
           </Stack>
-          <Stack>
-            <Request
-              request={analysis.request}
-              showHeader={true}
-              showDepth={false}
-            />
+          <Stack style={cardStyle}>
+            <Request theme={theme} request={analysis.request} />
           </Stack>
-          <Stack>
-            <Evaluation result={analysis.result} />
+          <Stack style={cardStyle}>
+            <Evaluation theme={theme} result={analysis.result} />
           </Stack>
-          <Stack>
-            <CommunitiesDetails result={analysis.result} />
+          <Stack style={cardStyle}>
+            <CommunitiesDetails theme={theme} result={analysis.result} />
           </Stack>
           <Stack.Item align="stretch" verticalFill>
             <Stack verticalAlign="end" verticalFill>
