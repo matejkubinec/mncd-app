@@ -50,8 +50,8 @@ namespace MNCD.Web.Mappings
         {
             var types = new List<VisualizationType>
             {
-                VisualizationType.MultiLayerHairball,
-                VisualizationType.MultiLayerSlicesCommunities
+                VisualizationType.MultiLayer_Hairball,
+                VisualizationType.MultiLayer_Slices_Communities
             };
             var items = new List<AnalysisVisualizationItemViewModel>();
             foreach (var type in types)
@@ -93,9 +93,9 @@ namespace MNCD.Web.Mappings
         {
             var types = new List<VisualizationType>
             {
-                VisualizationType.SingleLayerCommunitiesSpring,
-                VisualizationType.SingleLayerCommunitiesCircular,
-                VisualizationType.SingleLayerCommunitiesSpiral
+                VisualizationType.SingleLayer_Communities_Spring,
+                VisualizationType.SingleLayer_Communities_Circular,
+                VisualizationType.SingleLayer_Communities_Spiral
             };
             var items = new List<AnalysisVisualizationItemViewModel>();
             foreach (var type in types)

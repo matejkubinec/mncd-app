@@ -59,7 +59,7 @@ namespace MNCD.Services.Impl
 
         public async Task<Visualization> GetAnalysisVisualization(int analysisId, VisualizationType type)
         {
-            var analysis = _ctx.Analyses
+            var analysis = await _ctx.Analyses
                 .Include(a => a.Result)
                 .Include(a => a.Request)
                 .ThenInclude(r => r.DataSet)
@@ -68,7 +68,7 @@ namespace MNCD.Services.Impl
                 .ThenInclude(r => r.DataSet)
                 .ThenInclude(d => d.SlicesVisualization)
                 .Include(a => a.Visualizations)
-                .FirstOrDefault(a => a.Id == analysisId);
+                .FirstOrDefaultAsync(a => a.Id == analysisId);
 
             if (analysis is null)
             {
@@ -129,11 +129,11 @@ namespace MNCD.Services.Impl
             var message = string.Empty;
             var uri = $"{_baseUrl}/api/multi-layer/";
 
-            if (request.Type == VisualizationType.MultiLayerHairball)
+            if (request.Type == VisualizationType.MultiLayer_Hairball)
             {
                 uri += "hairball";
             }
-            else if (request.Type == VisualizationType.MultiLayerSlicesCommunities)
+            else if (request.Type == VisualizationType.MultiLayer_Slices_Communities)
             {
                 uri += "slices-communities";
             }
@@ -300,6 +300,17 @@ namespace MNCD.Services.Impl
                     if (type == VisualizationType.MultiLayer_Diagonal)
                     {
                         viz = analysis.Request.DataSet.DiagonalVisualization;
+
+                        if (viz is null)
+                        {
+                            viz = await VisualizeMultilayer(new MultilayerRequest
+                            {
+                                EdgeList = analysis.Request.DataSet.EdgeList,
+                                Type = type
+                            });
+                        }
+
+                        analysis.Request.DataSet.DiagonalVisualization = viz;
                     }
                     else
                     {
@@ -315,6 +326,19 @@ namespace MNCD.Services.Impl
                     if (type == VisualizationType.MultiLayer_Diagonal)
                     {
                         viz = analysis.Request.DataSet.SlicesVisualization;
+
+                        if (viz is null)
+                        {
+                            var request = new MultilayerCommunitiesRequest
+                            {
+                                EdgeList = analysis.Request.DataSet.EdgeList,
+                                CommunityList = analysis.Result.CommunityList,
+                                Type = type
+                            };
+                            viz = await VisualizeMultilayerCommunities(request);
+                        }
+
+                        analysis.Request.DataSet.SlicesVisualization = viz;
                     }
                     else
                     {
@@ -392,7 +416,7 @@ namespace MNCD.Services.Impl
                     };
                     viz = await VisualizeMultilayer(request);
                 }
-                else if (type == VisualizationType.MultiLayerSlicesCommunities)
+                else if (type == VisualizationType.MultiLayer_Slices_Communities)
                 {
                     var request = new MultilayerCommunitiesRequest
                     {

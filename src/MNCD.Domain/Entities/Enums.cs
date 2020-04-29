@@ -33,16 +33,16 @@ namespace MNCD.Domain.Entities
     public enum VisualizationType
     {
         MultiLayer_Diagonal = 0,
-        MultiLayerHairball = 1,
+        MultiLayer_Hairball = 1,
         SingleLayer_Spring = 2,
         SingleLayer_Circular = 3,
         SingleLayer_Spiral = 4,
-        SingleLayerCommunitiesSpring = 5,
-        SingleLayerCommunitiesCircular = 6,
-        SingleLayerCommunitiesSpiral = 7,
+        SingleLayer_Communities_Spring = 5,
+        SingleLayer_Communities_Circular = 6,
+        SingleLayer_Communities_Spiral = 7,
         Barplot = 8,
         Treemap = 9,
         MultiLayer_Slices = 10,
-        MultiLayerSlicesCommunities = 11
+        MultiLayer_Slices_Communities = 11
     }
 }

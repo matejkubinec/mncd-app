@@ -66,7 +66,7 @@ namespace MNCD.Tests.Services
             });
             var types = new List<VisualizationType>
             {
-                VisualizationType.MultiLayerHairball
+                VisualizationType.MultiLayer_Hairball
             };
             foreach (var type in types)
             {
