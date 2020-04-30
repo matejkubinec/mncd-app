@@ -1,5 +1,5 @@
 import React from "react";
-import { FileInput } from "../common";
+import { FileInput } from "../../common";
 import {
   Stack,
   Dropdown,
@@ -12,20 +12,20 @@ import {
   MessageBar,
   MessageBarType,
 } from "office-ui-fabric-react";
-import { FileType } from "../../types";
+import { FileType } from "../../../types";
 import { ConnectedProps, connect } from "react-redux";
-import { RootState } from "../../store";
+import { RootState } from "../../../store";
 import {
   updateItemToAdd,
   closeAddDataSetForm,
   saveDataSet,
-} from "../../slices/dataset-slice";
+} from "../../../slices/dataset-slice";
 
 interface IProps {
   file: File;
 }
 
-class AddDataSet extends React.Component<ReduxProps, IProps> {
+class AddDataSetForm extends React.Component<ReduxProps, IProps> {
   private options: IDropdownOption[] = [
     { key: FileType.MPX.toString(), text: "MPX", selected: true },
     { key: FileType.EdgeList.toString(), text: "Edge List" },
@@ -88,12 +88,10 @@ class AddDataSet extends React.Component<ReduxProps, IProps> {
     if (!this.props.item) {
       return null;
     }
+
     return (
       <form onSubmit={this.handleSubmit}>
         <Stack tokens={{ childrenGap: 10 }}>
-          <Stack.Item>
-            <h2>Add Dataset</h2>
-          </Stack.Item>
           <Stack.Item>
             <a href="/formats" target="_blank" rel="noopener noreferrer">
               Supported formats
@@ -188,4 +186,4 @@ const connector = connect(mapProps, mapDispatch);
 
 type ReduxProps = ConnectedProps<typeof connector>;
 
-export default connector(AddDataSet);
+export default connector(AddDataSetForm);

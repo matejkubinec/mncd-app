@@ -39,7 +39,7 @@ class AnalysisDataSetControl extends React.Component<ReduxProps> {
 const mapProps = (rootState: RootState) => {
   const { dataSet } = rootState.analysis;
   return {
-    name: dataSet ? dataSet.name : ""
+    name: dataSet ? dataSet.name : "",
   };
 };
 

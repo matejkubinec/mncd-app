@@ -1,22 +1,22 @@
 import React from "react";
 import { connect, ConnectedProps } from "react-redux";
-import { RootState } from "../../store";
+import { RootState } from "../../../store";
 import {
   Stack,
   TextField,
   DefaultButton,
   PrimaryButton,
   MessageBar,
-  MessageBarType
+  MessageBarType,
 } from "office-ui-fabric-react";
 import {
   editDataSet,
   editDataSetItemName,
-  closeEditDataSetForm
-} from "../../slices/dataset-slice";
-import { DataSetRowViewModel } from "../../types";
+  closeEditDataSetForm,
+} from "../../../slices/dataset-slice";
+import { DataSetRowViewModel } from "../../../types";
 
-class EditDataSet extends React.Component<ReduxProps> {
+class EditDataSetForm extends React.Component<ReduxProps> {
   get isValid(): boolean {
     return this.props.id >= 0 && !!this.props.name;
   }
@@ -43,7 +43,7 @@ class EditDataSet extends React.Component<ReduxProps> {
     if (this.isValid) {
       this.props.editDataSet({
         id: this.props.id,
-        name: this.props.name
+        name: this.props.name,
       } as DataSetRowViewModel);
     }
 
@@ -56,9 +56,6 @@ class EditDataSet extends React.Component<ReduxProps> {
     return (
       <form onSubmit={this.handleSave}>
         <Stack tokens={{ childrenGap: 10 }}>
-          <Stack.Item>
-            <h2>Edit</h2>
-          </Stack.Item>
           {this.props.error ? (
             <MessageBar messageBarType={MessageBarType.error}>
               {this.props.error}
@@ -111,7 +108,7 @@ const mapProps = (state: RootState) => {
   return {
     id: item ? item.id : 0,
     name: item ? item.name : "",
-    error
+    error,
   };
 };
 
@@ -121,4 +118,4 @@ const connector = connect(mapProps, mapDispatch);
 
 type ReduxProps = ConnectedProps<typeof connector>;
 
-export default connector(EditDataSet);
+export default connector(EditDataSetForm);

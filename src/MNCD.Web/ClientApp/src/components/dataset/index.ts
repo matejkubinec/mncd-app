@@ -1,15 +1,5 @@
-import AddDataSet from "./add-dataset";
-import DataSetsModal from "./modal-dataset";
-import DataSetsList from "./list-dataset";
-import RemoveDataSet from "./remove-dataset";
-import EditDataSet from "./edit-dataset";
+import DataSetsModal from "./modal";
 import DataSetDetail from "./detail";
+import DataSetPage from "./page";
 
-export {
-  AddDataSet,
-  DataSetsModal,
-  DataSetsList,
-  RemoveDataSet,
-  EditDataSet,
-  DataSetDetail,
-};
+export { DataSetsModal, DataSetDetail, DataSetPage };

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { SessionList } from "./components/sessions";
 import { AnalysisPage, AnalysisDetail } from "./components/analysis/index";
 import { FormatsPage } from "./components/pages";
-import { DataSetDetail } from "./components/dataset";
+import { DataSetDetail, DataSetPage } from "./components/dataset";
 import { Router, Route, Switch, NavLink } from "react-router-dom";
 import { history } from "./store";
 import { Stack, getTheme } from "office-ui-fabric-react";
@@ -47,7 +47,15 @@ export default class App extends Component {
                   className="navlink"
                   activeClassName="navlink-active"
                   exact
-                  to="/Formats"
+                  to="/datasets"
+                >
+                  <span style={{ fontSize }}>Datasets</span>
+                </NavLink>
+                <NavLink
+                  className="navlink"
+                  activeClassName="navlink-active"
+                  exact
+                  to="/formats"
                 >
                   <span style={{ fontSize }}>Formats</span>
                 </NavLink>
@@ -57,6 +65,7 @@ export default class App extends Component {
           <Switch>
             <Route path="/session/:id" component={AnalysisPage} />
             <Route path="/formats" component={FormatsPage} />
+            <Route path="/datasets" component={DataSetPage} />
             <Route path="/dataset/:id" component={DataSetDetail} />
             <Route path="/analysis/:id" component={AnalysisDetail} />
             <Route exact path="/" component={SessionList} />

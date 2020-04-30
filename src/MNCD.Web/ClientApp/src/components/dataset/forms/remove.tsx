@@ -1,18 +1,18 @@
 import React from "react";
 import { connect, ConnectedProps } from "react-redux";
-import { RootState } from "../../store";
+import { RootState } from "../../../store";
 import {
   Stack,
   DefaultButton,
   MessageBar,
-  MessageBarType
+  MessageBarType,
 } from "office-ui-fabric-react";
 import {
   removeDataSet,
-  closeRemoveDataSetForm
-} from "../../slices/dataset-slice";
+  closeRemoveDataSetForm,
+} from "../../../slices/dataset-slice";
 
-class RemoveDataSet extends React.Component<ReduxProps> {
+class RemoveDataSetForm extends React.Component<ReduxProps> {
   handleCancel = () => {
     this.props.closeRemoveDataSetForm();
   };
@@ -35,9 +35,6 @@ class RemoveDataSet extends React.Component<ReduxProps> {
     return (
       <form onSubmit={this.handleCancel}>
         <Stack tokens={{ childrenGap: 10 }}>
-          <Stack.Item>
-            <h2>Remove Data Set</h2>
-          </Stack.Item>
           {this.props.error ? (
             <MessageBar messageBarType={MessageBarType.error}>
               {this.props.error}
@@ -76,7 +73,7 @@ const mapProps = (state: RootState) => {
   return {
     item,
     isRemoving,
-    error
+    error,
   };
 };
 
@@ -86,4 +83,4 @@ const connector = connect(mapProps, mapDispatch);
 
 type ReduxProps = ConnectedProps<typeof connector>;
 
-export default connector(RemoveDataSet);
+export default connector(RemoveDataSetForm);

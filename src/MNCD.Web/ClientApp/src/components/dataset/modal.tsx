@@ -21,8 +21,12 @@ import {
   MessageBarType,
   DefaultButton,
 } from "office-ui-fabric-react";
-import DataSetsList from "./list-dataset";
-import { AddDataSet, RemoveDataSet, EditDataSet } from ".";
+import {
+  DataSetsList,
+  AddDataSetForm,
+  RemoveDataSetForm,
+  EditDataSetForm,
+} from "./forms";
 import { Depths } from "@uifabric/fluent-theme/lib/fluent/FluentDepths";
 import {
   MotionAnimations,
@@ -60,14 +64,29 @@ class DataSetsModal extends React.Component<IProps> {
 
   renderSidebar = () => {
     if (this.props.add.isOpen) {
-      return <AddDataSet />;
+      return (
+        <Stack>
+          <h2>Add dataset</h2>
+          <AddDataSetForm />
+        </Stack>
+      );
     }
 
     if (this.props.edit.isOpen) {
-      return <EditDataSet />;
+      return (
+        <Stack>
+          <h2>Edit dataset</h2>
+          <EditDataSetForm />
+        </Stack>
+      );
     }
 
-    return <RemoveDataSet />;
+    return (
+      <Stack>
+        <h2>Remove dataset</h2>
+        <RemoveDataSetForm />
+      </Stack>
+    );
   };
 
   render() {
@@ -111,7 +130,7 @@ class DataSetsModal extends React.Component<IProps> {
                   {this.props.isLoading ? (
                     <ProgressIndicator />
                   ) : (
-                    <DataSetsList />
+                    <DataSetsList enableSelection />
                   )}
                 </StackItem>
               </Stack>

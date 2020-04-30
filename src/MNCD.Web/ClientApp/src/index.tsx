@@ -10,7 +10,7 @@ import "./index.css";
 initializeIcons();
 
 const theme = store.getState().theme.current;
-const backgroundColor = theme.palette.neutralLighterAlt;
+const backgroundColor = theme.palette.neutralLight;
 const rootElement = document.getElementById("root");
 
 if (rootElement) {
