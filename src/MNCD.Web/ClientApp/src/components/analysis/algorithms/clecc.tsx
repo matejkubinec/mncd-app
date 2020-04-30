@@ -1,83 +1,106 @@
 import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../../store";
-import { Stack, TextField } from "office-ui-fabric-react";
+import {
+  Stack,
+  TextField,
+  MessageBar,
+  MessageBarType,
+} from "office-ui-fabric-react";
 import { updateAnalysisParameters } from "../../../slices/analysis-slice";
 
 class CLECC extends React.Component<ReduxProps> {
-  handleAlphaChange = (_: any, value?: string) => {
+  render = () => {
+    if (!this.props.hasDataSet) {
+      return (
+        <MessageBar messageBarType={MessageBarType.warning}>
+          Please select dataset first.
+        </MessageBar>
+      );
+    }
+
+    return (
+      <Stack>
+        <Stack.Item>
+          <TextField
+            type="number"
+            label="K"
+            description="Number of communities"
+            value={this.props.k}
+            onGetErrorMessage={this.handleGetKErrorMessage}
+            onChange={this.handleKChange}
+          />
+        </Stack.Item>
+        <Stack.Item>
+          <TextField
+            type="number"
+            label="Alpha"
+            description="Minumum number of layers on which node must be nieghbour"
+            value={this.props.alpha}
+            onGetErrorMessage={this.handleGetAlphaErrorMessage}
+            onChange={this.handleAlphaChange}
+          />
+        </Stack.Item>
+      </Stack>
+    );
+  };
+
+  private handleAlphaChange = (_: any, value?: string) => {
     if (value !== undefined) {
       this.props.updateAnalysisParameters({ alpha: value });
     }
   };
 
-  handleGetAlphaErrorMessage = (value: string) => {
+  private handleGetAlphaErrorMessage = (value: string) => {
+    const { maxAlpha } = this.props;
     const alpha = Number(value);
 
     if (alpha < 0) {
       return "Alpha must be greater or equal than zero.";
     }
 
-    if (this.props.maxAlpha && alpha > this.props.maxAlpha) {
-      return "Alpha must be less or equal than number of layers in network.";
+    if (alpha > maxAlpha) {
+      return `Alpha must be less or equal than number of layers in network. (${maxAlpha})`;
     }
 
     return "";
   };
 
-  handleKChange = (_: any, value?: string) => {
+  private handleKChange = (_: any, value?: string) => {
     if (value !== undefined) {
       this.props.updateAnalysisParameters({ k: value });
     }
   };
 
-  handleGetKErrorMessage = (value: string) => {
+  private handleGetKErrorMessage = (value: string) => {
+    const { maxK } = this.props;
     const k = Number(value);
 
     if (k <= 0) {
       return "K must be greater than zero.";
     }
 
-    if (this.props.maxK && k > this.props.maxK) {
-      return "K must be less or equal than number of actors in network.";
+    if (k > maxK) {
+      return `K must be less or equal than number of actors in network. (${maxK})`;
     }
 
     return "";
   };
-
-  render = () => (
-    <Stack>
-      <Stack.Item>
-        <TextField
-          type="number"
-          label="K"
-          description="Number of communities"
-          value={this.props.k}
-          onGetErrorMessage={this.handleGetKErrorMessage}
-          onChange={this.handleKChange}
-        />
-      </Stack.Item>
-      <Stack.Item>
-        <TextField
-          type="number"
-          label="Alpha"
-          description="Minumum number of layers on which node must be nieghbour"
-          value={this.props.alpha}
-          onChange={this.handleAlphaChange}
-        />
-      </Stack.Item>
-    </Stack>
-  );
 }
 
 const mapProps = (state: RootState) => {
   const { request, dataSet } = state.analysis;
   const { k, alpha } = request.analysisAlgorithmParameters;
+  const hasDataSet = !!dataSet;
+  const maxK = dataSet ? dataSet.nodeCount : 2;
+  const maxAlpha = dataSet ? dataSet.layerCount : 1;
+
   return {
-    k: k,
-    maxK: dataSet ? dataSet.nodeCount : null,
-    alpha: alpha,
-    maxAlpha: dataSet ? dataSet.layerCount : null
+    k,
+    maxK,
+    alpha,
+    maxAlpha,
+    hasDataSet,
   };
 };
 
