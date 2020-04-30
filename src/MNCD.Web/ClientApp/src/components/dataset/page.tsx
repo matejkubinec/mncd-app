@@ -9,6 +9,7 @@ import {
   PrimaryButton,
   MessageBarType,
   MessageBar,
+  ProgressIndicator,
 } from "office-ui-fabric-react";
 import {
   fetchDataSetsList,
@@ -33,7 +34,7 @@ class DataSetPage extends React.Component<ReduxProps> {
   }
 
   render() {
-    const { theme, isLoading } = this.props;
+    const { theme } = this.props;
     const { s1, m } = theme.spacing;
 
     return (
@@ -52,24 +53,36 @@ class DataSetPage extends React.Component<ReduxProps> {
           <h1>Datasets</h1>
         </Stack>
         <Separator />
-        <Stack>{isLoading ? "Loading..." : ""}</Stack>
-        <Stack>
-          {this.renderMessages()}
-          <DataSetsList enableSelection={false} biggerControls />
-          <Stack horizontalAlign="end" tokens={{ padding: s1 }}>
-            <StackItem>
-              <PrimaryButton
-                iconProps={{ iconName: "Add" }}
-                onClick={this.handleOpenAddDialog}
-              >
-                Add dataset
-              </PrimaryButton>
-            </StackItem>
-          </Stack>
-        </Stack>
+        {this.renderBody()}
       </Stack>
     );
   }
+
+  renderBody = () => {
+    const { theme, isLoading } = this.props;
+    const { s1 } = theme.spacing;
+
+    if (isLoading) {
+      return <ProgressIndicator />;
+    }
+
+    return (
+      <Stack>
+        {this.renderMessages()}
+        <DataSetsList enableSelection={false} biggerControls />
+        <Stack horizontalAlign="end" tokens={{ padding: s1 }}>
+          <StackItem>
+            <PrimaryButton
+              iconProps={{ iconName: "Add" }}
+              onClick={this.handleOpenAddDialog}
+            >
+              Add dataset
+            </PrimaryButton>
+          </StackItem>
+        </Stack>
+      </Stack>
+    );
+  };
 
   renderMessages = () => {
     const { errorMessage, successMessage } = this.props;

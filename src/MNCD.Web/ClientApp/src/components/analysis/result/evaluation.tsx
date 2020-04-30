@@ -1,5 +1,11 @@
 import React, { Component } from "react";
-import { Stack, TooltipHost, Icon, ITheme } from "office-ui-fabric-react";
+import {
+  Stack,
+  TooltipHost,
+  Icon,
+  ITheme,
+  Separator,
+} from "office-ui-fabric-react";
 import { AnalysisResultViewModel } from "../../../types";
 import { AnalysisResultCard } from ".";
 
@@ -131,35 +137,40 @@ export default class Evaluation extends Component<IProps> {
   );
 
   private renderArray = (values: number[]) => {
-    const items = values.map(
-      (v) => <li>{this.formatNumber(v.toFixed(2))}</li>
-      // v >= 0 ? <li>&nbsp;{v.toFixed(2)}</li> : <li>{v.toFixed(2)}</li>
-    );
-    const columns = Math.round(items.length / 5);
+    const items = values.map((v) => <li>{this.formatNumber(v.toFixed(2))}</li>);
+    const columns = Math.ceil(items.length / 5);
     return <ol style={{ columns }}>{items}</ol>;
   };
 
   private renderRows(rows: IRow[]) {
     const fontFamily = "Consolas, monospace";
     return rows.map((r, i) => (
-      <Stack horizontal horizontalAlign="center" key={i}>
-        <Stack.Item styles={{ root: { width: "50%" } }}>
-          <Stack tokens={{ childrenGap: 5 }} horizontal verticalAlign="center">
-            <Stack.Item verticalFill>
-              <span style={{ fontWeight: 600 }} aria-describedby={r.tooltipId}>
+      <Stack key={i}>
+        <Separator styles={{ root: { padding: 0, height: 5 } }} />
+        <Stack horizontal horizontalAlign="center" verticalAlign="center">
+          <Stack.Item verticalFill styles={{ root: { width: "50%" } }}>
+            <Stack
+              tokens={{ childrenGap: 5 }}
+              horizontal
+              verticalAlign="center"
+            >
+              <Stack.Item verticalFill styles={{ root: { fontWeight: 600 } }}>
                 {r.name}
-              </span>
-            </Stack.Item>
-            <Stack.Item verticalFill>
-              <TooltipHost id={r.tooltipId} content={r.tooltip}>
-                <Icon iconName="Info" style={{ paddingTop: 6 }} />
-              </TooltipHost>
-            </Stack.Item>
-          </Stack>
-        </Stack.Item>
-        <Stack.Item styles={{ root: { width: "50%", fontFamily } }}>
-          {r.value}
-        </Stack.Item>
+              </Stack.Item>
+              <Stack.Item verticalFill>
+                <TooltipHost id={r.tooltipId} content={r.tooltip}>
+                  <Icon iconName="Info" style={{ paddingTop: 6 }} />
+                </TooltipHost>
+              </Stack.Item>
+            </Stack>
+          </Stack.Item>
+          <Stack.Item
+            verticalFill
+            styles={{ root: { width: "50%", fontFamily } }}
+          >
+            {r.value}
+          </Stack.Item>
+        </Stack>
       </Stack>
     ));
   }
