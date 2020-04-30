@@ -26,3 +26,22 @@ body {
   flex-direction: column;
   justify-content: center;
 }
+
+.navlink {
+  color: white;
+  padding: 5px;
+  text-decoration: none;
+}
+
+.navlink:hover {
+  border-bottom: 2px solid white;
+}
+
+.navlink:active,
+.navlink:visited {
+  color: white;
+}
+
+.navlink-active {
+  font-weight: bold;
+}

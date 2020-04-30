@@ -9,7 +9,6 @@ import {
 } from "office-ui-fabric-react";
 import { fetchSessionById } from "../../slices/analysis-slice";
 import {
-  AnalysisPageHeader,
   AnalysisControls,
   AnalysisResult,
   AnalysisDeleteDialog,
@@ -29,16 +28,8 @@ class AnalysisPage extends React.Component<IProps> {
   }
 
   render() {
-    return (
-      <Stack>
-        <AnalysisPageHeader />
-        {this.renderBody()}
-      </Stack>
-    );
-  }
-
-  private renderBody = () => {
-    const { isLoading, error } = this.props;
+    const { isLoading, error, theme, session } = this.props;
+    const { s1, m } = theme.spacing;
 
     if (isLoading) {
       return <ProgressIndicator />;
@@ -53,19 +44,49 @@ class AnalysisPage extends React.Component<IProps> {
     }
 
     return (
-      <Fragment>
+      <Stack
+        style={{
+          margin: m,
+          borderRadius: theme.effects.roundedCorner2,
+          boxShadow: theme.effects.elevation16,
+          background: theme.palette.neutralLighterAlt,
+        }}
+      >
         <AnalysisDeleteDialog />
-        <AnalysisControls />
+        <Stack>
+          <Stack
+            horizontal
+            verticalFill
+            verticalAlign="center"
+            tokens={{ padding: s1, childrenGap: m }}
+            style={{
+              borderTopLeftRadius: theme.effects.roundedCorner2,
+              borderTopRightRadius: theme.effects.roundedCorner2,
+              backgroundColor: theme.palette.themePrimary,
+              color: theme.palette.white,
+            }}
+          >
+            <Stack.Item>
+              <h2>{session ? session.name : ""}</h2>
+            </Stack.Item>
+            <Stack.Item>
+              ({new Date(session ? session.createDate : "").toLocaleString()})
+            </Stack.Item>
+          </Stack>
+          <AnalysisControls />
+        </Stack>
         <AnalysisResult />
-      </Fragment>
+      </Stack>
     );
-  };
+  }
 }
 
 const mapProps = (state: RootState) => ({
+  theme: state.theme.current,
   success: state.analysis.success,
   error: state.analysis.error,
   isLoading: state.analysis.isSessionLoading,
+  session: state.analysis.session,
 });
 
 const mapDispatch = { fetchSessionById };
