@@ -1,12 +1,7 @@
 import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../store";
-import {
-  Stack,
-  Dropdown,
-  IDropdownOption,
-  Separator,
-} from "office-ui-fabric-react";
+import { Stack, Dropdown, IDropdownOption } from "office-ui-fabric-react";
 import { AnalysisResultItem } from ".";
 import { setLeftSide, setRightSide } from "../../slices/analysis-slice";
 

@@ -33,7 +33,7 @@ class AnalysisDeleteDialog extends React.Component<ReduxProps> {
     return (
       <Dialog
         dialogContentProps={{ title: "Analysis" }}
-        isOpen={isOpen}
+        hidden={!isOpen}
         onDismiss={this.handleCancel}
       >
         <form onSubmit={this.handleDelete}>

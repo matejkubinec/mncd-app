@@ -36,8 +36,8 @@ class FormatsPage extends React.Component<ReduxProps> {
     return mpx
       .trim()
       .split("\n")
-      .map((row) => (
-        <Stack horizontal tokens={{ childrenGap: 10 }}>
+      .map((row, i) => (
+        <Stack key={i} horizontal tokens={{ childrenGap: 10 }}>
           <Stack.Item>{row.trim()}</Stack.Item>
         </Stack>
       ));
@@ -55,13 +55,13 @@ class FormatsPage extends React.Component<ReduxProps> {
         1 Layer1
     `;
 
-    return edgelist.split("\n").map((row) => (
-      <Stack horizontal tokens={{ childrenGap: 10 }}>
+    return edgelist.split("\n").map((row, i) => (
+      <Stack key={"r" + i} horizontal tokens={{ childrenGap: 10 }}>
         {row
           .trim()
           .split(" ")
-          .map((cell) => (
-            <Stack.Item>{cell}</Stack.Item>
+          .map((cell, i) => (
+            <Stack.Item key={i}>{cell}</Stack.Item>
           ))}
       </Stack>
     ));

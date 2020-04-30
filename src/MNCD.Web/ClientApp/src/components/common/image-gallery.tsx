@@ -104,7 +104,6 @@ interface ICProps {
 interface ICState {
   isLoading: boolean;
   isError: boolean;
-  hideImage: boolean;
 }
 
 class ImageContainer extends React.Component<ICProps, ICState> {
@@ -115,7 +114,6 @@ class ImageContainer extends React.Component<ICProps, ICState> {
     this.state = {
       isLoading: true,
       isError: false,
-      hideImage: false,
     };
   }
 
@@ -128,7 +126,7 @@ class ImageContainer extends React.Component<ICProps, ICState> {
   };
 
   render() {
-    const { isLoading, isError, hideImage } = this.state;
+    const { isLoading, isError } = this.state;
     const display = isLoading || isError ? "none" : "unset";
 
     return (

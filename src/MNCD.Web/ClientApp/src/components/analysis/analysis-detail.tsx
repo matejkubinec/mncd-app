@@ -1,6 +1,6 @@
 import React from "react";
 import { connect, ConnectedProps } from "react-redux";
-import { RootState } from "../../store";
+import { RootState, history } from "../../store";
 import { RouteComponentProps } from "react-router";
 import {
   Stack,
@@ -11,6 +11,7 @@ import {
   MessageBarType,
   Spinner,
   SpinnerSize,
+  IconButton,
 } from "office-ui-fabric-react";
 import {
   fetchAnalysisDetailById,
@@ -41,20 +42,29 @@ class AnalysisDetail extends React.Component<IProps> {
 
   render() {
     const { theme, isLoading } = this.props;
+    const { s1, m } = theme.spacing;
     const { id } = this.props.match.params;
 
     return (
-      <Stack tokens={{ padding: 25 }}>
+      <Stack tokens={{ padding: m }}>
         <Stack
-          tokens={{ padding: 25 }}
+          tokens={{ padding: "10px 25px 25px 25px" }}
           style={{
             borderRadius: theme.effects.roundedCorner2,
             boxShadow: theme.effects.elevation16,
             background: theme.palette.white,
           }}
         >
-          <Stack.Item styles={{ root: { paddingBottom: 10 } }}>
-            <h1>Analysis {id}</h1>
+          <Stack.Item>
+            <Stack horizontal verticalFill verticalAlign="center">
+              <IconButton
+                iconProps={{ iconName: "Back" }}
+                style={{ color: theme.palette.black, margin: s1 }}
+                label="Back"
+                onClick={() => history.goBack()}
+              />
+              <h1>Analysis {id}</h1>
+            </Stack>
           </Stack.Item>
           <Separator />
           {isLoading ? this.renderLoading() : this.renderBody()}

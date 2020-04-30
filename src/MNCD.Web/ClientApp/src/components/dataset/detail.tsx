@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect, ConnectedProps } from "react-redux";
-import { RootState } from "../../store";
+import { RootState, history } from "../../store";
 import { RouteComponentProps } from "react-router";
 import {
   fetchDataSetDetailById,
@@ -12,6 +12,7 @@ import {
   List,
   PrimaryButton,
   ProgressIndicator,
+  IconButton,
 } from "office-ui-fabric-react";
 import { ImageGallery } from "../common";
 
@@ -24,18 +25,21 @@ interface IProps extends RouteComponentProps<MatchParams>, ReduxProps {}
 class DataSetDetail extends Component<IProps> {
   componentDidMount() {
     const { id } = this.props.match.params;
+    console.log(this.props.match);
+    console.log(this.props.location.search);
     this.props.fetchDataSetDetailById(id);
   }
 
   render() {
     const { isLoading, dataSet, theme } = this.props;
+    const { s1, m } = theme.spacing;
 
     if (isLoading) {
       return "Loading...";
     }
 
     return (
-      <Stack tokens={{ padding: 25 }}>
+      <Stack tokens={{ padding: m }}>
         <Stack
           tokens={{ padding: "10px 25px 25px 25px" }}
           style={{
@@ -45,7 +49,15 @@ class DataSetDetail extends Component<IProps> {
           }}
         >
           <Stack.Item>
-            <h1>{dataSet ? dataSet.name : "Dataset"}</h1>
+            <Stack horizontal verticalFill verticalAlign="center">
+              <IconButton
+                iconProps={{ iconName: "Back" }}
+                style={{ color: theme.palette.black, margin: s1 }}
+                label="Back"
+                onClick={() => history.goBack()}
+              />
+              <h1>{dataSet ? dataSet.name : "Dataset"}</h1>
+            </Stack>
           </Stack.Item>
           <Stack.Item>
             <Separator />
@@ -151,6 +163,10 @@ class DataSetDetail extends Component<IProps> {
       </td>
     </tr>
   );
+
+  private showBackLink = (): boolean => {
+    return this.props.location.search.includes("showBackLink");
+  };
 }
 
 const mapProps = (rootState: RootState) => ({

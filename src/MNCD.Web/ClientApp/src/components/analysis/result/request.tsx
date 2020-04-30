@@ -10,6 +10,7 @@ import {
   flatteningToString,
 } from "../../../utils";
 import { Stack, Separator, ITheme } from "office-ui-fabric-react";
+import { Link } from "react-router-dom";
 import AnalysisResultCard from "./result-card";
 
 interface AnalysisRequestRow {
@@ -56,13 +57,9 @@ export default class AnalysisRequest extends Component<IProps> {
     rows.push({
       name: "DataSet",
       value: (
-        <a
-          href={`/dataset/${request.datasetId}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <Link to={`/dataset/${request.datasetId}`}>
           {request.dataSetName || ""}
-        </a>
+        </Link>
       ),
       separator: true,
     });

@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../store";
 import {
@@ -62,12 +62,13 @@ class AnalysisPage extends React.Component<IProps> {
             style={{
               borderTopLeftRadius: theme.effects.roundedCorner2,
               borderTopRightRadius: theme.effects.roundedCorner2,
-              backgroundColor: theme.palette.themePrimary,
-              color: theme.palette.white,
+              borderBottom: "1px solid",
+              borderColor: theme.palette.neutralLight,
+              backgroundColor: theme.palette.white,
             }}
           >
-            <Stack.Item>
-              <h2>{session ? session.name : ""}</h2>
+            <Stack.Item styles={{ root: { paddingLeft: s1 } }}>
+              <h1>{session ? session.name : ""}</h1>
             </Stack.Item>
             <Stack.Item>
               ({new Date(session ? session.createDate : "").toLocaleString()})

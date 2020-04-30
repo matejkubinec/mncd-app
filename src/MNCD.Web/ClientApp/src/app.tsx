@@ -63,11 +63,11 @@ export default class App extends Component {
             </Stack.Item>
           </Stack>
           <Switch>
-            <Route path="/session/:id" component={AnalysisPage} />
-            <Route path="/formats" component={FormatsPage} />
-            <Route path="/datasets" component={DataSetPage} />
             <Route path="/dataset/:id" component={DataSetDetail} />
             <Route path="/analysis/:id" component={AnalysisDetail} />
+            <Route path="/session/:id" component={AnalysisPage} />
+            <Route path="/datasets" component={DataSetPage} />
+            <Route path="/formats" component={FormatsPage} />
             <Route exact path="/" component={SessionList} />
           </Switch>
         </React.Fragment>

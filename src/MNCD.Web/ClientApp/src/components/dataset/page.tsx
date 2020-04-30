@@ -4,7 +4,6 @@ import { RootState } from "../../store";
 import {
   Stack,
   Separator,
-  DefaultButton,
   Dialog,
   StackItem,
   PrimaryButton,
@@ -34,7 +33,7 @@ class DataSetPage extends React.Component<ReduxProps> {
   }
 
   render() {
-    const { theme, isLoading, items } = this.props;
+    const { theme, isLoading } = this.props;
     const { s1, m } = theme.spacing;
 
     return (
@@ -160,7 +159,6 @@ class DataSetPage extends React.Component<ReduxProps> {
 
 const mapProps = (state: RootState) => ({
   theme: state.theme.current,
-  items: state.dataset.items,
   successMessage: state.dataset.successMessage,
   errorMessage: state.dataset.errorMessage,
   isLoading: state.dataset.isLoading,

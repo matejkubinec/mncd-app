@@ -13,6 +13,7 @@ import {
   Visualization,
   CommunitiesDetails,
 } from "./result";
+import { Link } from "react-router-dom";
 
 interface IProps {
   analysis: AnalysisViewModel;
@@ -32,7 +33,7 @@ class AnalysisResultItem extends Component<IProps> {
   render() {
     const { showControls, analysis, theme } = this.props;
     const { s1 } = theme.spacing;
-    const { id, result, request, visualization } = analysis;
+    const { result, request, visualization } = analysis;
 
     const itemStyles = {
       root: {
@@ -97,19 +98,14 @@ class AnalysisResultItem extends Component<IProps> {
     );
   }
 
-  private renderLink = () => (
-    <div>
-      Click{" "}
-      <a
-        href={`/analysis/${this.props.analysis.id}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        here
-      </a>{" "}
-      to view a more detailed version.
-    </div>
-  );
+  private renderLink = () => {
+    const to = `/analysis/${this.props.analysis.id}`;
+    return (
+      <div>
+        Click <Link to={to}>here</Link> to view a more detailed version.
+      </div>
+    );
+  };
 
   private handleMinimize = () => {
     this.props.onMinimize(this.props.analysis.id);

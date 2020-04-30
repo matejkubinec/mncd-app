@@ -62,7 +62,7 @@ class DataSetsList extends React.Component<ReduxProps & IProps> {
       minWidth: this.props.biggerControls ? 270 : 90,
       onRender: (item: DataSetRowViewModel) => {
         const { s1 } = this.props.theme.spacing;
-        const onOpen = () => history.push(`/dataset/${item.id}`);
+        const onOpen = () => history.push(`/dataset/${item.id}?showBackLink`);
         const onEdit = (e: any) => this.handleEditDataSet(e, item);
         const onRemove = (e: any) => this.handleRemoveDataSet(e, item);
 
