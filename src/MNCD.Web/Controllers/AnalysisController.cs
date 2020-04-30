@@ -51,7 +51,7 @@ namespace MNCD.Web.Controllers
         }
 
         [HttpPost]
-        [Route("toggle-visibility/{id}")]
+        [Route("{id}/toggle-visibility")]
         public async Task<IActionResult> Toggle(int id)
         {
             if (id <= 0)

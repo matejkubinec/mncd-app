@@ -29,30 +29,6 @@ export default class Evaluation extends Component<IProps> {
     };
   }
 
-  formatArray = (data: number[], prefix: string) => (
-    <table>
-      <thead>
-        <tr>
-          {data.map((_, i) => (
-            <th key={i} align="center">
-              {prefix}
-              {i}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          {data.map((d, i) => (
-            <td key={i} align="left">
-              {d.toFixed(2)}
-            </td>
-          ))}
-        </tr>
-      </tbody>
-    </table>
-  );
-
   getRows(): IRow[] {
     const res = this.props.result;
     const rows = new Array<IRow>();
@@ -83,7 +59,7 @@ export default class Evaluation extends Component<IProps> {
         name: "Coverages",
         tooltipId: `${id}-coverage-tooltip`,
         tooltip: "Coverage of communities in each layer.",
-        value: this.formatArray(res.coverages, "L"),
+        value: this.renderArray(res.coverages),
       });
     }
 
@@ -112,7 +88,7 @@ export default class Evaluation extends Component<IProps> {
         name: "Performances",
         tooltipId: `${id}-performance-tooltip`,
         tooltip: "Performances of communities individual layers.",
-        value: this.formatArray(res.performances, "L"),
+        value: this.renderArray(res.performances),
       });
     }
 
@@ -132,7 +108,7 @@ export default class Evaluation extends Component<IProps> {
         tooltipId: `${id}-modularity-tooltip`,
         tooltip:
           "Modularity is the fraction of the edges that fall within the given groups minus the expected fraction if edges were distributed at random.",
-        value: res.averageModularity.toFixed(2),
+        value: this.formatNumber(res.averageModularity.toFixed(2)),
       });
     }
 
@@ -141,7 +117,7 @@ export default class Evaluation extends Component<IProps> {
         name: "Modularities",
         tooltipId: `${id}-modularity-tooltip`,
         tooltip: "Modularity of communities in each layer.",
-        value: this.formatArray(res.modularities, "L"),
+        value: this.renderArray(res.modularities),
       });
     }
 
@@ -154,7 +130,17 @@ export default class Evaluation extends Component<IProps> {
     </AnalysisResultCard>
   );
 
+  private renderArray = (values: number[]) => {
+    const items = values.map(
+      (v) => <li>{this.formatNumber(v.toFixed(2))}</li>
+      // v >= 0 ? <li>&nbsp;{v.toFixed(2)}</li> : <li>{v.toFixed(2)}</li>
+    );
+    const columns = Math.round(items.length / 5);
+    return <ol style={{ columns }}>{items}</ol>;
+  };
+
   private renderRows(rows: IRow[]) {
+    const fontFamily = "Consolas, monospace";
     return rows.map((r, i) => (
       <Stack horizontal horizontalAlign="center" key={i}>
         <Stack.Item styles={{ root: { width: "50%" } }}>
@@ -171,8 +157,18 @@ export default class Evaluation extends Component<IProps> {
             </Stack.Item>
           </Stack>
         </Stack.Item>
-        <Stack.Item styles={{ root: { width: "50%" } }}>{r.value}</Stack.Item>
+        <Stack.Item styles={{ root: { width: "50%", fontFamily } }}>
+          {r.value}
+        </Stack.Item>
       </Stack>
     ));
   }
+
+  private formatNumber = (num: number | string) => {
+    return Number(num) >= 0 ? (
+      <React.Fragment>&nbsp;{num}</React.Fragment>
+    ) : (
+      <React.Fragment>{num}</React.Fragment>
+    );
+  };
 }
