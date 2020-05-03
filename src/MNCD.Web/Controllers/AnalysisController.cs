@@ -15,19 +15,11 @@ namespace MNCD.Web.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IAnalysisService _analysisService;
-        private readonly INetworkDataSetService _dataSetService;
-        private readonly IAnalysisSessionService _analysisSessionService;
 
-        public AnalysisController(
-            IMapper mapper,
-            IAnalysisService analysisService,
-            INetworkDataSetService dataSetService,
-            IAnalysisSessionService analysisSessionService)
+        public AnalysisController(IMapper mapper, IAnalysisService analysisService)
         {
             _mapper = mapper;
             _analysisService = analysisService;
-            _dataSetService = dataSetService;
-            _analysisSessionService = analysisSessionService;
         }
 
         [HttpGet]
@@ -41,7 +33,7 @@ namespace MNCD.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Analyze([FromBody]AnalysisRequestViewModel model)
+        public async Task<IActionResult> Analyze([FromBody] AnalysisRequestViewModel model)
         {
             var request = _mapper.Map<AnalysisRequest>(model);
             var analysis = await _analysisService.Analyze(model.SessionId, model.DatasetId, request);
@@ -97,7 +89,7 @@ namespace MNCD.Web.Controllers
 
         [HttpPatch]
         [Route("{id}")]
-        public async Task<IActionResult> Edit(int id, [FromBody]AnalysisEditViewModel model)
+        public async Task<IActionResult> Edit(int id, [FromBody] AnalysisEditViewModel model)
         {
             if (id <= 0)
             {
