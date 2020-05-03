@@ -12,17 +12,19 @@ class WeightedFlattening extends React.Component<ReduxProps, IState> {
   constructor(props: ReduxProps) {
     super(props);
     this.state = {
-      globalWeight: 1.0
+      globalWeight: 1.0,
     };
   }
 
   handleApplyGlobalWeight = () => {
     const weights = this.props.weights;
+
     for (let y = 0; y < weights.length; y++) {
       for (let x = 0; x < weights.length; x++) {
         weights[y][x] = this.state.globalWeight;
       }
     }
+
     this.props.updateFlatteningParameters({ weights: JSON.stringify(weights) });
   };
 
@@ -86,6 +88,7 @@ class WeightedFlattening extends React.Component<ReduxProps, IState> {
             <Stack.Item align="end">
               <TextField
                 label="Weight"
+                type="number"
                 value={this.state.globalWeight.toString()}
                 onChange={this.handleGlobalWeightChange}
               />
@@ -109,7 +112,7 @@ const mapProps = (state: RootState) => {
   const { weights } = flatteningAlgorithmParameters;
   return {
     layerNames: dataSet ? dataSet.layerNames : [],
-    weights: (weights ? JSON.parse(weights) : []) as number[][]
+    weights: (weights ? JSON.parse(weights) : []) as number[][],
   };
 };
 

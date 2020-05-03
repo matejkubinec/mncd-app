@@ -7,7 +7,10 @@ import {
   MessageBar,
   MessageBarType,
 } from "office-ui-fabric-react";
-import { updateAnalysisParameters } from "../../../slices/analysis-slice";
+import {
+  setHasAnalysisError,
+  updateAnalysisParameters,
+} from "../../../slices/analysis-slice";
 
 class CLECC extends React.Component<ReduxProps> {
   render = () => {
@@ -48,6 +51,7 @@ class CLECC extends React.Component<ReduxProps> {
   private handleAlphaChange = (_: any, value?: string) => {
     if (value !== undefined) {
       this.props.updateAnalysisParameters({ alpha: value });
+      this.validate(this.props.k, value);
     }
   };
 
@@ -62,13 +66,12 @@ class CLECC extends React.Component<ReduxProps> {
     if (alpha > maxAlpha) {
       return `Alpha must be less or equal than number of layers in network. (${maxAlpha})`;
     }
-
-    return "";
   };
 
   private handleKChange = (_: any, value?: string) => {
     if (value !== undefined) {
       this.props.updateAnalysisParameters({ k: value });
+      this.validate(value, this.props.alpha);
     }
   };
 
@@ -85,6 +88,13 @@ class CLECC extends React.Component<ReduxProps> {
     }
 
     return "";
+  };
+
+  private validate = (k: string, alpha: string) => {
+    const hasError =
+      !!this.handleGetKErrorMessage(alpha) || !!this.handleGetKErrorMessage(k);
+
+    this.props.setHasAnalysisError(hasError);
   };
 }
 
@@ -104,7 +114,10 @@ const mapProps = (state: RootState) => {
   };
 };
 
-const mapDispatch = { updateAnalysisParameters };
+const mapDispatch = {
+  setHasAnalysisError,
+  updateAnalysisParameters,
+};
 
 const connector = connect(mapProps, mapDispatch);
 

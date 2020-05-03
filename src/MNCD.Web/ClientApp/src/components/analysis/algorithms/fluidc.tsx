@@ -7,52 +7,12 @@ import {
   MessageBarType,
 } from "office-ui-fabric-react";
 import { RootState } from "../../../store";
-import { updateAnalysisParameters } from "../../../slices/analysis-slice";
+import {
+  updateAnalysisParameters,
+  setHasAnalysisError,
+} from "../../../slices/analysis-slice";
 
-interface IProps extends ReduxProps {}
-
-interface IState {}
-
-class FluidC extends React.Component<IProps, IState> {
-  constructor(props: IProps) {
-    super(props);
-
-    this.onKChange = this.onKChange.bind(this);
-    this.onMaxIterationsChange = this.onMaxIterationsChange.bind(this);
-    this.onGetErrorMessageK = this.onGetErrorMessageK.bind(this);
-    this.onGetErrorMessageMaxIterations = this.onGetErrorMessageMaxIterations.bind(
-      this
-    );
-  }
-
-  onKChange(_: any, value?: string) {
-    if (value !== undefined) {
-      this.props.updateAnalysisParameters({ k: value });
-    }
-  }
-
-  onGetErrorMessageK(value: string) {
-    if (Number(value) < 2) {
-      return "K must be greater than 1.";
-    }
-
-    if (Number(value) > this.props.maxK) {
-      return `K must be less than number of actors (${this.props.maxK}).`;
-    }
-  }
-
-  onMaxIterationsChange(_: any, value?: string) {
-    if (value !== undefined) {
-      this.props.updateAnalysisParameters({ maxIterations: value });
-    }
-  }
-
-  onGetErrorMessageMaxIterations(value: string) {
-    if (Number(value) < 1) {
-      return "MaxIterations must be greater than zero.";
-    }
-  }
-
+class FluidC extends React.Component<ReduxProps> {
   render() {
     if (!this.props.hasDataSet) {
       return (
@@ -87,6 +47,44 @@ class FluidC extends React.Component<IProps, IState> {
       </Stack>
     );
   }
+
+  private onKChange = (_: any, value?: string) => {
+    if (value !== undefined) {
+      this.props.updateAnalysisParameters({ k: value });
+      this.validate(value, this.props.maxIterations);
+    }
+  };
+
+  private onGetErrorMessageK = (value: string) => {
+    if (Number(value) < 2) {
+      return "K must be greater than 1.";
+    }
+
+    if (Number(value) > this.props.maxK) {
+      return `K must be less than number of actors (${this.props.maxK}).`;
+    }
+  };
+
+  private onMaxIterationsChange = (_: any, value?: string) => {
+    if (value !== undefined) {
+      this.props.updateAnalysisParameters({ maxIterations: value });
+      this.validate(this.props.k, value);
+    }
+  };
+
+  private onGetErrorMessageMaxIterations = (value: string) => {
+    if (Number(value) < 1) {
+      return "MaxIterations must be greater than zero.";
+    }
+  };
+
+  private validate = (k: string, maxIterations: string) => {
+    const hasError =
+      !!this.onGetErrorMessageK(k) ||
+      !!this.onGetErrorMessageMaxIterations(maxIterations);
+
+    this.props.setHasAnalysisError(hasError);
+  };
 }
 
 const mapProps = (state: RootState) => {
@@ -103,7 +101,10 @@ const mapProps = (state: RootState) => {
   };
 };
 
-const mapDispatch = { updateAnalysisParameters };
+const mapDispatch = {
+  updateAnalysisParameters,
+  setHasAnalysisError,
+};
 
 const connector = connect(mapProps, mapDispatch);
 

@@ -45,6 +45,11 @@ export type AnalysisState = {
     id: number;
     error: string;
   };
+  requestErrors: {
+    hasDataSet: boolean;
+    hasFlatteningError: boolean;
+    hasAlgorithmError: boolean;
+  };
 };
 
 const initialState: AnalysisState = {
@@ -80,6 +85,11 @@ const initialState: AnalysisState = {
     isDeleting: false,
     id: 0,
     error: "",
+  },
+  requestErrors: {
+    hasDataSet: false,
+    hasFlatteningError: false,
+    hasAlgorithmError: false,
   },
 };
 
@@ -117,6 +127,20 @@ export const deleteAnalysisById = createAsyncThunk(
     }
   }
 );
+
+const isRequestValid = (state: AnalysisState) => {
+  const {
+    hasDataSet,
+    hasFlatteningError,
+    hasAlgorithmError,
+  } = state.requestErrors;
+
+  if (state.request.approach === AnalysisApproach.SingleLayerFlattening) {
+    return hasDataSet && !hasFlatteningError && !hasAlgorithmError;
+  }
+
+  return hasDataSet && !hasAlgorithmError;
+};
 
 const slice = createSlice({
   name: "analysis-state",
@@ -159,6 +183,7 @@ const slice = createSlice({
       }
 
       state.request = { ...state.request, ...action.payload };
+      state.isRequestValid = isRequestValid(state);
     },
     setFlatteningAlgorithm: (
       state,
@@ -173,6 +198,7 @@ const slice = createSlice({
           state.request.flatteningAlgorithmParameters = {
             weightEdges: "false",
           };
+          state.requestErrors.hasFlatteningError = false;
           break;
         case FlattenningAlgorithm.LocalSimplification:
           const relevances = dataSet
@@ -183,6 +209,7 @@ const slice = createSlice({
             weightEdges: "true",
             relevances: JSON.stringify(relevances),
           };
+          state.requestErrors.hasFlatteningError = false;
           break;
         case FlattenningAlgorithm.MergeFlattening:
           const layerIndices = dataSet
@@ -192,6 +219,7 @@ const slice = createSlice({
             includeWeights: "true",
             layerIndices: JSON.stringify(layerIndices),
           };
+          state.requestErrors.hasFlatteningError = false;
           break;
         case FlattenningAlgorithm.WeightedFlattening:
           if (!dataSet) {
@@ -210,8 +238,11 @@ const slice = createSlice({
               weights: JSON.stringify(weights),
             };
           }
+          state.requestErrors.hasFlatteningError = false;
           break;
       }
+
+      state.isRequestValid = isRequestValid(state);
     },
     updateFlatteningParameters: (state, action) => {
       state.request.flatteningAlgorithmParameters = {
@@ -226,23 +257,27 @@ const slice = createSlice({
       switch (action.payload) {
         case AnalysisAlgorithm.Louvain:
           state.request.analysisAlgorithmParameters = {};
+          state.requestErrors.hasAlgorithmError = false;
           break;
         case AnalysisAlgorithm.FluidC:
           state.request.analysisAlgorithmParameters = {
             k: "2",
             maxIterations: "100",
           };
+          state.requestErrors.hasAlgorithmError = false;
           break;
         case AnalysisAlgorithm.KClique:
           state.request.analysisAlgorithmParameters = {
             k: "2",
           };
+          state.requestErrors.hasAlgorithmError = false;
           break;
         case AnalysisAlgorithm.CLECC:
           state.request.analysisAlgorithmParameters = {
             k: "2",
             alpha: "1",
           };
+          state.requestErrors.hasAlgorithmError = false;
           break;
         case AnalysisAlgorithm.ABACUS:
           state.request.analysisAlgorithmParameters = {
@@ -250,8 +285,11 @@ const slice = createSlice({
             algorithm: String(Number(AnalysisAlgorithm.Louvain)),
             parameters: "{}",
           };
+          state.requestErrors.hasAlgorithmError = false;
           break;
       }
+
+      state.isRequestValid = isRequestValid(state);
     },
     updateAnalysisParameters: (state, action: PayloadAction<object>) => {
       state.request.analysisAlgorithmParameters = {
@@ -265,7 +303,7 @@ const slice = createSlice({
     ) => {
       state.dataSet = action.payload;
       state.request.datasetId = action.payload.id;
-      state.isRequestValid = true;
+      state.requestErrors.hasDataSet = true;
 
       if (state.request.approach === AnalysisApproach.SingleLayerFlattening) {
         const { flatteningAlgorithm } = state.request;
@@ -304,6 +342,8 @@ const slice = createSlice({
             break;
         }
       }
+
+      state.isRequestValid = isRequestValid(state);
     },
     toggleResultControls: (state) => {
       state.areResultControlsVisible = !state.areResultControlsVisible;
@@ -371,6 +411,14 @@ const slice = createSlice({
     },
     hideErrorMessage: (state) => {
       state.error = null;
+    },
+    setHasFlatteningError: (state, action: PayloadAction<boolean>) => {
+      state.requestErrors.hasFlatteningError = action.payload;
+      state.isRequestValid = isRequestValid(state);
+    },
+    setHasAnalysisError: (state, action: PayloadAction<boolean>) => {
+      state.requestErrors.hasAlgorithmError = action.payload;
+      state.isRequestValid = isRequestValid(state);
     },
   },
   extraReducers: {
@@ -445,6 +493,8 @@ export const {
   openDeleteDialog,
   closeDeleteDialog,
   dismissDeleteDialogError,
+  setHasFlatteningError,
+  setHasAnalysisError,
 } = slice.actions;
 
 export const setAnalysisApproach = (approach: AnalysisApproach) => (

@@ -5,12 +5,6 @@ import { Toggle, Stack } from "office-ui-fabric-react";
 import { updateFlatteningParameters } from "../../../slices/analysis-slice";
 
 class BasicFlattening extends React.Component<ReduxProps> {
-  handleWeightEdgesChange = (_: any, checked?: boolean) => {
-    if (checked !== undefined) {
-      this.props.updateFlatteningParameters({ weightEdges: checked });
-    }
-  };
-
   render() {
     return (
       <Stack>
@@ -18,18 +12,22 @@ class BasicFlattening extends React.Component<ReduxProps> {
           <Toggle
             label="Weight Edges"
             checked={this.props.weightEdges}
-            onChange={this.handleWeightEdgesChange}
+            onChanged={this.handleWeightEdgesChange}
           />
         </Stack.Item>
       </Stack>
     );
   }
+
+  private handleWeightEdgesChange = (weightEdges: boolean) => {
+    this.props.updateFlatteningParameters({ weightEdges });
+  };
 }
 
 const mapProps = (rootState: RootState) => ({
   weightEdges: Boolean(
     rootState.analysis.request.flatteningAlgorithmParameters["weightEdges"]
-  )
+  ),
 });
 
 const mapDispatch = { updateFlatteningParameters };
