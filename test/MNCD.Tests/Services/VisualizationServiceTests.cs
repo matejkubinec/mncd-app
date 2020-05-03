@@ -9,7 +9,7 @@ namespace MNCD.Tests.Services
 {
     public class VisualizationServiceTests
     {
-        private static string Url => "https://mncd-viz.azurewebsites.net/";
+        private static string Url => "https://mncd-viz.herokuapp.com/";
         private readonly VisualizationService _service = new VisualizationService(null, Url);
 
         [Fact]
