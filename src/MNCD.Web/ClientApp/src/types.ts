@@ -14,6 +14,7 @@ export enum AnalysisAlgorithm {
   KClique = 2,
   CLECC = 3,
   ABACUS = 4,
+  LabelPropagation = 5,
 }
 
 export enum FlattenningAlgorithm {

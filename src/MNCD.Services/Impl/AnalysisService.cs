@@ -40,6 +40,7 @@ namespace MNCD.Services.Impl
             { AnalysisAlgorithm.KClique, new KCliqueAnalysis() },
             { AnalysisAlgorithm.CLECC, new CLECCAnalysis() },
             { AnalysisAlgorithm.ABACUS, new ABACUSAnalysis() },
+            { AnalysisAlgorithm.LabelPropagation, new LabelPropagationAnalysis() },
         };
 
         public AnalysisService(

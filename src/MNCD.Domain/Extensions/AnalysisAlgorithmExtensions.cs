@@ -9,6 +9,7 @@ namespace MNCD.Domain.Extensions
             return
                 algorithm == AnalysisAlgorithm.FluidC ||
                 algorithm == AnalysisAlgorithm.KClique ||
+                algorithm == AnalysisAlgorithm.LabelPropagation ||
                 algorithm == AnalysisAlgorithm.Louvain;
         }
 

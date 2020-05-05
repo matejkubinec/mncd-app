@@ -286,6 +286,11 @@ const slice = createSlice({
             parameters: "{}",
           };
           state.requestErrors.hasAlgorithmError = false;
+        case AnalysisAlgorithm.LabelPropagation:
+          state.request.analysisAlgorithmParameters = {
+            maxIterations: "10000",
+          };
+          state.requestErrors.hasAlgorithmError = false;
           break;
       }
 

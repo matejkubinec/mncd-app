@@ -1,7 +1,7 @@
 import {
   AnalysisApproach,
   AnalysisAlgorithm,
-  FlattenningAlgorithm
+  FlattenningAlgorithm,
 } from "./types";
 
 export function approachToString(approach: AnalysisApproach) {
@@ -29,6 +29,8 @@ export function analysisToString(algorithm: AnalysisAlgorithm) {
       return "CLECC Community Detection";
     case AnalysisAlgorithm.ABACUS:
       return "ABACUS";
+    case AnalysisAlgorithm.LabelPropagation:
+      return "Label Propagation";
   }
 }
 

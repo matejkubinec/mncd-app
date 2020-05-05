@@ -9,5 +9,5 @@ export {
   AnalysisApproachControl,
   AnalysisChooseLayerControl,
   AnalysisAlgorithmControl,
-  AnalysisFlatteningControl
+  AnalysisFlatteningControl,
 };

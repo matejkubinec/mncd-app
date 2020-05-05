@@ -13,7 +13,8 @@ namespace MNCD.Domain.Entities
         Louvain = 1,
         KClique = 2,
         CLECC = 3,
-        ABACUS = 4
+        ABACUS = 4,
+        LabelPropagation = 5,
     }
 
     public enum FlatteningAlgorithm
