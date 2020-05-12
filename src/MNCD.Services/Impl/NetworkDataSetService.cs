@@ -42,7 +42,6 @@ namespace MNCD.Services.Impl
         {
             return await _ctx
                 .DataSets
-                .Include(d => d.NetworkInfo)
                 .Where(d => !d.Deleted)
                 .ToListAsync();
         }
@@ -56,9 +55,7 @@ namespace MNCD.Services.Impl
 
             var dataSet = await _ctx
                 .DataSets
-                .Include(d => d.NetworkInfo)
-                .Include(d => d.DiagonalVisualization)
-                .Include(d => d.SlicesVisualization)
+                .Include(d => d.Visualizations)
                 .FirstOrDefaultAsync(d => d.Id == id);
 
             if (dataSet is null)
@@ -89,7 +86,6 @@ namespace MNCD.Services.Impl
             }
 
             var network = ReadNetwork(content, fileType);
-            var info = GetInfo(network);
             var edgeList = GetEdgeList(network);
 
             var dataSet = new NetworkDataSet
@@ -99,7 +95,11 @@ namespace MNCD.Services.Impl
                 EdgeList = edgeList,
                 FileType = fileType,
                 Hash = hash,
-                NetworkInfo = info,
+                NodeCount = network.ActorCount,
+                EdgeCount = network.Layers.Sum(l => l.Edges.Count) + network.InterLayerEdges.Count,
+                LayerCount = network.LayerCount,
+                ActorNames = network.Actors.Select(a => a.Name).ToList(),
+                LayerNames = network.Layers.Select(l => l.Name).ToList()
             };
 
             await _ctx.DataSets.AddAsync(dataSet);
@@ -155,11 +155,11 @@ namespace MNCD.Services.Impl
             {
                 Name = dataSet.Name,
                 FileType = dataSet.FileType.ToString(),
-                NodeCount = dataSet.NetworkInfo.NodeCount,
-                EdgeCount = dataSet.NetworkInfo.EdgeCount,
-                LayerCount = dataSet.NetworkInfo.LayerCount,
-                LayerNames = dataSet.NetworkInfo.LayerNames,
-                ActorNames = dataSet.NetworkInfo.ActorNames,
+                NodeCount = dataSet.NodeCount,
+                EdgeCount = dataSet.EdgeCount,
+                LayerCount = dataSet.LayerCount,
+                LayerNames = dataSet.LayerNames,
+                ActorNames = dataSet.ActorNames,
             });
             var edgeList = dataSet.EdgeList;
             var originalData = dataSet.Content;
@@ -176,16 +176,16 @@ namespace MNCD.Services.Impl
                         await WriteContent(archive, "data.edgelist.txt", edgeList);
                     }
 
-                    if (dataSet.DiagonalVisualization != null)
+                    var diagonal = dataSet.Visualizations.FirstOrDefault(v => v.Type == VisualizationType.MultiLayer_Diagonal);
+                    if (diagonal != null)
                     {
-                        var svg = dataSet.DiagonalVisualization.SvgImage;
-                        await WriteContent(archive, "images/diagonal.svg", svg);
+                        await WriteContent(archive, "images/diagonal.svg", diagonal.SvgImage);
                     }
 
-                    if (dataSet.SlicesVisualization != null)
+                    var slices = dataSet.Visualizations.FirstOrDefault(v => v.Type == VisualizationType.MultiLayer_Slices);
+                    if (slices != null)
                     {
-                        var svg = dataSet.SlicesVisualization.SvgImage;
-                        await WriteContent(archive, "images/slices.svg", svg);
+                        await WriteContent(archive, "images/slices.svg", slices.SvgImage);
                     }
                 }
 
@@ -214,18 +214,6 @@ namespace MNCD.Services.Impl
         private string GetEdgeList(Network network)
         {
             return _edgeListWriter.ToString(network, true);
-        }
-
-        private NetworkInfo GetInfo(Network network)
-        {
-            return new NetworkInfo
-            {
-                NodeCount = network.ActorCount,
-                EdgeCount = network.Layers.Sum(l => l.Edges.Count) + network.InterLayerEdges.Count,
-                LayerCount = network.LayerCount,
-                ActorNames = network.Actors.Select(a => a.Name).ToList(),
-                LayerNames = network.Layers.Select(l => l.Name).ToList()
-            };
         }
 
         private Network ReadNetwork(string content, FileType fileType)

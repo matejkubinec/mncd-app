@@ -19,7 +19,7 @@ namespace MNCD.Web.Mappings
                 )
                 .ForMember(
                     dst => dst.SelectedLayerName,
-                    opt => opt.MapFrom(src => src.DataSet.NetworkInfo.LayerNames[src.SelectedLayer])
+                    opt => opt.MapFrom(src => src.DataSet.LayerNames[src.SelectedLayer])
                 );
             CreateMap<AnalysisRequestViewModel, AnalysisRequest>();
         }

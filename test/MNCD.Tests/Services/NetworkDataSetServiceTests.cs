@@ -54,9 +54,9 @@ namespace MNCD.Tests.Services
                 var dataSet = await service.AddDataSet("Data set 2", "0 0 1 0 1\n 0 1 1 1 1", FileType.EdgeList);
 
                 Assert.Equal(2, dataSet.Id);
-                Assert.Equal(2, dataSet.NetworkInfo.NodeCount);
-                Assert.Equal(2, dataSet.NetworkInfo.LayerCount);
-                Assert.Equal(2, dataSet.NetworkInfo.EdgeCount);
+                Assert.Equal(2, dataSet.NodeCount);
+                Assert.Equal(2, dataSet.LayerCount);
+                Assert.Equal(2, dataSet.EdgeCount);
             }
         }
 
@@ -129,9 +129,9 @@ namespace MNCD.Tests.Services
 
                 Assert.Equal(1, dataSet.Id);
                 Assert.Equal("Data set 1", dataSet.Name);
-                Assert.Equal(2, dataSet.NetworkInfo.NodeCount);
-                Assert.Equal(1, dataSet.NetworkInfo.LayerCount);
-                Assert.Equal(1, dataSet.NetworkInfo.EdgeCount);
+                Assert.Equal(2, dataSet.NodeCount);
+                Assert.Equal(1, dataSet.LayerCount);
+                Assert.Equal(1, dataSet.EdgeCount);
             }
         }
 
@@ -202,17 +202,12 @@ namespace MNCD.Tests.Services
                 EdgeList = edgeList,
                 Name = "Data set 1",
                 Hash = _hasher.GetHashFor(edgeList),
-            };
-            var info = new NetworkInfo
-            {
                 ActorNames = new List<string> { "A0", "A1" },
                 EdgeCount = 1,
                 LayerCount = 1,
                 LayerNames = new List<string> { "L1" },
                 NodeCount = 2,
-                NetworkDataSet = dataSet
             };
-            dataSet.NetworkInfo = info;
             ctx.DataSets.Add(dataSet);
             ctx.SaveChanges();
             return new MNCDContext(options);

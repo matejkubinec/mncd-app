@@ -16,14 +16,20 @@ namespace MNCD.Domain.Entities
 
         public bool Deleted { get; set; }
 
-        public FileType FileType { get; set; }
+        public int NodeCount { get; set; }
 
-        public NetworkInfo NetworkInfo { get; set; }
+        public int EdgeCount { get; set; }
+
+        public int LayerCount { get; set; }
+
+        public List<string> LayerNames { get; set; } = new List<string>();
+
+        public List<string> ActorNames { get; set; } = new List<string>();
+
+        public FileType FileType { get; set; }
 
         public List<AnalysisRequest> Requests { get; set; }
 
-        public Visualization DiagonalVisualization { get; set; }
-
-        public Visualization SlicesVisualization { get; set; }
+        public List<Visualization> Visualizations { get; set; } = new List<Visualization>();
     }
 }

@@ -26,8 +26,7 @@ namespace MNCD.Data.Configurations
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasForeignKey<AnalysisRequest>(r => r.AnalysisId);
 
-            builder
-                .HasMany(a => a.Visualizations);
+            builder.HasMany(a => a.Visualizations);
         }
     }
 }

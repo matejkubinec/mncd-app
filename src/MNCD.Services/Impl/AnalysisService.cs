@@ -83,7 +83,6 @@ namespace MNCD.Services.Impl
             var analysis = await _ctx.Analyses
                 .Include(a => a.Request)
                 .ThenInclude(r => r.DataSet)
-                .ThenInclude(d => d.NetworkInfo)
                 .Include(a => a.Result)
                 .Include(a => a.Visualizations)
                 .FirstOrDefaultAsync(a => a.Id == id);
@@ -163,6 +162,8 @@ namespace MNCD.Services.Impl
                 throw new AnalysisNotFoundException($"Analysis with id '{analysisId}' doesn't exist.");
             }
 
+            _ctx.RemoveRange(analysis.Visualizations);
+
             _ctx.Remove(analysis);
 
             await _ctx.SaveChangesAsync();
@@ -200,13 +201,9 @@ namespace MNCD.Services.Impl
                 .Include(a => a.Visualizations)
                 .Include(a => a.Request)
                 .ThenInclude(r => r.DataSet)
-                .ThenInclude(r => r.NetworkInfo)
                 .Include(a => a.Request)
                 .ThenInclude(r => r.DataSet)
-                .ThenInclude(r => r.SlicesVisualization)
-                .Include(a => a.Request)
-                .ThenInclude(r => r.DataSet)
-                .ThenInclude(r => r.DiagonalVisualization)
+                .ThenInclude(r => r.Visualizations)
                 .Include(a => a.Result)
                 .FirstOrDefault(a => a.Id == analysisId);
 
@@ -223,11 +220,11 @@ namespace MNCD.Services.Impl
             {
                 Name = dataSet.Name,
                 FileType = dataSet.FileType.ToString(),
-                NodeCount = dataSet.NetworkInfo.NodeCount,
-                EdgeCount = dataSet.NetworkInfo.EdgeCount,
-                LayerCount = dataSet.NetworkInfo.LayerCount,
-                LayerNames = dataSet.NetworkInfo.LayerNames,
-                ActorNames = dataSet.NetworkInfo.ActorNames,
+                NodeCount = dataSet.NodeCount,
+                EdgeCount = dataSet.EdgeCount,
+                LayerCount = dataSet.LayerCount,
+                LayerNames = dataSet.LayerNames,
+                ActorNames = dataSet.ActorNames,
             });
             var edgeList = dataSet.EdgeList;
             var originalData = dataSet.Content;
@@ -250,7 +247,7 @@ namespace MNCD.Services.Impl
             }
             else if (req.Approach == AnalysisApproach.SingleLayerOnly)
             {
-                requestContent.SelectedLayer = dataSet.NetworkInfo.LayerNames[req.SelectedLayer];
+                requestContent.SelectedLayer = dataSet.LayerNames[req.SelectedLayer];
             }
 
             var resultContent = new ResultContent();
@@ -288,16 +285,16 @@ namespace MNCD.Services.Impl
                         await WriteContent(archive, "dataset/data.edgelist.txt", edgeList);
                     }
 
-                    if (dataSet.DiagonalVisualization != null)
+                    var diagonal = dataSet.Visualizations.FirstOrDefault(v => v.Type == VisualizationType.MultiLayer_Diagonal);
+                    if (diagonal != null)
                     {
-                        var svg = dataSet.DiagonalVisualization.SvgImage;
-                        await WriteContent(archive, "dataset/images/diagonal.svg", svg);
+                        await WriteContent(archive, "dataset/images/diagonal.svg", diagonal.SvgImage);
                     }
 
-                    if (dataSet.SlicesVisualization != null)
+                    var slices = dataSet.Visualizations.FirstOrDefault(v => v.Type == VisualizationType.MultiLayer_Slices);
+                    if (slices != null)
                     {
-                        var svg = dataSet.SlicesVisualization.SvgImage;
-                        await WriteContent(archive, "dataset/images/slices.svg", svg);
+                        await WriteContent(archive, "dataset/images/slices.svg", slices.SvgImage);
                     }
 
                     foreach (var vis in analysis.Visualizations)
