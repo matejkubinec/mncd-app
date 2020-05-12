@@ -162,6 +162,8 @@ namespace MNCD.Services.Impl
                 throw new AnalysisNotFoundException($"Analysis with id '{analysisId}' doesn't exist.");
             }
 
+            _ctx.RemoveRange(analysis.Visualizations);
+
             _ctx.Remove(analysis);
 
             await _ctx.SaveChangesAsync();
@@ -201,10 +203,7 @@ namespace MNCD.Services.Impl
                 .ThenInclude(r => r.DataSet)
                 .Include(a => a.Request)
                 .ThenInclude(r => r.DataSet)
-                .ThenInclude(r => r.SlicesVisualization)
-                .Include(a => a.Request)
-                .ThenInclude(r => r.DataSet)
-                .ThenInclude(r => r.DiagonalVisualization)
+                .ThenInclude(r => r.Visualizations)
                 .Include(a => a.Result)
                 .FirstOrDefault(a => a.Id == analysisId);
 
@@ -286,16 +285,16 @@ namespace MNCD.Services.Impl
                         await WriteContent(archive, "dataset/data.edgelist.txt", edgeList);
                     }
 
-                    if (dataSet.DiagonalVisualization != null)
+                    var diagonal = dataSet.Visualizations.FirstOrDefault(v => v.Type == VisualizationType.MultiLayer_Diagonal);
+                    if (diagonal != null)
                     {
-                        var svg = dataSet.DiagonalVisualization.SvgImage;
-                        await WriteContent(archive, "dataset/images/diagonal.svg", svg);
+                        await WriteContent(archive, "dataset/images/diagonal.svg", diagonal.SvgImage);
                     }
 
-                    if (dataSet.SlicesVisualization != null)
+                    var slices = dataSet.Visualizations.FirstOrDefault(v => v.Type == VisualizationType.MultiLayer_Slices);
+                    if (slices != null)
                     {
-                        var svg = dataSet.SlicesVisualization.SvgImage;
-                        await WriteContent(archive, "dataset/images/slices.svg", svg);
+                        await WriteContent(archive, "dataset/images/slices.svg", slices.SvgImage);
                     }
 
                     foreach (var vis in analysis.Visualizations)

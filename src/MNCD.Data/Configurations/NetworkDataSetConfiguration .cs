@@ -13,6 +13,8 @@ namespace MNCD.Data.Configurations
                 .WithOne(a => a.DataSet)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasForeignKey(r => r.DataSetId);
+
+            builder.HasMany(d => d.Visualizations);
         }
     }
 }

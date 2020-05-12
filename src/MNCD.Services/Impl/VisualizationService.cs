@@ -44,8 +44,7 @@ namespace MNCD.Services.Impl
         public async Task<Visualization> GetDataSetVisualization(int dataSetId, VisualizationType type)
         {
             var dataSet = await _ctx.DataSets
-                .Include(d => d.SlicesVisualization)
-                .Include(d => d.DiagonalVisualization)
+                .Include(d => d.Visualizations)
                 .FirstOrDefaultAsync(d => d.Id == dataSetId);
 
             if (dataSet is null)
@@ -63,10 +62,7 @@ namespace MNCD.Services.Impl
                 .Include(a => a.Result)
                 .Include(a => a.Request)
                 .ThenInclude(r => r.DataSet)
-                .ThenInclude(d => d.DiagonalVisualization)
-                .Include(a => a.Request)
-                .ThenInclude(r => r.DataSet)
-                .ThenInclude(d => d.SlicesVisualization)
+                .ThenInclude(d => d.Visualizations)
                 .Include(a => a.Visualizations)
                 .FirstOrDefaultAsync(a => a.Id == analysisId);
 
@@ -297,9 +293,9 @@ namespace MNCD.Services.Impl
             {
                 if (type.IsMultiLayer())
                 {
-                    if (type == VisualizationType.MultiLayer_Diagonal)
+                    if (type == VisualizationType.MultiLayer_Diagonal || type == VisualizationType.MultiLayer_Slices)
                     {
-                        viz = analysis.Request.DataSet.DiagonalVisualization;
+                        viz = analysis.Request.DataSet.Visualizations.FirstOrDefault(v => v.Type == type);
 
                         if (viz is null)
                         {
@@ -308,9 +304,8 @@ namespace MNCD.Services.Impl
                                 EdgeList = analysis.Request.DataSet.EdgeList,
                                 Type = type
                             });
+                            analysis.Request.DataSet.Visualizations.Add(viz);
                         }
-
-                        analysis.Request.DataSet.DiagonalVisualization = viz;
                     }
                     else
                     {
@@ -323,33 +318,13 @@ namespace MNCD.Services.Impl
                 }
                 else if (type.IsMultiLayerCommunities())
                 {
-                    if (type == VisualizationType.MultiLayer_Diagonal)
+                    var request = new MultilayerCommunitiesRequest
                     {
-                        viz = analysis.Request.DataSet.SlicesVisualization;
-
-                        if (viz is null)
-                        {
-                            var request = new MultilayerCommunitiesRequest
-                            {
-                                EdgeList = analysis.Request.DataSet.EdgeList,
-                                CommunityList = analysis.Result.CommunityList,
-                                Type = type
-                            };
-                            viz = await VisualizeMultilayerCommunities(request);
-                        }
-
-                        analysis.Request.DataSet.SlicesVisualization = viz;
-                    }
-                    else
-                    {
-                        var request = new MultilayerCommunitiesRequest
-                        {
-                            EdgeList = analysis.Request.DataSet.EdgeList,
-                            CommunityList = analysis.Result.CommunityList,
-                            Type = type
-                        };
-                        viz = await VisualizeMultilayerCommunities(request);
-                    }
+                        EdgeList = analysis.Request.DataSet.EdgeList,
+                        CommunityList = analysis.Result.CommunityList,
+                        Type = type
+                    };
+                    viz = await VisualizeMultilayerCommunities(request);
                 }
                 else if (type.IsSingleLayer())
                 {
@@ -427,7 +402,11 @@ namespace MNCD.Services.Impl
                     viz = await VisualizeMultilayerCommunities(request);
                 }
 
-                analysis.Visualizations.Add(viz);
+                if (type != VisualizationType.MultiLayer_Diagonal && type != VisualizationType.MultiLayer_Slices)
+                {
+                    analysis.Visualizations.Add(viz);
+                }
+
                 await _ctx.SaveChangesAsync();
             }
             return viz;
@@ -439,31 +418,41 @@ namespace MNCD.Services.Impl
         {
             if (type == VisualizationType.MultiLayer_Diagonal)
             {
-                if (dataSet.DiagonalVisualization is null)
+                var diagonal = dataSet.Visualizations
+                    .FirstOrDefault(v => v.Type == VisualizationType.MultiLayer_Diagonal);
+                
+                if (diagonal is null)
                 {
                     var request = new MultilayerRequest
                     {
                         EdgeList = dataSet.EdgeList,
                         Type = VisualizationType.MultiLayer_Diagonal
                     };
-                    dataSet.DiagonalVisualization = await VisualizeMultilayer(request);
+                    diagonal = await VisualizeMultilayer(request);
+                    dataSet.Visualizations.Add(diagonal);
                     await _ctx.SaveChangesAsync();
                 }
-                return dataSet.DiagonalVisualization;
+
+                return diagonal;
             }
             else if (type == VisualizationType.MultiLayer_Slices)
             {
-                if (dataSet.SlicesVisualization is null)
+                var slices = dataSet.Visualizations
+                    .FirstOrDefault(v => v.Type == VisualizationType.MultiLayer_Slices);
+
+                if (slices is null)
                 {
                     var request = new MultilayerRequest
                     {
                         EdgeList = dataSet.EdgeList,
                         Type = VisualizationType.MultiLayer_Slices
                     };
-                    dataSet.SlicesVisualization = await VisualizeMultilayer(request);
+                    slices = await VisualizeMultilayer(request);
+                    dataSet.Visualizations.Add(slices);
                     await _ctx.SaveChangesAsync();
                 }
-                return dataSet.SlicesVisualization;
+                
+                return slices;
             }
 
             throw new NotSupportedException($"Visualization type '{type}' is not supported for datasets.");

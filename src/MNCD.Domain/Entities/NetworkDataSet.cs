@@ -30,8 +30,6 @@ namespace MNCD.Domain.Entities
 
         public List<AnalysisRequest> Requests { get; set; }
 
-        public Visualization DiagonalVisualization { get; set; }
-
-        public Visualization SlicesVisualization { get; set; }
+        public List<Visualization> Visualizations { get; set; } = new List<Visualization>();
     }
 }

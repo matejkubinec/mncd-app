@@ -55,8 +55,7 @@ namespace MNCD.Services.Impl
 
             var dataSet = await _ctx
                 .DataSets
-                .Include(d => d.DiagonalVisualization)
-                .Include(d => d.SlicesVisualization)
+                .Include(d => d.Visualizations)
                 .FirstOrDefaultAsync(d => d.Id == id);
 
             if (dataSet is null)
@@ -177,16 +176,16 @@ namespace MNCD.Services.Impl
                         await WriteContent(archive, "data.edgelist.txt", edgeList);
                     }
 
-                    if (dataSet.DiagonalVisualization != null)
+                    var diagonal = dataSet.Visualizations.FirstOrDefault(v => v.Type == VisualizationType.MultiLayer_Diagonal);
+                    if (diagonal != null)
                     {
-                        var svg = dataSet.DiagonalVisualization.SvgImage;
-                        await WriteContent(archive, "images/diagonal.svg", svg);
+                        await WriteContent(archive, "images/diagonal.svg", diagonal.SvgImage);
                     }
 
-                    if (dataSet.SlicesVisualization != null)
+                    var slices = dataSet.Visualizations.FirstOrDefault(v => v.Type == VisualizationType.MultiLayer_Slices);
+                    if (slices != null)
                     {
-                        var svg = dataSet.SlicesVisualization.SvgImage;
-                        await WriteContent(archive, "images/slices.svg", svg);
+                        await WriteContent(archive, "images/slices.svg", slices.SvgImage);
                     }
                 }
 
