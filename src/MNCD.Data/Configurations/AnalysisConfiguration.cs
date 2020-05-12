@@ -27,7 +27,7 @@ namespace MNCD.Data.Configurations
                 .HasForeignKey<AnalysisRequest>(r => r.AnalysisId);
 
             builder
-                .HasMany(a => a.Visualizations);
+                .OwnsMany(a => a.Visualizations);
         }
     }
 }

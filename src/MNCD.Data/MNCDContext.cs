@@ -16,8 +16,6 @@ namespace MNCD.Data
 
         public DbSet<NetworkDataSet> DataSets { get; set; }
 
-        public DbSet<NetworkInfo> NetworkInfos { get; set; }
-
         public DbSet<Visualization> Visualizations { get; set; }
 
         public MNCDContext()
@@ -81,12 +79,12 @@ namespace MNCD.Data
                 .HasConversion(listDoubleConverter);
 
             builder
-                .Entity<NetworkInfo>()
+                .Entity<NetworkDataSet>()
                 .Property(e => e.LayerNames)
                 .HasConversion(listStringConverter);
 
             builder
-                .Entity<NetworkInfo>()
+                .Entity<NetworkDataSet>()
                 .Property(e => e.ActorNames)
                 .HasConversion(listStringConverter);
         }

@@ -9,12 +9,9 @@ namespace MNCD.Tests.Helpers
         {
             Name = "Florentine",
             FileType = FileType.MPX,
-            NetworkInfo = new NetworkInfo
-            {
-                EdgeCount = 35,
-                NodeCount = 16,
-                LayerCount = 2
-            },
+            EdgeCount = 35,
+            NodeCount = 16,
+            LayerCount = 2,
             Content = File.ReadAllText("Networks/florentine.mpx")
         };
 
@@ -22,12 +19,9 @@ namespace MNCD.Tests.Helpers
         {
             Name = "Louvain",
             FileType = FileType.MPX,
-            NetworkInfo = new NetworkInfo
-            {
-                EdgeCount = 5,
-                NodeCount = 6,
-                LayerCount = 1
-            },
+            EdgeCount = 5,
+            NodeCount = 6,
+            LayerCount = 1,
             Content = File.ReadAllText("Networks/louvain.mpx")
         };
     }
