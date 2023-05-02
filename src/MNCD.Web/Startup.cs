@@ -11,6 +11,7 @@ using MNCD.Domain.Services;
 using MNCD.Services.Impl;
 using MNCD.Web.Filters;
 using MNCD.Web.Mappings;
+using System.Reflection;
 
 namespace MNCD.Web
 {
@@ -91,9 +92,11 @@ namespace MNCD.Web
 
         private void RegisterMapper(IServiceCollection services)
         {
+            var assembly = Assembly.GetExecutingAssembly();
             var mappingConfig = new MapperConfiguration(cfg =>
             {
-                cfg.AddMaps(new[] { typeof(DataSetDetailViewModelProfile) });
+                cfg.ShouldMapMethod = (m => false);
+                cfg.AddMaps(assembly);
             });
 
             var mapper = mappingConfig.CreateMapper();

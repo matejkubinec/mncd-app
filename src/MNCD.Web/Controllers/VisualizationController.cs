@@ -64,7 +64,7 @@ namespace MNCD.Web.Controllers
 
         private IActionResult GetSvgResult(string svg)
         {
-            return new ContentResult()
+            return new Microsoft.AspNetCore.Mvc.ContentResult()
             {
                 Content = svg,
                 ContentType = "image/svg+xml",
