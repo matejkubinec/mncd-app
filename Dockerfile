@@ -14,9 +14,9 @@ RUN apt-get -y update \
 # Copy everything
 COPY . ./
 # Restore as distinct layers
-RUN cd src && dotnet restore
+RUN dotnet restore ./src/MNCD.sln
 # Build and publish a release
-RUN cd src && dotnet publish -c Release -o /App/out
+RUN dotnet publish ./src/MNCD.sln -c Release -o /App/out
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
