@@ -1,0 +1,28 @@
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import tsconfigPaths from 'vite-tsconfig-paths';
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [
+    tsconfigPaths({ root: '.' }),
+    react({
+      jsxImportSource: '@emotion/react',
+      plugins: [['@swc/plugin-emotion', {}]],
+    }),
+  ],
+  server: {
+    port: 3000,
+    hmr: {
+      protocol: 'ws',
+    },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '/api'),
+      },
+    },
+  },
+});

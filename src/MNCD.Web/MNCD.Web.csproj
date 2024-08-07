@@ -4,7 +4,7 @@
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
-    <SpaRoot>ClientApp\</SpaRoot>
+    <SpaRoot>UI\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
   </PropertyGroup>
   <ItemGroup>
@@ -22,25 +22,25 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
-    <Compile Remove="ClientApp\src\types\**" />
+    <Compile Remove="UI\src\types\**" />
     <Content Remove="$(SpaRoot)**" />
-    <Content Remove="ClientApp\src\types\**" />
-    <EmbeddedResource Remove="ClientApp\src\types\**" />
+    <Content Remove="UI\src\types\**" />
+    <EmbeddedResource Remove="UI\src\types\**" />
     <None Remove="$(SpaRoot)**" />
-    <None Remove="ClientApp\src\types\**" />
+    <None Remove="UI\src\types\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="ClientApp\src\App.test.ts" />
-    <None Remove="ClientApp\src\App.ts" />
-    <None Remove="ClientApp\src\components\Counter.ts" />
-    <None Remove="ClientApp\src\components\FetchData.ts" />
-    <None Remove="ClientApp\src\components\Home.ts" />
-    <None Remove="ClientApp\src\components\Layout.ts" />
-    <None Remove="ClientApp\src\components\NavMenu.ts" />
-    <None Remove="ClientApp\src\components\SessionPage.tsx" />
-    <None Remove="ClientApp\src\index.ts" />
-    <None Remove="ClientApp\src\registerServiceWorker.ts" />
+    <None Remove="UI\src\App.test.ts" />
+    <None Remove="UI\src\App.ts" />
+    <None Remove="UI\src\components\Counter.ts" />
+    <None Remove="UI\src\components\FetchData.ts" />
+    <None Remove="UI\src\components\Home.ts" />
+    <None Remove="UI\src\components\Layout.ts" />
+    <None Remove="UI\src\components\NavMenu.ts" />
+    <None Remove="UI\src\components\SessionPage.tsx" />
+    <None Remove="UI\src\index.ts" />
+    <None Remove="UI\src\registerServiceWorker.ts" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MNCD.Services\MNCD.Services.csproj" />
@@ -60,7 +60,7 @@
     <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
-      <DistFiles Include="$(SpaRoot)build\**" />
+      <DistFiles Include="$(SpaRoot)dist\**" />
       <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
         <RelativePath>%(DistFiles.Identity)</RelativePath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
