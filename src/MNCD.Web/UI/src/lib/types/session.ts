@@ -9,3 +9,8 @@ export interface Session {
 export interface AddSessionPayload {
   name: string;
 }
+
+export interface PatchSessionPayload {
+  id: number;
+  name: string;
+}

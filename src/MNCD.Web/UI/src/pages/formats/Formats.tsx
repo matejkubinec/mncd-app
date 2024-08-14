@@ -1,6 +1,6 @@
 import { FC } from 'react';
-import { Page } from '../../components/page';
+import { Page } from '@components/page';
 
-export const Formats: FC = () => {
-  return <Page title='Supported Formats'></Page>;
+export const FormatsPage: FC = () => {
+  return <Page title='Supported Formats'>WIP</Page>;
 };

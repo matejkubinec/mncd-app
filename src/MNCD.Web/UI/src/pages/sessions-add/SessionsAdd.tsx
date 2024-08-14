@@ -1,12 +1,12 @@
 import { FC } from 'react';
 import { useForm } from 'react-hook-form';
-import { Button } from '../../components/button';
-import { Stack } from '../../components/stack';
-import { InputControl } from '../../components/input';
-import { useAddSession } from '../../hooks/api/session';
+import { Button } from '@components/button';
+import { Stack } from '@components/stack';
+import { InputControl } from '@components/input';
+import { useAddSession } from '@hooks/api/session';
 import { useNavigate } from 'react-router-dom';
 
-export const SessionsAdd: FC = () => {
+export const AddSessionPage: FC = () => {
   const { control, handleSubmit } = useForm<AddSessionForm>({
     values: {
       name: '',
@@ -29,8 +29,8 @@ export const SessionsAdd: FC = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack
           gap={10}
-          direction='column'
-          xs={{
+          flexDirection='column'
+          sx={{
             width: '250px',
           }}
         >

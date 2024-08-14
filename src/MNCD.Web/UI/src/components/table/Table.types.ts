@@ -6,9 +6,25 @@ export interface TableProps<T> {
   columns: Column<T>[];
 }
 
-export interface Column<T> {
-  id: string;
-  field: keyof T;
-  name: string;
-  cell?: (item: T) => ReactElement | string;
-}
+export type ColumnAlign = 'left' | 'center' | 'right';
+
+type ColumnCommon = {
+  align?: ColumnAlign;
+  width?: number;
+};
+
+type ColumnConditional<T> =
+  | {
+      id: string;
+      field?: keyof T;
+      name?: string;
+      cell: (item: T) => ReactElement | string;
+    }
+  | {
+      id?: string;
+      field: keyof T;
+      name: string;
+      cell?: (item: T) => ReactElement | string;
+    };
+
+export type Column<T> = ColumnCommon & ColumnConditional<T>;

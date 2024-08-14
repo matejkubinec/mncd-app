@@ -1,11 +1,11 @@
 import { FC } from 'react';
 import { InputControlProps, InputProps } from './Input.types';
 import { css } from '@emotion/react';
-import { Stack } from '../stack';
 import { Controller, FieldValues } from 'react-hook-form';
+import { Stack } from '@components/stack';
 
 export const Input: FC<InputProps> = ({ label, ...props }) => (
-  <Stack direction='column'>
+  <Stack flexDirection='column'>
     {!!label && (
       <label css={styles.label} htmlFor={props.id}>
         {label}

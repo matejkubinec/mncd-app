@@ -3,11 +3,11 @@ import { StackProps } from './Stack.types';
 import { css } from '@emotion/react';
 
 export const Stack: FC<StackProps> = ({
-  direction,
+  flexDirection,
   gap,
-  align,
-  justify,
-  xs,
+  alignItems,
+  justifyContent,
+  sx,
   children,
 }) => (
   <div
@@ -15,11 +15,11 @@ export const Stack: FC<StackProps> = ({
       css({
         display: 'flex',
         gap,
-        flexDirection: direction,
-        alignItems: align,
-        justifyContent: justify,
+        flexDirection,
+        alignItems,
+        justifyContent,
       }),
-      xs ? css(xs) : {},
+      sx ? css(sx) : {},
     ]}
   >
     {children}

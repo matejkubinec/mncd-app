@@ -9,9 +9,6 @@
     }
   ],
   "compilerOptions": {
-    "types": ["@emotion/core"],
-    "baseUrl": "src",
-    "jsx": "react-jsx",
     "jsxImportSource": "@emotion/react"
   }
 }

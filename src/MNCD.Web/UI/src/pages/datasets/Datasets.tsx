@@ -1,23 +1,23 @@
+import { LinkButton } from '@components/button';
+import { Page } from '@components/page';
+import { Stack } from '@components/stack';
+import { Table } from '@components/table';
+import { useDatasets } from '@hooks/api/dataset';
 import { FC } from 'react';
-import { Page } from '../../components/page';
-import { useDatasets } from '../../hooks/api/dataset';
-import { Table } from '../../components/table';
-import { Stack } from '../../components/stack';
-import { Button, LinkButton } from '../../components/button';
 
-export const Datasets: FC = () => {
-  const { data, isLoading } = useDatasets();
+export const DatasetsPage: FC = () => {
+  const datasets = useDatasets();
 
   return (
     <Page title='Datasets'>
-      {isLoading ? (
+      {datasets.isLoading ? (
         <p>Loading ...</p>
-      ) : !data?.length ? (
+      ) : !datasets.data?.length ? (
         <p>No datasets to show</p>
       ) : (
         <Table
           rowId='id'
-          rows={data}
+          rows={datasets.data}
           columns={[
             {
               id: 'name',
@@ -42,7 +42,7 @@ export const Datasets: FC = () => {
           ]}
         />
       )}
-      <Stack direction='row' justify='flex-end'>
+      <Stack flexDirection='row' justifyContent='flex-end'>
         <LinkButton to='/datasets/add'>Add Dataset</LinkButton>
       </Stack>
     </Page>

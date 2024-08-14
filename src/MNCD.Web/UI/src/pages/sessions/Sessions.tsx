@@ -1,18 +1,17 @@
+import { LinkButton } from '@components/button';
+import { Page } from '@components/page';
+import { Stack } from '@components/stack';
+import { Table } from '@components/table';
+import { useSessions } from '@hooks/api/session';
 import { FC } from 'react';
-import { useSessions } from '../../hooks/api/session';
-import { Table } from '../../components/table';
-import { LinkButton } from '../../components/button';
-import { Stack } from '../../components/stack';
-import { Page } from '../../components/page';
+import { SessionActions } from './sessions-actions/SessionActions';
 
-export const Sessions: FC = () => {
+export const SessionsPage: FC = () => {
   const { data, isLoading } = useSessions();
 
   return (
-    <Page title='Sessions'>
-      {isLoading ? (
-        <p>Loading ...</p>
-      ) : !data ? (
+    <Page title='Sessions' loading={isLoading}>
+      {!data?.length ? (
         <p>No sessions yet</p>
       ) : (
         <Table
@@ -27,7 +26,7 @@ export const Sessions: FC = () => {
             {
               id: 'createdate',
               field: 'createDate',
-              name: 'Create Date',
+              name: 'Created',
               cell: ({ createDate }) => new Date(createDate).toLocaleString(),
             },
             {
@@ -35,10 +34,16 @@ export const Sessions: FC = () => {
               field: 'analysesCount',
               name: 'Analyses',
             },
+            {
+              id: 'actions',
+              align: 'right',
+              width: 100,
+              cell: (row) => <SessionActions session={row} />,
+            },
           ]}
         />
       )}
-      <Stack direction='row' justify='flex-end'>
+      <Stack flexDirection='row' justifyContent='flex-end'>
         <LinkButton to='/sessions/add'>Add Session</LinkButton>
       </Stack>
     </Page>

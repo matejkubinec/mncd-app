@@ -43,6 +43,8 @@ namespace MNCD.Web
             {
                 configuration.RootPath = "UI/dist";
             });
+
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -73,6 +75,9 @@ namespace MNCD.Web
             app.UseSpaStaticFiles();
 
             app.UseRouting();
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.UseEndpoints(endpoints =>
             {

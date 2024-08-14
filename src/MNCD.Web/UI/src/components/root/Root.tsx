@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Outlet } from 'react-router-dom';
-import { AppBar } from '../components/app-bar';
 import { css } from '@emotion/react';
+import { AppBar } from '@components/app-bar';
 
 export const Root: FC = () => (
   <main css={styles.main}>

@@ -1,10 +1,11 @@
+import { AddDatasetPage } from '@pages/datasets-add';
+import { DatasetsPage } from '@pages/datasets';
+import { FormatsPage } from '@pages/formats';
+import { AddSessionPage } from '@pages/sessions-add';
+import { EditSessionPage } from '@pages/sessions-edit';
+import { SessionsPage } from '@pages/sessions/Sessions';
+import { Root } from '@components/root';
 import { createBrowserRouter } from 'react-router-dom';
-import { Sessions } from '../pages/sessions/Sessions';
-import { Root } from '../pages/Root';
-import { SessionsAdd } from '../pages/sessions/SessionsAdd';
-import { Formats } from '../pages/formats/Formats';
-import { Datasets } from '../pages/datasets/Datasets';
-import { AddDataset } from '../pages/datasets/AddDataset';
 
 export const router = createBrowserRouter([
   {
@@ -13,23 +14,27 @@ export const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <Sessions />,
+        element: <SessionsPage />,
       },
       {
         path: '/sessions/add',
-        element: <SessionsAdd />,
+        element: <AddSessionPage />,
+      },
+      {
+        path: '/sessions/:id/edit',
+        element: <EditSessionPage />,
       },
       {
         path: '/datasets',
-        element: <Datasets />,
+        element: <DatasetsPage />,
       },
       {
         path: '/datasets/add',
-        element: <AddDataset />,
+        element: <AddDatasetPage />,
       },
       {
         path: '/formats',
-        element: <Formats />,
+        element: <FormatsPage />,
       },
     ],
   },
