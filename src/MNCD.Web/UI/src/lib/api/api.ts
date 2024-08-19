@@ -36,6 +36,14 @@ class Api {
     const { data } = await res.json();
     return { data };
   }
+
+  async delete<T = object>(url: string): Promise<ApiResponse<T>> {
+    const res = await fetch(url, {
+      method: 'DELETE',
+    });
+    const { data } = await res.json();
+    return { data };
+  }
 }
 
 export const api = new Api();

@@ -1,15 +1,18 @@
 import {
   addSession,
+  deleteSession,
   getSession,
   getSessions,
   patchSession,
 } from '@lib/api/session';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { Session } from '@lib/types/session';
+import { useMutation, useQuery, UseQueryOptions } from '@tanstack/react-query';
 
-export const useSessions = () =>
+export const useSessions = (options?: Partial<UseQueryOptions<Session[]>>) =>
   useQuery({
     queryKey: ['sessions'],
     queryFn: getSessions,
+    ...options,
   });
 
 export const useAddSession = () =>
@@ -26,4 +29,9 @@ export const useSession = (id: string) =>
   useQuery({
     queryKey: ['session', id],
     queryFn: () => getSession(id),
+  });
+
+export const useDeleteSession = () =>
+  useMutation({
+    mutationFn: (id: number) => deleteSession(id),
   });

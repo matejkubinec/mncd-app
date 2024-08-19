@@ -1,16 +1,26 @@
 import { FC } from 'react';
-import { ButtonProps, IconButtonProps, LinkButtonProps } from './Button.types';
+import {
+  ButtonProps,
+  ButtonVariant,
+  IconButtonProps,
+  LinkButtonProps,
+} from './Button.types';
 import { useNavigate } from 'react-router-dom';
-import { css } from '@emotion/react';
+import { css, SerializedStyles } from '@emotion/react';
 import { Icon } from '@components/icon';
 import { Stack } from '@components/stack';
 
 export const Button: FC<ButtonProps> = ({
   onClick,
   type = 'button',
+  variant = 'primary',
   children,
 }) => (
-  <button css={styles.primary} onClick={onClick} type={type}>
+  <button
+    css={[styles.base, buttonVariants[variant]]}
+    onClick={onClick}
+    type={type}
+  >
     {children}
   </button>
 );
@@ -26,12 +36,16 @@ export const IconButton: FC<IconButtonProps> = ({
   onClick,
   to,
   type = 'button',
+  variant = 'filled',
 }) => {
   const navigate = useNavigate();
 
   return (
     <button
-      css={styles.iconButton}
+      css={[
+        styles.iconButton,
+        variant === 'outlined' && styles.iconButtonOutlined,
+      ]}
       onClick={to ? () => navigate(to) : onClick}
       type={type}
     >
@@ -43,14 +57,7 @@ export const IconButton: FC<IconButtonProps> = ({
 };
 
 const styles = {
-  primary: css({
-    backgroundColor: '#333',
-    color: '#fff',
-
-    '&:hover': {
-      backgroundColor: '#666',
-    },
-  }),
+  base: css({}),
   iconButton: css({
     padding: 7,
     borderRadius: '50%',
@@ -64,5 +71,35 @@ const styles = {
   icon: css({
     width: 15,
     height: 15,
+  }),
+  iconButtonOutlined: css({
+    backgroundColor: 'transparent',
+    color: '#333',
+
+    '&:hover': {
+      borderColor: '#ccc',
+      backgroundColor: '#eee',
+    },
+  }),
+};
+
+const buttonVariants: Record<ButtonVariant, SerializedStyles> = {
+  primary: css({
+    backgroundColor: '#333',
+    color: '#fff',
+
+    '&:hover': {
+      borderColor: '#666',
+      backgroundColor: '#666',
+    },
+  }),
+  danger: css({
+    backgroundColor: '#da3b01',
+    color: '#ffffff',
+
+    '&:hover': {
+      borderColor: '#d13438',
+      backgroundColor: '#d13438',
+    },
   }),
 };

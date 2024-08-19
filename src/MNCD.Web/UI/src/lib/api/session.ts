@@ -30,3 +30,8 @@ export const addSession = async (payload: AddSessionPayload) => {
   );
   return res.data;
 };
+
+export const deleteSession = async (id: number) => {
+  const res = await api.delete(`/api/session/${id}`);
+  return res.data;
+};
