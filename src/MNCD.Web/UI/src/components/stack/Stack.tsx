@@ -9,6 +9,7 @@ export const Stack: FC<StackProps> = ({
   justifyContent,
   sx,
   children,
+  className,
 }) => (
   <div
     css={[
@@ -21,6 +22,7 @@ export const Stack: FC<StackProps> = ({
       }),
       sx ? css(sx) : {},
     ]}
+    className={className}
   >
     {children}
   </div>

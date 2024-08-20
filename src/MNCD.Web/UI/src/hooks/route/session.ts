@@ -3,5 +3,5 @@ import { useParams } from 'react-router-dom';
 
 export const useRouteSession = () => {
   const { id } = useParams();
-  return useSession(id!);
+  return useSession(id);
 };

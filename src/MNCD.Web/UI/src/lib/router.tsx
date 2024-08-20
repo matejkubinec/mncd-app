@@ -6,6 +6,8 @@ import { EditSessionPage } from '@pages/sessions-edit';
 import { SessionsPage } from '@pages/sessions/Sessions';
 import { Root } from '@components/root';
 import { createBrowserRouter } from 'react-router-dom';
+import { EditDatasetPage } from '@pages/datasets-edit';
+import { DatasetDetail } from '@pages/datasets-detail';
 
 export const router = createBrowserRouter([
   {
@@ -29,8 +31,16 @@ export const router = createBrowserRouter([
         element: <DatasetsPage />,
       },
       {
+        path: '/datasets/:id/edit',
+        element: <EditDatasetPage />,
+      },
+      {
         path: '/datasets/add',
         element: <AddDatasetPage />,
+      },
+      {
+        path: '/datasets/:id',
+        element: <DatasetDetail />,
       },
       {
         path: '/formats',

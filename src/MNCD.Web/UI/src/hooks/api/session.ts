@@ -25,7 +25,7 @@ export const useUpdateSession = () =>
     mutationFn: patchSession,
   });
 
-export const useSession = (id: string) =>
+export const useSession = (id: number) =>
   useQuery({
     queryKey: ['session', id],
     queryFn: () => getSession(id),

@@ -10,7 +10,7 @@ export const getSessions = async () => {
   return res.data;
 };
 
-export const getSession = async (id: string) => {
+export const getSession = async (id: number) => {
   const res = await api.get<Session>(`/api/session/${id}`);
   return res.data;
 };

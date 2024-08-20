@@ -14,12 +14,14 @@ export const Button: FC<ButtonProps> = ({
   onClick,
   type = 'button',
   variant = 'primary',
+  className,
   children,
 }) => (
   <button
     css={[styles.base, buttonVariants[variant]]}
     onClick={onClick}
     type={type}
+    className={className}
   >
     {children}
   </button>
@@ -35,6 +37,7 @@ export const IconButton: FC<IconButtonProps> = ({
   name,
   onClick,
   to,
+  className,
   type = 'button',
   variant = 'filled',
 }) => {
@@ -46,6 +49,7 @@ export const IconButton: FC<IconButtonProps> = ({
         styles.iconButton,
         variant === 'outlined' && styles.iconButtonOutlined,
       ]}
+      className={className}
       onClick={to ? () => navigate(to) : onClick}
       type={type}
     >

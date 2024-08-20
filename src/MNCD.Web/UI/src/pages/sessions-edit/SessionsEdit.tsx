@@ -6,6 +6,8 @@ export const EditSessionPage: FC = () => {
   const session = useRouteSession();
 
   return (
-    <Page title={session.data ? `Editing ${session.data.name}` : ''}>WIP</Page>
+    <Page title={session.data ? `Editing ${session.data.name}` : ''} backTo='/'>
+      WIP
+    </Page>
   );
 };

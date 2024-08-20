@@ -4,6 +4,7 @@ import { Stack } from '@components/stack';
 import { Table } from '@components/table';
 import { useDatasets } from '@hooks/api/dataset';
 import { FC } from 'react';
+import { DatasetsActions } from './datasets-actions';
 
 export const DatasetsPage: FC = () => {
   const datasets = useDatasets();
@@ -27,17 +28,21 @@ export const DatasetsPage: FC = () => {
             {
               id: 'nodeCount',
               field: 'nodeCount',
-              name: 'Node Count',
+              name: 'Nodes',
             },
             {
               id: 'edgeCount',
               field: 'edgeCount',
-              name: 'Edge Count',
+              name: 'Edges',
             },
             {
               id: 'layerCount',
               field: 'layerCount',
-              name: 'Layer Count',
+              name: 'Layers',
+            },
+            {
+              id: 'actions',
+              cell: (dataset) => <DatasetsActions dataset={dataset} />,
             },
           ]}
         />
