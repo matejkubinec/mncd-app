@@ -8,6 +8,9 @@ import { Root } from '@components/root';
 import { createBrowserRouter } from 'react-router-dom';
 import { EditDatasetPage } from '@pages/datasets-edit';
 import { DatasetDetail } from '@pages/datasets-detail';
+import { SessionPage } from '@pages/session';
+import { SessionAnalysis } from '@pages/session-analysis';
+import { AnalysisPage } from '@pages/analysis';
 
 export const router = createBrowserRouter([
   {
@@ -21,6 +24,18 @@ export const router = createBrowserRouter([
       {
         path: '/sessions/add',
         element: <AddSessionPage />,
+      },
+      {
+        path: '/sessions/:id',
+        element: <SessionPage />,
+      },
+      {
+        path: '/session/:sessionId/analysis/:analysisId',
+        element: <AnalysisPage />,
+      },
+      {
+        path: '/sessions/:id/analyze',
+        element: <SessionAnalysis />,
       },
       {
         path: '/sessions/:id/edit',

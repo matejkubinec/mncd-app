@@ -35,7 +35,7 @@ export const Table = <T,>({ rowId, rows, columns }: TableProps<T>) => (
             <tr key={row[rowId] as Key} css={styles.tr}>
               {columns.map((col) => (
                 <td
-                  key={col.field as Key}
+                  key={col.id || col.field as Key}
                   css={[styles.td, col.align && stylesAlign[col.align]]}
                 >
                   {col.cell ? col.cell(row) : (row[col.field!] as ReactPortal)}

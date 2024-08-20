@@ -5,7 +5,13 @@ import { IconButton } from '@components/button';
 import { useNavigate } from 'react-router-dom';
 import { css } from '@emotion/react';
 
-export const Page: FC<PageProps> = ({ title, backTo, loading, children }) => {
+export const Page: FC<PageProps> = ({
+  title,
+  backTo,
+  loading,
+  right,
+  children,
+}) => {
   const navigate = useNavigate();
 
   return (
@@ -25,7 +31,8 @@ export const Page: FC<PageProps> = ({ title, backTo, loading, children }) => {
               css={styles.backButton}
             />
           )}
-          <h2>{title}</h2>
+          <h2 css={styles.title}>{title}</h2>
+          {right && <Stack>{right}</Stack>}
         </Stack>
       )}
       {loading ? (
@@ -49,5 +56,8 @@ const styles = {
   backButton: css({
     position: 'absolute',
     left: -35,
+  }),
+  title: css({
+    flex: 1,
   }),
 };

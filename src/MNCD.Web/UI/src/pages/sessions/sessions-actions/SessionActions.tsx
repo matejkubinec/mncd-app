@@ -43,7 +43,7 @@ export const SessionActions: FC<Props> = ({ session }) => {
     <Stack flexDirection='row' gap={10} justifyContent='flex-end'>
       <IconButton name='cross1' onClick={() => setModalOpen(true)} />
       <IconButton name='pencil1' to={`/sessions/${session.id}/edit`} />
-      <IconButton name='enter' to='/' />
+      <IconButton name='enter' to={`/sessions/${session.id}`} />
       <Dialog open={modalOpen} onClose={handleClose}>
         <p>Are you sure you want to delete this session?</p>
         <Stack gap={10} justifyContent='flex-end'>
