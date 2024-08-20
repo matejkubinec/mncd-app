@@ -14,13 +14,7 @@ export const DatasetDetail: FC = () => {
   return (
     <Page title={dataset?.name} backTo='/datasets' loading={isLoading}>
       <Stack flexDirection='row' gap={50}>
-        <Stack
-          flexDirection='column'
-          gap={10}
-          sx={{
-            width: 500,
-          }}
-        >
+        <Stack flexDirection='column' gap={10} css={styles.information}>
           <h3>Information</h3>
           <Stack flexDirection='column'>
             <table css={styles.table}>
@@ -61,7 +55,7 @@ export const DatasetDetail: FC = () => {
             {!dataset?.actorNames?.length ? (
               <p css={styles.noData}>No actors</p>
             ) : (
-              <ol>
+              <ol css={styles.ol}>
                 {dataset?.actorNames.map((name, idx) => (
                   <li key={idx}>{name}</li>
                 ))}
@@ -87,6 +81,9 @@ export const DatasetDetail: FC = () => {
 };
 
 const styles = {
+  information: css({
+    width: 500,
+  }),
   noData: css({
     margin: 0,
     padding: 0,
@@ -101,5 +98,8 @@ const styles = {
   }),
   download: css({
     width: 250,
+  }),
+  ol: css({
+    columns: 2,
   }),
 };

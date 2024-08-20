@@ -44,6 +44,7 @@ export const Page: FC<PageProps> = ({ title, backTo, loading, children }) => {
 const styles = {
   header: css({
     position: 'relative',
+    marginBottom: 10,
   }),
   backButton: css({
     position: 'absolute',

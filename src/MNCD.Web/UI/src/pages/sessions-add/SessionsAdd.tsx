@@ -5,6 +5,8 @@ import { Stack } from '@components/stack';
 import { InputControl } from '@components/input';
 import { useAddSession } from '@hooks/api/session';
 import { useNavigate } from 'react-router-dom';
+import { css } from '@emotion/react';
+import { Page } from '@components/page';
 
 export const AddSessionPage: FC = () => {
   const { control, handleSubmit } = useForm<AddSessionForm>({
@@ -24,24 +26,23 @@ export const AddSessionPage: FC = () => {
   };
 
   return (
-    <div>
-      <h2>Add Session</h2>
+    <Page title='Add Session' backTo='/'>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack
-          gap={10}
-          flexDirection='column'
-          sx={{
-            width: '250px',
-          }}
-        >
+        <Stack gap={10} flexDirection='column' css={styles.form}>
           <InputControl label='Name' name='name' control={control} />
           <Button type='submit'>Add Session</Button>
         </Stack>
       </form>
-    </div>
+    </Page>
   );
 };
 
 interface AddSessionForm {
   name: string;
 }
+
+const styles = {
+  form: css({
+    width: 250,
+  }),
+};

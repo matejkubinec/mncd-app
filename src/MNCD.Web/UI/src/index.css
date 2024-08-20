@@ -14,13 +14,17 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+pre {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #1565c0;
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: #0d47a1;
 }
 
 body {
@@ -66,7 +70,7 @@ button:focus-visible {
     background-color: #ffffff;
   }
   a:hover {
-    color: #747bff;
+    color: #0d47a1;
   }
   button {
     background-color: #f9f9f9;

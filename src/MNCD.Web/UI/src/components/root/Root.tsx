@@ -19,6 +19,6 @@ const styles = {
     height: '100%',
   }),
   content: {
-    padding: '1em 2.5em',
+    padding: '1em 3em',
   },
 };

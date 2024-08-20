@@ -55,7 +55,7 @@ const styles = {
     borderColor: '#aaa',
     borderWidth: 1,
     borderRadius: 4,
-    borderStyle: 'dotted',
+    borderStyle: 'dashed',
   }),
   description: css({
     margin: 0,
