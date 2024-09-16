@@ -47,7 +47,7 @@ namespace MNCD.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Insert([FromForm]DataSetAddViewModel model)
+        public async Task<IActionResult> Insert([FromForm] DataSetAddViewModel model)
         {
             if (string.IsNullOrWhiteSpace(model.Name))
             {
