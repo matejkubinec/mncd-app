@@ -1,43 +1,18 @@
 import { FC } from 'react';
-import { css } from '@emotion/react';
-import { Link } from 'react-router-dom';
+import MuiAppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import { LinkButton } from '@components/link-button';
 
-export const AppBar: FC = () => {
-  return (
-    <nav css={styles.nav}>
-      <h1 css={styles.title}>MNCD</h1>
-      <Link css={styles.link} to='/'>
-        Sessions
-      </Link>
-      <Link css={styles.link} to='/datasets'>
-        Datasets
-      </Link>
-      <Link css={styles.link} to='/formats'>
-        Formats
-      </Link>
-    </nav>
-  );
-};
-
-const styles = {
-  nav: css({
-    width: '100%',
-    backgroundColor: '#333',
-    color: '#fff',
-    padding: '1em',
-    gap: '1em',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-  }),
-  title: css({
-    margin: 0,
-    fontSize: 25,
-  }),
-  link: css({
-    color: '#fff',
-    '&:hover': {
-      color: '#ccc',
-    },
-  }),
-};
+export const AppBar: FC = () => (
+  <MuiAppBar>
+    <Toolbar>
+      <Typography variant='h6' mr={2}>
+        MNCD
+      </Typography>
+      <LinkButton to='/'>Sessions</LinkButton>
+      <LinkButton to='/datasets'>Datasets</LinkButton>
+      <LinkButton to='/formats'>Formats</LinkButton>
+    </Toolbar>
+  </MuiAppBar>
+);

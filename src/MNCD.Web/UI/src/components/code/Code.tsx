@@ -1,26 +1,23 @@
-import { css } from '@emotion/react';
 import { WithClassName } from '@lib/types/common';
+import { Box } from '@mui/material';
 import { FC, PropsWithChildren } from 'react';
 
 export const Code: FC<PropsWithChildren & WithClassName> = ({
   className,
   children,
 }) => (
-  <div css={styles.container}>
-    <pre css={styles.code} className={className}>
-      {children}
-    </pre>
-  </div>
+  <Box
+    className={className}
+    sx={{
+      px: 2,
+      borderRadius: 1,
+      backgroundColor: 'background.paper',
+      pre: {
+        fontSize: 'small',
+        whiteSpace: 'pre',
+      },
+    }}
+  >
+    <pre>{children}</pre>
+  </Box>
 );
-
-const styles = {
-  container: css({
-    padding: '5px 15px',
-    whiteSpace: 'pre',
-    backgroundColor: '#eee',
-  }),
-  code: css({
-    whiteSpace: 'pre',
-    fontSize: 14,
-  }),
-};

@@ -1,48 +1,63 @@
 import { FC } from 'react';
 import { useForm } from 'react-hook-form';
-import { Button } from '@components/button';
-import { Stack } from '@components/stack';
 import { InputControl } from '@components/input';
 import { useAddSession } from '@hooks/api/session';
-import { useNavigate } from 'react-router-dom';
-import { css } from '@emotion/react';
+import { Navigate } from 'react-router-dom';
 import { Page } from '@components/page';
+import Button from '@mui/material/Button';
+import { useSnackbar } from 'notistack';
+import Stack from '@mui/material/Stack';
+import {
+  defaultValues,
+  AddSessionFormValues,
+} from '@lib/form/add-session.form';
 
 export const AddSessionPage: FC = () => {
-  const { control, handleSubmit } = useForm<AddSessionForm>({
-    values: {
-      name: '',
-    },
+  const { control, handleSubmit } = useForm<AddSessionFormValues>({
+    defaultValues,
   });
-  const { mutateAsync } = useAddSession();
-  const navigate = useNavigate();
+  const { data, mutateAsync, isSuccess } = useAddSession();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const onSubmit = async (values: AddSessionForm) => {
-    const res = await mutateAsync(values);
-
-    if (res) {
-      navigate('/');
-    }
+  const addSession = async (values: AddSessionFormValues) => {
+    mutateAsync(values, {
+      onSuccess: () =>
+        enqueueSnackbar({
+          message: `Session "${values.name}" added`,
+          variant: 'success',
+        }),
+      onError: () =>
+        enqueueSnackbar({
+          message: `Session "${values.name}" couldn't be added`,
+          variant: 'error',
+        }),
+    });
   };
+
+  if (isSuccess) {
+    return <Navigate to={`/sessions/${data.id}`} />;
+  }
 
   return (
     <Page title='Add Session' backTo='/'>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack gap={10} flexDirection='column' css={styles.form}>
-          <InputControl label='Name' name='name' control={control} />
-          <Button type='submit'>Add Session</Button>
-        </Stack>
-      </form>
+      <Stack
+        gap={1}
+        width={250}
+        component='form'
+        onSubmit={handleSubmit(addSession)}
+      >
+        <InputControl
+          label='Name'
+          name='name'
+          control={control}
+          rules={{
+            required: 'Name is required',
+          }}
+        />
+        <Button type='submit' variant='contained'>
+          Add Session
+        </Button>
+      </Stack>
     </Page>
   );
-};
-
-interface AddSessionForm {
-  name: string;
-}
-
-const styles = {
-  form: css({
-    width: 250,
-  }),
 };

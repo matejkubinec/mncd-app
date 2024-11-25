@@ -1,24 +1,30 @@
 import { FC } from 'react';
 import { Outlet } from 'react-router-dom';
-import { css } from '@emotion/react';
 import { AppBar } from '@components/app-bar';
+import Stack from '@mui/material/Stack';
 
 export const Root: FC = () => (
-  <main css={styles.main}>
+  <Stack
+    component='main'
+    sx={{
+      p: 0,
+      width: '100%',
+      height: '100%',
+    }}
+  >
     <AppBar />
-    <div css={styles.content}>
+    <Stack
+      sx={{
+        px: {
+          sm: 2,
+          md: 4,
+          lg: 6,
+        },
+        py: 1,
+        mt: 8,
+      }}
+    >
       <Outlet />
-    </div>
-  </main>
+    </Stack>
+  </Stack>
 );
-
-const styles = {
-  main: css({
-    padding: 0,
-    width: '100%',
-    height: '100%',
-  }),
-  content: {
-    padding: '1em 3em',
-  },
-};

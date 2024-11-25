@@ -12,7 +12,7 @@ export const getDataset = async (id: number) => {
 };
 
 export const addDataset = async (formData: FormData) => {
-  const res = await api.post('/api/dataset', undefined, formData);
+  const res = await api.post<Dataset>('/api/dataset', undefined, formData);
   return res.data;
 };
 

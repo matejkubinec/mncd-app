@@ -4,6 +4,8 @@ export interface TableProps<T> {
   rowId: keyof T;
   rows: T[];
   columns: Column<T>[];
+  onRowClick?: (row: T) => void;
+  size?: 'small' | 'medium';
 }
 
 export type ColumnAlign = 'left' | 'center' | 'right';

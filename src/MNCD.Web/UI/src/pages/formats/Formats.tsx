@@ -1,93 +1,64 @@
 import { FC } from 'react';
 import { Page } from '@components/page';
-import { Stack } from '@components/stack';
-import { css } from '@emotion/react';
 import { Code } from '@components/code';
 import { Image } from '@components/image';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
+import Stack from '@mui/material/Stack';
+import { FORMATS_SAMPLES } from './Formats.constants';
 
 export const FormatsPage: FC = () => (
   <Page title='Supported Formats'>
-    <Stack flexDirection='row' gap={25}>
-      <Stack flexDirection='column' css={styles.aside} gap={10}>
-        <h3>Edge List</h3>
-        <p>Data in edgelist format need to be supplied in following format:</p>
-        <Code>{samples.edgeList}</Code>
-        <p>
-          File can also include metadata after the edgelist in following format:
-        </p>
-        <Code>{samples.edgeListMetadata}</Code>
-        <h4>Example</h4>
-        <Code>{samples.edgeListExample}</Code>
+    <Stack direction='column' gap={1}>
+      <Typography variant='subtitle1'>Edge List</Typography>
+      <Typography>
+        Data in edgelist format need to be supplied in following format:
+      </Typography>
+      <Code>{FORMATS_SAMPLES.edgeList}</Code>
+      <Typography>
+        File can also include metadata after the edgelist in following format:
+      </Typography>
+      <Code>{FORMATS_SAMPLES.edgeListMetadata}</Code>
+      <Typography variant='subtitle2'>Example</Typography>
+      <Stack
+        direction='row'
+        gap={2}
+        sx={{
+          '& > *': {
+            flex: 1,
+            height: 250,
+          },
+        }}
+      >
+        <Code>{FORMATS_SAMPLES.edgeListExample}</Code>
         <Image src='/images/edgelist-example.svg' />
       </Stack>
-      <Stack css={styles.edgeList} />
-      <Stack flexDirection='column' css={styles.aside} gap={10}>
-        <h3>MPX</h3>
-        <p>
-          More info on this format{' '}
-          <a
-            href='https://rdrr.io/cran/multinet/man/IO.html'
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            here
-          </a>
-          .
-        </p>
-        <h4>Example</h4>
-        <Code>{samples.mpx}</Code>
+      <Typography variant='subtitle1'>MPX</Typography>
+      <Typography>
+        More info on this format{' '}
+        <Link
+          href='https://rdrr.io/cran/multinet/man/IO.html'
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          here
+        </Link>
+        .
+      </Typography>
+      <Typography variant='subtitle2'>Example</Typography>
+      <Stack
+        direction='row'
+        gap={2}
+        sx={{
+          '& > *': {
+            flex: 1,
+            height: 250,
+          },
+        }}
+      >
+        <Code>{FORMATS_SAMPLES.mpx}</Code>
         <Image src='/images/mpx-example.svg' />
       </Stack>
     </Stack>
   </Page>
 );
-
-const styles = {
-  aside: css({
-    width: '50%',
-  }),
-  edgeList: css({
-    borderRightWidth: 1,
-    borderRightColor: '#ccc',
-    borderRightStyle: 'dashed',
-  }),
-};
-
-const samples = {
-  edgeList: `
-actor_from layer_from actor_to layer_to edge_weight
-`.trim(),
-  edgeListMetadata: `
-# Actors
-actor_index actor_name
-...
-# Layers
-layer_index layer_name
-...
-`.trim(),
-  edgeListExample: `
-0 0 1 0 1
-0 1 1 1 1
-0 0 1 1 1
-
-# Actors
-0 Actor0
-1 Actor1
-
-# Layers
-0 Layer0
-1 Layer1
-`.trim(),
-  mpx: `
-#TYPE multiplex
-#LAYERS
-Layer1,UNDIRECTED
-Layer2,UNDIRECTED
-#ACTORS
-Actor1
-Actor2
-#EDGES
-Actor1,Actor2,Layer1,1
-Actor1,Actor2,Layer2,1
-`.trim(),
-};

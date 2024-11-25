@@ -1,8 +1,9 @@
-import { IconButton } from '@components/button';
 import { Stack } from '@components/stack';
 import { css } from '@emotion/react';
+import IconButton from '@mui/material/IconButton';
 import { FC, PropsWithChildren, useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface Props extends PropsWithChildren {
   open?: boolean;
@@ -34,7 +35,9 @@ export const Dialog: FC<Props> = ({ open, onClose, children }) => {
         gap={10}
       >
         <h4 css={styles.title}>Title</h4>
-        <IconButton name='cross1' variant='outlined' onClick={handleClose} />
+        <IconButton onClick={handleClose}>
+          <CloseIcon />
+        </IconButton>
       </Stack>
       {children}
     </dialog>,

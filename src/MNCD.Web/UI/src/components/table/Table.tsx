@@ -1,73 +1,72 @@
 import { Key, ReactPortal } from 'react';
-import { ColumnAlign, TableProps } from './Table.types';
-import { css, SerializedStyles } from '@emotion/react';
+import { TableProps } from './Table.types';
+import MuiTable from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 
-export const Table = <T,>({ rowId, rows, columns }: TableProps<T>) => (
-  <div>
-    <table css={styles.table}>
-      <thead>
-        <tr>
+export const Table = <T,>({
+  rowId,
+  rows,
+  columns,
+  onRowClick,
+  size = 'small',
+}: TableProps<T>) => (
+  <TableContainer
+    sx={(theme) => ({
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderRadius: 1,
+      borderColor: theme.palette.divider,
+      boxShadow: 'none',
+
+      ['tbody tr:hover .row-actions']: {
+        visibility: 'visible',
+      },
+
+      [`tbody tr:last-child .${tableCellClasses.root}`]: {
+        border: 'none',
+      },
+    })}
+  >
+    <MuiTable>
+      <TableHead>
+        <TableRow>
           {columns.map((col) => (
-            <th
-              key={col.id}
-              css={[
-                styles.th,
-                col.width &&
-                  css({
-                    width: col.width,
-                  }),
-              ]}
-            >
+            <TableCell size={size} key={col.id}>
               {col.name}
-            </th>
+            </TableCell>
           ))}
-        </tr>
-      </thead>
-      <tbody>
+        </TableRow>
+      </TableHead>
+      <TableBody>
         {!rows.length ? (
-          <tr>
-            <td colSpan={columns.length} css={styles.td} align='center'>
+          <TableRow>
+            <TableCell size={size} colSpan={columns.length} align='center'>
               No Data
-            </td>
-          </tr>
+            </TableCell>
+          </TableRow>
         ) : (
           rows.map((row) => (
-            <tr key={row[rowId] as Key} css={styles.tr}>
+            <TableRow key={row[rowId] as Key} hover>
               {columns.map((col) => (
-                <td
-                  key={col.id || col.field as Key}
-                  css={[styles.td, col.align && stylesAlign[col.align]]}
+                <TableCell
+                  size={size}
+                  key={col.id || (col.field as Key)}
+                  onClick={onRowClick ? () => onRowClick(row) : undefined}
+                  sx={{
+                    cursor: onRowClick ? 'pointer' : 'default',
+                  }}
                 >
                   {col.cell ? col.cell(row) : (row[col.field!] as ReactPortal)}
-                </td>
+                </TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))
         )}
-      </tbody>
-    </table>
-  </div>
+      </TableBody>
+    </MuiTable>
+  </TableContainer>
 );
-
-const styles = {
-  table: css({
-    width: '100%',
-    borderCollapse: 'collapse',
-  }),
-  tr: css({}),
-  th: css({
-    textAlign: 'left',
-    padding: '0.5em 0.25em',
-    borderBottom: '1px solid #ccc',
-  }),
-  td: css({
-    padding: '0.5em 0.25em',
-    borderBottom: '1px solid #ccc',
-  }),
-};
-
-const stylesAlign: Record<ColumnAlign, SerializedStyles> = {
-  left: css({}),
-  right: css({}),
-  center: css({}),
-};

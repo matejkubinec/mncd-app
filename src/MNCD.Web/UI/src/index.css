@@ -1,5 +1,5 @@
 :root {
-  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-family: 'Roboto', system-ui, sans-serif;
   font-weight: 400;
   font-style: normal;
   line-height: 1.5;
@@ -15,7 +15,7 @@
 }
 
 pre {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'Roboto Mono', monospace;
 }
 
 a {

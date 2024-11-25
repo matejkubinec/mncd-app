@@ -1,20 +1,10 @@
 import { FC } from 'react';
-import { InputControlProps, InputProps } from './Input.types';
+import { InputControlProps } from './Input.types';
 import { css } from '@emotion/react';
 import { Controller, FieldValues } from 'react-hook-form';
 import { Stack } from '@components/stack';
 import { Icon } from '@components/icon';
-
-export const Input: FC<InputProps> = ({ label, ...props }) => (
-  <Stack flexDirection='column'>
-    {!!label && (
-      <label css={styles.label} htmlFor={props.id}>
-        {label}
-      </label>
-    )}
-    <input css={styles.input} {...props} />
-  </Stack>
-);
+import TextField from '@mui/material/TextField';
 
 export const InputControl = <T extends FieldValues, K>({
   control,
@@ -23,11 +13,19 @@ export const InputControl = <T extends FieldValues, K>({
   <Controller
     name={props.name}
     control={control}
-    render={({ field }) => <Input {...props} {...field} />}
+    rules={props.rules}
+    render={({ field, fieldState }) => (
+      <TextField
+        label={props.label}
+        error={!!fieldState.error}
+        helperText={fieldState.error?.message}
+        {...field}
+      />
+    )}
   />
 );
 
-export const FileInput: FC<InputProps> = ({ label, ...props }) => (
+export const FileInput: FC<any> = ({ label, ...props }) => (
   <Stack flexDirection='column'>
     {!!label && (
       <label css={styles.label} htmlFor={props.id}>

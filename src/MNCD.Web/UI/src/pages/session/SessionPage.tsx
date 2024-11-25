@@ -1,4 +1,3 @@
-import { Button } from '@components/button';
 import { Page } from '@components/page';
 import { Stack } from '@components/stack';
 import { Table } from '@components/table';
@@ -7,6 +6,8 @@ import { ANALYSIS_ALGORITHM_NAME, APPROACH_NAME } from '@lib/constants';
 import { FC, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnalysisActions } from './analysis-actions';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 
 export const SessionPage: FC = () => {
   const { data: session, isLoading } = useRouteSession();
@@ -27,7 +28,7 @@ export const SessionPage: FC = () => {
         </Stack>
       }
     >
-      <h3>Analyses</h3>
+      <Typography variant='subtitle1'>Analyses</Typography>
       <Table
         rowId='id'
         rows={session?.analyses || []}

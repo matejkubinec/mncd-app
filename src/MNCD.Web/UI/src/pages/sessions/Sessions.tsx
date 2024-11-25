@@ -1,22 +1,33 @@
-import { LinkButton } from '@components/button';
 import { Page } from '@components/page';
-import { Stack } from '@components/stack';
 import { Table } from '@components/table';
 import { useSessions } from '@hooks/api/session';
 import { FC } from 'react';
 import { SessionActions } from './sessions-actions/SessionActions';
+import { useNavigate } from 'react-router-dom';
+import { LinkButton } from '@components/link-button';
+import Typography from '@mui/material/Typography';
 
 export const SessionsPage: FC = () => {
   const { data, isLoading } = useSessions();
+  const navigate = useNavigate();
 
   return (
-    <Page title='Sessions' loading={isLoading}>
+    <Page
+      title='Sessions'
+      loading={isLoading}
+      right={
+        <LinkButton to='/sessions/add' variant='contained'>
+          Add Session
+        </LinkButton>
+      }
+    >
       {!data?.length ? (
-        <p>No sessions yet</p>
+        <Typography variant='body2'>No sessions to show</Typography>
       ) : (
         <Table
           rowId='id'
           rows={data}
+          onRowClick={({ id }) => navigate(`/sessions/${id}`)}
           columns={[
             {
               id: 'name',
@@ -43,9 +54,6 @@ export const SessionsPage: FC = () => {
           ]}
         />
       )}
-      <Stack flexDirection='row' justifyContent='flex-end'>
-        <LinkButton to='/sessions/add'>Add Session</LinkButton>
-      </Stack>
     </Page>
   );
 };

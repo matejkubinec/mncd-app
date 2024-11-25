@@ -1,8 +1,9 @@
 import { FC, useCallback, useState } from 'react';
 import { ImageProps } from './Image.types';
-import { Stack } from '@components/stack';
-import { Icon } from '@components/icon';
-import { css } from '@emotion/react';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+import BrokenImageIcon from '@mui/icons-material/BrokenImage';
 
 export const Image: FC<ImageProps> = (props) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -19,49 +20,46 @@ export const Image: FC<ImageProps> = (props) => {
 
   return (
     <Stack
-      css={styles.container}
       className={props.className}
-      flexDirection='column'
-      justifyContent='center'
-      alignItems='center'
+      sx={{
+        borderColor: '#aaa',
+        borderWidth: 1,
+        borderRadius: 1,
+        borderStyle: 'dashed',
+      }}
     >
-      {isLoading && <Stack>Loading . . . </Stack>}
+      {isLoading && (
+        <Stack flex='1' alignItems='center' justifyContent='center' gap={1}>
+          <CircularProgress />
+          <Typography textAlign='center'>Loading</Typography>
+        </Stack>
+      )}
       {hasError && (
-        <>
-          <Icon name='exclamation-triangle' width={75} height={75} />
-          <p css={styles.description}>Could not load image</p>
-        </>
+        <Stack gap={1} flex='1' alignItems='center' justifyContent='center'>
+          <BrokenImageIcon
+            color='error'
+            sx={{
+              width: 30,
+              height: 30,
+            }}
+          />
+          <Typography variant='body2'>Could not load image</Typography>
+        </Stack>
       )}
       <img
         onLoad={handleLoad}
         onError={handleError}
         css={[
           {
+            width: '100%',
+            height: '100%',
             display: hasError ? 'none' : 'inherit',
             visibility: isLoading ? 'hidden' : 'visible',
           },
-          styles.image,
         ]}
         src={props.src}
         alt={props.alt}
       />
     </Stack>
   );
-};
-
-const styles = {
-  container: css({
-    padding: 5,
-    borderColor: '#aaa',
-    borderWidth: 1,
-    borderRadius: 4,
-    borderStyle: 'dashed',
-  }),
-  description: css({
-    margin: 0,
-  }),
-  image: css({
-    width: '100%',
-    height: '100%',
-  }),
 };

@@ -1,10 +1,11 @@
-import { Button } from '@components/button';
 import { Image } from '@components/image';
 import { Page } from '@components/page';
-import { Stack } from '@components/stack';
 import { css } from '@emotion/react';
 import { useDownloadDataset } from '@hooks/api/dataset';
 import { useRouteDataset } from '@hooks/route';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { FC } from 'react';
 
 export const DatasetDetail: FC = () => {
@@ -13,66 +14,110 @@ export const DatasetDetail: FC = () => {
 
   return (
     <Page title={dataset?.name} backTo='/datasets' loading={isLoading}>
-      <Stack flexDirection='row' gap={50}>
-        <Stack flexDirection='column' gap={10} css={styles.information}>
-          <h3>Information</h3>
-          <Stack flexDirection='column'>
-            <table css={styles.table}>
-              <tbody>
-                <tr>
-                  <th>Nodes:</th>
-                  <td>{dataset?.nodeCount}</td>
-                </tr>
-                <tr>
-                  <th>Edges:</th>
-                  <td>{dataset?.edgeCount}</td>
-                </tr>
-                <tr>
-                  <th>Layers:</th>
-                  <td>{dataset?.layerCount}</td>
-                </tr>
-                <tr>
-                  <th>File Type:</th>
-                  <td>{dataset?.fileType}</td>
-                </tr>
-              </tbody>
-            </table>
-          </Stack>
-          <Stack flexDirection='column'>
-            <h4>Layers</h4>
-            {!dataset?.layerNames?.length ? (
-              <p css={styles.noData}>No layers</p>
-            ) : (
-              <ol>
-                {dataset?.layerNames.map((name, idx) => (
-                  <li key={idx}>{name}</li>
-                ))}
-              </ol>
-            )}
-          </Stack>
-          <Stack flexDirection='column'>
-            <h4>Actors</h4>
-            {!dataset?.actorNames?.length ? (
-              <p css={styles.noData}>No actors</p>
-            ) : (
-              <ol css={styles.ol}>
-                {dataset?.actorNames.map((name, idx) => (
-                  <li key={idx}>{name}</li>
-                ))}
-              </ol>
-            )}
-          </Stack>
-          <Button css={styles.download} onClick={download}>
-            Download
-          </Button>
+      <Stack direction='column' gap={1}>
+        <Stack>
+          <Typography variant='subtitle1'>Information</Typography>
+          <table
+            css={{
+              width: 150,
+              th: {
+                fontWeight: 'normal',
+                textAlign: 'start',
+              },
+              td: {
+                textAlign: 'end',
+              },
+            }}
+          >
+            <tbody>
+              <tr>
+                <th>Nodes:</th>
+                <td>{dataset?.nodeCount}</td>
+              </tr>
+              <tr>
+                <th>Edges:</th>
+                <td>{dataset?.edgeCount}</td>
+              </tr>
+              <tr>
+                <th>Layers:</th>
+                <td>{dataset?.layerCount}</td>
+              </tr>
+              <tr>
+                <th>File Type:</th>
+                <td>{dataset?.fileType}</td>
+              </tr>
+            </tbody>
+          </table>
         </Stack>
-        <Stack flexDirection='column' gap={10} justifyContent='flex-start'>
-          <h3>Visualizations</h3>
-          <Stack flexDirection='column' gap={10}>
-            <h4>Slices</h4>
-            <Image src={dataset?.slicesUrl} alt='Slices' css={styles.img} />
-            <h4>Diagonal</h4>
-            <Image src={dataset?.diagonalUrl} alt='Diagonal' css={styles.img} />
+        <Stack>
+          <Typography variant='subtitle2'>Layers</Typography>
+          {!dataset?.layerNames?.length ? (
+            <Typography>No layers</Typography>
+          ) : (
+            <ol
+              css={{
+                margin: 0,
+                columns: Math.ceil((dataset.layerNames.length || 0) / 10),
+              }}
+            >
+              {dataset?.layerNames.map((name, idx) => (
+                <li key={idx}>{name}</li>
+              ))}
+            </ol>
+          )}
+        </Stack>
+        <Stack>
+          <Typography variant='subtitle2'>Actors</Typography>
+          {!dataset?.actorNames?.length ? (
+            <Typography css={styles.noData}>No actors</Typography>
+          ) : (
+            <ol
+              css={{
+                margin: 0,
+                columns: Math.ceil((dataset.actorNames.length || 0) / 10),
+              }}
+            >
+              {dataset?.actorNames.map((name, idx) => (
+                <li key={idx}>{name}</li>
+              ))}
+            </ol>
+          )}
+        </Stack>
+
+        <Button
+          onClick={download}
+          variant='contained'
+          sx={{
+            alignSelf: 'flex-end',
+          }}
+        >
+          Download
+        </Button>
+        <Typography variant='subtitle1'>Visualizations</Typography>
+        <Stack
+          direction='row'
+          gap={2}
+          sx={{
+            '& > *': {
+              width: 500,
+            },
+          }}
+        >
+          <Stack gap={1}>
+            <Typography variant='subtitle2'>Slices</Typography>
+            <Image
+              src={dataset?.slicesUrl}
+              alt='Slices'
+              css={{ height: 250 }}
+            />
+          </Stack>
+          <Stack gap={1}>
+            <Typography variant='subtitle2'>Diagonal</Typography>
+            <Image
+              src={dataset?.diagonalUrl}
+              alt='Diagonal'
+              css={{ height: 250 }}
+            />
           </Stack>
         </Stack>
       </Stack>
@@ -100,6 +145,8 @@ const styles = {
     width: 250,
   }),
   ol: css({
+    margin: 0,
     columns: 2,
   }),
+  list: css({}),
 };

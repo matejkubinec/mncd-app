@@ -1,9 +1,11 @@
 import { FC } from 'react';
 import { PageProps } from './Page.types';
-import { Stack } from '@components/stack';
-import { IconButton } from '@components/button';
 import { useNavigate } from 'react-router-dom';
-import { css } from '@emotion/react';
+import Stack from '@mui/material/Stack';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import ArrowBack from '@mui/icons-material/ArrowBack';
+import { LinearProgress } from '@mui/material';
 
 export const Page: FC<PageProps> = ({
   title,
@@ -15,49 +17,53 @@ export const Page: FC<PageProps> = ({
   const navigate = useNavigate();
 
   return (
-    <Stack flexDirection='column'>
+    <Stack direction='column' position='relative' mb={10}>
       {!!title && (
         <Stack
-          flexDirection='row'
-          gap={10}
+          direction='row'
           alignItems='center'
-          css={styles.header}
+          justifyContent='space-between'
+          my={1}
         >
-          {!!backTo && (
-            <IconButton
-              name='left-arrow'
-              variant='outlined'
-              onClick={() => navigate(backTo)}
-              css={styles.backButton}
-            />
-          )}
-          <h2 css={styles.title}>{title}</h2>
-          {right && <Stack>{right}</Stack>}
+          <Stack direction='row' alignItems='center' gap={1}>
+            {!!backTo && (
+              <IconButton onClick={() => navigate(backTo)}>
+                <ArrowBack />
+              </IconButton>
+            )}
+            <Typography
+              variant='h5'
+              sx={{
+                pl: backTo ? 0 : 6,
+              }}
+            >
+              {title}
+            </Typography>
+          </Stack>
+          {right && <Stack pr={6}>{right}</Stack>}
         </Stack>
       )}
-      {loading ? (
-        <Stack flexDirection='column' gap={10}>
-          Loading . . .
-        </Stack>
-      ) : (
-        <Stack flexDirection='column' gap={10}>
-          {children}
+      {loading && (
+        <Stack
+          sx={{
+            top: -10,
+            left: -15,
+            right: -15,
+            position: 'absolute',
+          }}
+        >
+          <LinearProgress />
         </Stack>
       )}
+      <Stack
+        direction='column'
+        gap={1}
+        sx={{
+          px: 6,
+        }}
+      >
+        {loading ? <>Loading . . .</> : children}
+      </Stack>
     </Stack>
   );
-};
-
-const styles = {
-  header: css({
-    position: 'relative',
-    marginBottom: 10,
-  }),
-  backButton: css({
-    position: 'absolute',
-    left: -35,
-  }),
-  title: css({
-    flex: 1,
-  }),
 };

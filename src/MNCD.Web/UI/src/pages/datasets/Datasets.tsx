@@ -1,24 +1,33 @@
-import { LinkButton } from '@components/button';
 import { Page } from '@components/page';
-import { Stack } from '@components/stack';
 import { Table } from '@components/table';
 import { useDatasets } from '@hooks/api/dataset';
 import { FC } from 'react';
 import { DatasetsActions } from './datasets-actions';
+import { LinkButton } from '@components/link-button';
+import Typography from '@mui/material/Typography';
+import { useNavigate } from 'react-router-dom';
 
 export const DatasetsPage: FC = () => {
   const datasets = useDatasets();
+  const navigate = useNavigate();
 
   return (
-    <Page title='Datasets'>
-      {datasets.isLoading ? (
-        <p>Loading ...</p>
-      ) : !datasets.data?.length ? (
-        <p>No datasets to show</p>
+    <Page
+      title='Datasets'
+      loading={datasets.isLoading}
+      right={
+        <LinkButton variant='contained' to='/datasets/add'>
+          Add Dataset
+        </LinkButton>
+      }
+    >
+      {!datasets.data?.length ? (
+        <Typography variant='body2'>No datasets to show</Typography>
       ) : (
         <Table
           rowId='id'
           rows={datasets.data}
+          onRowClick={({ id }) => navigate(`/datasets/${id}`)}
           columns={[
             {
               id: 'name',
@@ -47,9 +56,6 @@ export const DatasetsPage: FC = () => {
           ]}
         />
       )}
-      <Stack flexDirection='row' justifyContent='flex-end'>
-        <LinkButton to='/datasets/add'>Add Dataset</LinkButton>
-      </Stack>
     </Page>
   );
 };

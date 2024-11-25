@@ -1,10 +1,14 @@
-import { Button, IconButton } from '@components/button';
 import { Dialog } from '@components/dialog';
-import { Stack } from '@components/stack';
 import { useDeleteSession, useSessions } from '@hooks/api/session';
 import { Session } from '@lib/types/session';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import { useSnackbar } from 'notistack';
-import { FC, useCallback, useState } from 'react';
+import { FC, MouseEventHandler, useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import Stack from '@mui/material/Stack';
 
 interface Props {
   session: Session;
@@ -17,6 +21,7 @@ export const SessionActions: FC<Props> = ({ session }) => {
     refetchOnMount: false,
   });
   const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
 
   const handleClose = useCallback(() => {
     setModalOpen(false);
@@ -39,16 +44,39 @@ export const SessionActions: FC<Props> = ({ session }) => {
     });
   }, [handleClose, mutate, session, refetch, enqueueSnackbar]);
 
+  const removeSession: MouseEventHandler<HTMLButtonElement> = (e) => {
+    setModalOpen(true);
+
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const editSession: MouseEventHandler<HTMLButtonElement> = (e) => {
+    navigate(`/sessions/${session.id}/edit`);
+
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   return (
-    <Stack flexDirection='row' gap={10} justifyContent='flex-end'>
-      <IconButton name='cross1' onClick={() => setModalOpen(true)} />
-      <IconButton name='pencil1' to={`/sessions/${session.id}/edit`} />
-      <IconButton name='enter' to={`/sessions/${session.id}`} />
+    <Stack
+      gap={1}
+      direction='row'
+      justifyContent='flex-end'
+      className='row-actions'
+      visibility='hidden'
+    >
+      <IconButton onClick={editSession}>
+        <EditIcon />
+      </IconButton>
+      <IconButton color='error' onClick={removeSession}>
+        <DeleteIcon />
+      </IconButton>
       <Dialog open={modalOpen} onClose={handleClose}>
         <p>Are you sure you want to delete this session?</p>
         <Stack gap={10} justifyContent='flex-end'>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleDelete} variant='danger'>
+          <Button onClick={handleDelete} color='error'>
             Delete
           </Button>
         </Stack>

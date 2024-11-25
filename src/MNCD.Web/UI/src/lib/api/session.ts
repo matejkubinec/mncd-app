@@ -24,7 +24,7 @@ export const patchSession = async (payload: PatchSessionPayload) => {
 };
 
 export const addSession = async (payload: AddSessionPayload) => {
-  const res = await api.post<Session[], AddSessionPayload>(
+  const res = await api.post<Session, AddSessionPayload>(
     '/api/session',
     payload,
   );

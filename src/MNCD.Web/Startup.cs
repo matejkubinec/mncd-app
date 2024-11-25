@@ -53,10 +53,7 @@ namespace MNCD.Web
             using (var scope = app.ApplicationServices.CreateScope())
             {
                 var ctx = scope.ServiceProvider.GetService<MNCDContext>();
-                if (!ctx.Database.EnsureCreated())
-                {
-                    ctx.Database.Migrate();
-                }
+                ctx.Database.EnsureCreated();
             }
 
             if (env.IsDevelopment())
