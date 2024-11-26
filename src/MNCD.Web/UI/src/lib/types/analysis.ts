@@ -47,6 +47,7 @@ export interface AnalyzePayload {
   analysisAlgorithmParameters?: Record<string, number | string>;
 
   flatteningAlgorithm?: FlattenningAlgorithm;
+  flatteningAlgorithmParameters?: Record<string, any>;
 }
 
 export interface AnalysisResult {

@@ -11,6 +11,7 @@ import { Button, Stack } from '@mui/material';
 import SingleLayerAlgorithmStep from './steps/SingleLayerAlgorithmStep';
 import { useTriggerAnalysis } from '@hooks/api/analysis';
 import { useSnackbar } from 'notistack';
+import FlatteningStep from './steps/FlatteningStep';
 
 export const SessionAnalysis: FC = () => {
   const { data: session, isLoading } = useRouteSession();
@@ -54,6 +55,12 @@ export const SessionAnalysis: FC = () => {
           {approach === AnalysisApproach.SingleLayerOnly && (
             <>
               <LayerSelectionStep />
+              <SingleLayerAlgorithmStep />
+            </>
+          )}
+          {approach === AnalysisApproach.SingleLayerFlattening && (
+            <>
+              <FlatteningStep />
               <SingleLayerAlgorithmStep />
             </>
           )}

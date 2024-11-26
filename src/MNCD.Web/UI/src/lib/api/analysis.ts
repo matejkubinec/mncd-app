@@ -7,9 +7,23 @@ export const getAnalysis = async (id: number): Promise<Analysis> => {
 };
 
 export const triggerAnalysis = async (payload: AnalyzePayload) => {
+  const body: AnalyzePayload = {
+    ...payload,
+  };
+
+  if (
+    body.flatteningAlgorithm !== undefined &&
+    body.flatteningAlgorithmParameters !== undefined
+  ) {
+    const entries = Object.entries(body.flatteningAlgorithmParameters);
+    for (const [key, value] of entries) {
+      body.flatteningAlgorithmParameters![key] = JSON.stringify(value);
+    }
+  }
+
   const res = await api.post<AnalysisResult, AnalyzePayload>(
     `/api/analysis`,
-    payload,
+    body,
   );
   return res.data;
 };

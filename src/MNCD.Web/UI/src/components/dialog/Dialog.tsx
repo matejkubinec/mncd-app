@@ -1,9 +1,9 @@
-import { Stack } from '@components/stack';
 import { css } from '@emotion/react';
 import IconButton from '@mui/material/IconButton';
 import { FC, PropsWithChildren, useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import CloseIcon from '@mui/icons-material/Close';
+import Stack from '@mui/material/Stack';
 
 interface Props extends PropsWithChildren {
   open?: boolean;
@@ -32,7 +32,7 @@ export const Dialog: FC<Props> = ({ open, onClose, children }) => {
         flexDirection='row'
         alignItems='center'
         justifyContent='space-between'
-        gap={10}
+        gap={1}
       >
         <h4 css={styles.title}>Title</h4>
         <IconButton onClick={handleClose}>
