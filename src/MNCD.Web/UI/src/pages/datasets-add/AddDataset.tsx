@@ -1,4 +1,5 @@
-import { FileInputControl, InputControl } from '@components/input';
+import { FileInputControl } from '@components/file-input';
+import { InputControl } from '@components/input';
 import { Page } from '@components/page';
 import { SelectControl } from '@components/select';
 import { useAddDataset } from '@hooks/api/dataset';
@@ -63,7 +64,14 @@ export const AddDatasetPage: FC = () => {
             required: 'Format is required',
           }}
         />
-        <FileInputControl label='File' name='file' control={control} />
+        <FileInputControl
+          label='File'
+          name='file'
+          control={control}
+          rules={{
+            required: 'File is required',
+          }}
+        />
         <Button type='submit' variant='contained'>
           Add Dataset
         </Button>

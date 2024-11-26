@@ -1,5 +1,4 @@
 import { Page } from '@components/page';
-import { Stack } from '@components/stack';
 import { Table } from '@components/table';
 import { useRouteSession } from '@hooks/route';
 import { ANALYSIS_ALGORITHM_NAME, APPROACH_NAME } from '@lib/constants';
@@ -23,9 +22,9 @@ export const SessionPage: FC = () => {
       loading={isLoading}
       backTo='/'
       right={
-        <Stack>
-          <Button onClick={addAnalysis}>Analyze</Button>
-        </Stack>
+        <Button variant='contained' onClick={addAnalysis}>
+          Analyze
+        </Button>
       }
     >
       <Typography variant='subtitle1'>Analyses</Typography>

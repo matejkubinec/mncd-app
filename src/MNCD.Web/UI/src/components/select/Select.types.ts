@@ -1,3 +1,4 @@
+import { TextFieldProps } from '@mui/material';
 import {
   Control,
   FieldValues,
@@ -16,4 +17,6 @@ export interface SelectControlProps<T extends FieldValues, K> {
   label?: string;
   options?: SelectOption[];
   rules?: UseControllerProps<T, Path<T>>['rules'];
+  description?: string;
+  fieldProps?: TextFieldProps;
 }

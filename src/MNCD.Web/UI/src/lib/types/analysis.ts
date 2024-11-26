@@ -37,6 +37,18 @@ export interface AnalysisRequest {
   flatteningAlgorithm: FlattenningAlgorithm;
 }
 
+export interface AnalyzePayload {
+  sessionId: number;
+  datasetId: number;
+  selectedLayer: number;
+
+  approach: AnalysisApproach;
+  analysisAlgorithm: AnalysisAlgorithm;
+  analysisAlgorithmParameters?: Record<string, number | string>;
+
+  flatteningAlgorithm?: FlattenningAlgorithm;
+}
+
 export interface AnalysisResult {
   id: number;
 }

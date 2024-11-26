@@ -1,3 +1,4 @@
+import { SelectOption } from '@components/select';
 import {
   AnalysisAlgorithm,
   AnalysisApproach,
@@ -25,3 +26,20 @@ export const FLATTENING_NAME: Record<FlattenningAlgorithm, string> = {
   [FlattenningAlgorithm.MergeFlattening]: 'Merge Flattening',
   [FlattenningAlgorithm.WeightedFlattening]: 'Weighted Flattening',
 };
+
+export const APPROACH_OPTIONS: SelectOption[] = [
+  AnalysisApproach.SingleLayerOnly,
+  AnalysisApproach.SingleLayerFlattening,
+  AnalysisApproach.MultiLayer,
+]
+  .map((approach) => ({ label: APPROACH_NAME[approach], value: approach }))
+  .sort((a, b) => a.label.localeCompare(b.label));
+
+export const SINGLE_LAYER_ALGORITHM_OPTIONS: SelectOption[] = [
+  AnalysisAlgorithm.FluidC,
+  AnalysisAlgorithm.Louvain,
+  AnalysisAlgorithm.KClique,
+  AnalysisAlgorithm.LabelPropagation,
+]
+  .map((alg) => ({ label: ANALYSIS_ALGORITHM_NAME[alg], value: alg }))
+  .sort((a, b) => a.label.localeCompare(b.label));

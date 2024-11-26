@@ -1,4 +1,3 @@
-import { TextFieldProps } from '@mui/material';
 import {
   Control,
   FieldValues,
@@ -6,12 +5,10 @@ import {
   UseControllerProps,
 } from 'react-hook-form';
 
-export interface InputControlProps<T extends FieldValues, K> {
-  label?: string;
+export interface FileInputControlProps<T extends FieldValues, K> {
   name: Path<T>;
-  type?: HTMLInputElement['type'];
   control: Control<T, K>;
+  label?: string;
   rules?: UseControllerProps<T, Path<T>>['rules'];
   description?: string;
-  textFieldProps?: TextFieldProps;
 }
