@@ -33,8 +33,10 @@ export interface AnalysisRequest {
   selectedLayerName: string;
 
   analysisAlgorithm: AnalysisAlgorithm;
+  analysisAlgorithmParameters: Record<string, string>;
 
   flatteningAlgorithm: FlattenningAlgorithm;
+  flatteningAlgorithmParameters: Record<string, string>;
 }
 
 export interface AnalyzePayload {
@@ -50,8 +52,42 @@ export interface AnalyzePayload {
   flatteningAlgorithmParameters?: Record<string, any>;
 }
 
+export interface ActorItem {
+  idx: number;
+  name: string;
+}
+
+export interface AnalysisCommunityDetail {
+  name: string;
+  actorCount: number;
+  actors: ActorItem[];
+}
+
 export interface AnalysisResult {
   id: number;
+  averageVariety: number | null;
+  varieties: number[];
+
+  averageExclusivity: number | null;
+  exclusivities: number[];
+
+  averageHomogenity: number | null;
+  homogenities: number[];
+
+  averageCoverage: number | null;
+  coverages: number[] | null;
+
+  averagePerformance: number | null;
+  performances: number[] | null;
+
+  averageModularity: number | null;
+  modularities: number[] | null;
+
+  coverage: number | null;
+  performance: number | null;
+  modularity: number | null;
+
+  communityDetails: AnalysisCommunityDetail[];
 }
 
 export interface AnalysisImage {
@@ -69,6 +105,7 @@ export interface AnalysisVisualization {
 
 export interface Analysis {
   id: number;
+  notes: string | null;
   request: AnalysisRequest;
   result: AnalysisResult;
 }

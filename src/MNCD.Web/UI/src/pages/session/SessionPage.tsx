@@ -31,6 +31,9 @@ export const SessionPage: FC = () => {
       <Table
         rowId='id'
         rows={session?.analyses || []}
+        onRowClick={({ id }) =>
+          navigate(`/session/${session?.id}/analysis/${id}`)
+        }
         columns={[
           {
             id: 'id',
