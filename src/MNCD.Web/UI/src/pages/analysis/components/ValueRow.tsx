@@ -1,6 +1,7 @@
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import { FC, ReactNode } from 'react';
+import ValueRowLabel from './ValueRowLabel';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 
 interface Props {
   label: string;
@@ -14,18 +15,13 @@ const ValueRow: FC<Props> = ({ label, value, tooltip }) => {
   }
 
   if (Array.isArray(value)) {
+    if (!value.length) {
+      return null;
+    }
+
     return (
       <Stack direction='row'>
-        <Stack>
-          <Typography width={200}>{label}</Typography>
-          {!!tooltip && (
-            <Tooltip title={tooltip}>
-              <IconButton>
-                <InfoOutlinedIcon />
-              </IconButton>
-            </Tooltip>
-          )}
-        </Stack>
+        <ValueRowLabel label={label} tooltip={tooltip} />
         <Stack width={75}>
           {value.map((val, idx) => (
             <Stack direction='row' justifyContent='space-between'>
@@ -43,9 +39,13 @@ const ValueRow: FC<Props> = ({ label, value, tooltip }) => {
   }
 
   if (typeof value === 'number') {
+    if (value === 0) {
+      return null;
+    }
+
     return (
       <Stack direction='row'>
-        <Typography width={200}>{label}</Typography>
+        <ValueRowLabel label={label} tooltip={tooltip} />
         <Typography
           width={75}
           textAlign='right'
@@ -59,7 +59,7 @@ const ValueRow: FC<Props> = ({ label, value, tooltip }) => {
 
   return (
     <Stack direction='row'>
-      <Typography width={200}>{label}</Typography>
+      <ValueRowLabel label={label} tooltip={tooltip} />
       <Typography textAlign='left' fontFamily='Roboto Mono, monospace'>
         {value}
       </Typography>
