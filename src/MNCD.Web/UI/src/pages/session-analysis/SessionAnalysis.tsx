@@ -12,6 +12,8 @@ import SingleLayerAlgorithmStep from './steps/SingleLayerAlgorithmStep';
 import { useTriggerAnalysis } from '@hooks/api/analysis';
 import { useSnackbar } from 'notistack';
 import FlatteningStep from './steps/FlatteningStep';
+import MultiLayerAlgorithmStep from './steps/MultiLayerAlgorithmStep';
+import { Navigate } from 'react-router-dom';
 
 export const SessionAnalysis: FC = () => {
   const { data: session, isLoading } = useRouteSession();
@@ -20,7 +22,7 @@ export const SessionAnalysis: FC = () => {
     name: 'approach',
     control: methods.control,
   });
-  const { mutateAsync } = useTriggerAnalysis();
+  const { mutateAsync, data, isSuccess } = useTriggerAnalysis();
   const { enqueueSnackbar } = useSnackbar();
 
   const onAnalyze = (values: AnalyzeFormValues) => {
@@ -37,6 +39,10 @@ export const SessionAnalysis: FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, methods.setValue]);
+
+  if (isSuccess) {
+    return <Navigate to={`/session/${session?.id}/analysis/${data.id}`} />;
+  }
 
   return (
     <Page
@@ -63,6 +69,9 @@ export const SessionAnalysis: FC = () => {
               <FlatteningStep />
               <SingleLayerAlgorithmStep />
             </>
+          )}
+          {approach === AnalysisApproach.MultiLayer && (
+            <MultiLayerAlgorithmStep />
           )}
           <Stack alignSelf='flex-start' width={250}>
             <Button variant='contained' type='submit'>

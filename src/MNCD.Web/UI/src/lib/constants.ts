@@ -44,6 +44,12 @@ export const SINGLE_LAYER_ALGORITHM_OPTIONS: SelectOption[] = [
   .map((alg) => ({ label: ANALYSIS_ALGORITHM_NAME[alg], value: alg }))
   .sort((a, b) => a.label.localeCompare(b.label));
 
+export const MULTI_LAYER_ALGORITHM_OPTIONS: SelectOption[] = [
+  AnalysisAlgorithm.CLECC,
+]
+  .map((alg) => ({ label: ANALYSIS_ALGORITHM_NAME[alg], value: alg }))
+  .sort((a, b) => a.label.localeCompare(b.label));
+
 export const FLATTENING_OPTIONS: SelectOption[] = [
   FlattenningAlgorithm.BasicFlattening,
   FlattenningAlgorithm.LocalSimplification,
