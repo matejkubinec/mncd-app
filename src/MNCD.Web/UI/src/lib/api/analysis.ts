@@ -27,3 +27,10 @@ export const triggerAnalysis = async (payload: AnalyzePayload) => {
   );
   return res.data;
 };
+
+export const updateNotes = async (analysisId: number, notes: string) => {
+  const res = await api.patch(`/api/analysis/${analysisId}`, {
+    notes,
+  });
+  return res.data;
+};

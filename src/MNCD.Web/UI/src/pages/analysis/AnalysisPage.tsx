@@ -5,6 +5,7 @@ import Request from './components/Request';
 import Evaluation from './components/Evaluation';
 import CommunityDetails from './components/CommunityDetails';
 import { Stack } from '@mui/material';
+import Notes from './components/Notes';
 
 export const AnalysisPage: FC = () => {
   const analysis = useRouteAnalysis('analysisId');
@@ -30,6 +31,12 @@ export const AnalysisPage: FC = () => {
             <Evaluation {...result} />
             <CommunityDetails {...result} />
           </>
+        )}
+        {analysis.data && (
+          <Notes
+            analysisId={analysis.data.id}
+            notes={analysis.data.notes || ''}
+          />
         )}
       </Stack>
     </Page>
