@@ -1,9 +1,13 @@
 import { buttonClasses, createTheme } from '@mui/material';
+import { yellow } from '@mui/material/colors';
 
 const theme = createTheme({
   palette: {
     primary: {
       main: 'rgb(0, 120, 212)',
+    },
+    secondary: {
+      main: yellow['A700'],
     },
     background: {
       paper: '#f5f5f5',

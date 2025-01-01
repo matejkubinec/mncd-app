@@ -108,4 +108,5 @@ export interface Analysis {
   notes: string | null;
   request: AnalysisRequest;
   result: AnalysisResult;
+  visualization: AnalysisVisualization;
 }

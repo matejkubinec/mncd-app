@@ -6,10 +6,12 @@ import Evaluation from './components/Evaluation';
 import CommunityDetails from './components/CommunityDetails';
 import { Stack } from '@mui/material';
 import Notes from './components/Notes';
+import Visualizations from './components/Visualizations';
 
 export const AnalysisPage: FC = () => {
   const analysis = useRouteAnalysis('analysisId');
   const session = useRouteSession('sessionId');
+  const visualization = analysis.data?.visualization;
   const request = analysis.data?.request;
   const result = analysis.data?.result;
 
@@ -32,6 +34,7 @@ export const AnalysisPage: FC = () => {
             <CommunityDetails {...result} />
           </>
         )}
+        {visualization && <Visualizations visualizations={visualization} />}
         {analysis.data && (
           <Notes
             analysisId={analysis.data.id}

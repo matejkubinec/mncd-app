@@ -35,7 +35,13 @@ export const Image: FC<ImageProps> = (props) => {
         </Stack>
       )}
       {hasError && (
-        <Stack gap={1} flex='1' alignItems='center' justifyContent='center'>
+        <Stack
+          gap={1}
+          flex='1'
+          alignItems='center'
+          justifyContent='center'
+          py={2}
+        >
           <BrokenImageIcon
             color='error'
             sx={{

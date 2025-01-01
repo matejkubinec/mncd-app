@@ -4,6 +4,7 @@ import {
   AnalysisApproach,
   FlattenningAlgorithm,
 } from './types/analysis';
+import { Visualization, VisualizationType } from './types/images';
 
 export const APPROACH_NAME: Record<AnalysisApproach, string> = {
   [AnalysisApproach.MultiLayer]: 'Multi Layer',
@@ -25,6 +26,14 @@ export const FLATTENING_NAME: Record<FlattenningAlgorithm, string> = {
   [FlattenningAlgorithm.LocalSimplification]: 'Local Simplification',
   [FlattenningAlgorithm.MergeFlattening]: 'Merge Flattening',
   [FlattenningAlgorithm.WeightedFlattening]: 'Weighted Flattening',
+};
+
+export const VISUALIZATION_NAME: Record<VisualizationType, string> = {
+  singleLayer: 'Single Layer',
+  singleLayerCommunities: 'Single Layer - Communities',
+  multiLayer: 'Multi Layer',
+  multiLayerCommunities: 'Multi Layer - Communities',
+  communitySizes: 'Community Sizes',
 };
 
 export const APPROACH_OPTIONS: SelectOption[] = [
@@ -58,3 +67,14 @@ export const FLATTENING_OPTIONS: SelectOption[] = [
 ]
   .map((approach) => ({ label: FLATTENING_NAME[approach], value: approach }))
   .sort((a, b) => a.label.localeCompare(b.label));
+
+export const VISUALIZATION_OPTIONS: SelectOption[] = [
+  Visualization.MultiLayer,
+  Visualization.MultiLayerCommunities,
+  Visualization.SingleLayer,
+  Visualization.SingleLayerCommunities,
+  Visualization.CommunitySizes,
+].map((visualization) => ({
+  label: VISUALIZATION_NAME[visualization],
+  value: visualization,
+}));
