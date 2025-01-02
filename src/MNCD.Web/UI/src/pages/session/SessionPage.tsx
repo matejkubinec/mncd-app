@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import AnalysisActions from './components/AnalysisActions';
+import AnalysisComparison from './components/AnalysisComparison';
 
 export const SessionPage: FC = () => {
   const { data: session, isLoading } = useRouteSession();
@@ -69,6 +70,7 @@ export const SessionPage: FC = () => {
           },
         ]}
       />
+      <AnalysisComparison analyzes={session?.analyses || []} />
     </Page>
   );
 };
