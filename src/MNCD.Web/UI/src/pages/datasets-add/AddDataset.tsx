@@ -39,7 +39,7 @@ export const AddDatasetPage: FC = () => {
   return (
     <Page title='Add Dataset' backTo='/datasets'>
       <Stack
-        gap={1}
+        gap={2}
         width={250}
         component='form'
         onSubmit={handleSubmit(addDataset)}

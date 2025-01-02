@@ -1,14 +1,21 @@
-import { Dialog } from '@components/dialog';
 import { useDeleteSession, useSessions } from '@hooks/api/session';
 import { Session } from '@lib/types/session';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import { useSnackbar } from 'notistack';
-import { FC, MouseEventHandler, useCallback, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Stack from '@mui/material/Stack';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from '@mui/material';
+import { withoutBubbling } from '@lib/utils';
 
 interface Props {
   session: Session;
@@ -44,18 +51,12 @@ export const SessionActions: FC<Props> = ({ session }) => {
     });
   }, [handleClose, mutate, session, refetch, enqueueSnackbar]);
 
-  const removeSession: MouseEventHandler<HTMLButtonElement> = (e) => {
+  const removeSession = () => {
     setModalOpen(true);
-
-    e.preventDefault();
-    e.stopPropagation();
   };
 
-  const editSession: MouseEventHandler<HTMLButtonElement> = (e) => {
+  const editSession = () => {
     navigate(`/sessions/${session.id}/edit`);
-
-    e.preventDefault();
-    e.stopPropagation();
   };
 
   return (
@@ -66,20 +67,25 @@ export const SessionActions: FC<Props> = ({ session }) => {
       className='row-actions'
       visibility='hidden'
     >
-      <IconButton onClick={editSession}>
+      <IconButton onClick={withoutBubbling(editSession)}>
         <EditIcon />
       </IconButton>
-      <IconButton color='error' onClick={removeSession}>
+      <IconButton color='error' onClick={withoutBubbling(removeSession)}>
         <DeleteIcon />
       </IconButton>
-      <Dialog open={modalOpen} onClose={handleClose}>
-        <p>Are you sure you want to delete this session?</p>
-        <Stack gap={10} justifyContent='flex-end'>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleDelete} color='error'>
+      <Dialog open={modalOpen} onClose={withoutBubbling(handleClose)}>
+        <DialogTitle>Delete session</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this session?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={withoutBubbling(handleClose)}>Cancel</Button>
+          <Button onClick={withoutBubbling(handleDelete)} color='error'>
             Delete
           </Button>
-        </Stack>
+        </DialogActions>
       </Dialog>
     </Stack>
   );

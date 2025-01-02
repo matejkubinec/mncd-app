@@ -71,7 +71,7 @@ const AnalysisItemActions: FC<Props> = ({ analysis }) => {
       </IconButton>
       <Dialog
         open={deleting}
-        onClose={cancelDeletion}
+        onClose={withoutBubbling(cancelDeletion)}
         aria-labelledby='alert-delete-analysis-title'
         aria-describedby='alert-delete-analysis-description'
       >
