@@ -4,9 +4,10 @@ import { FC } from 'react';
 import Request from './components/Request';
 import Evaluation from './components/Evaluation';
 import CommunityDetails from './components/CommunityDetails';
-import { Stack } from '@mui/material';
 import Notes from './components/Notes';
 import Visualizations from './components/Visualizations';
+import AnalysisActions from './components/AnalysisActions';
+import Stack from '@mui/material/Stack';
 
 export const AnalysisPage: FC = () => {
   const analysis = useRouteAnalysis('analysisId');
@@ -20,6 +21,9 @@ export const AnalysisPage: FC = () => {
       title={analysis ? `Analysis ${analysis.data?.id}` : undefined}
       loading={session.isLoading || analysis.isLoading}
       backTo={`/sessions/${session.data?.id}`}
+      right={
+        analysis.data ? <AnalysisActions analysis={analysis.data} /> : undefined
+      }
     >
       <Stack gap={2}>
         {request && (

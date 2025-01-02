@@ -34,3 +34,6 @@ export const updateNotes = async (analysisId: number, notes: string) => {
   });
   return res.data;
 };
+
+export const downloadAnalysis = async (analysisId: number) =>
+  Promise.resolve(window.open(`/api/analysis/download/${analysisId}`));

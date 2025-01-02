@@ -1,4 +1,9 @@
-import { getAnalysis, triggerAnalysis, updateNotes } from '@lib/api/analysis';
+import {
+  downloadAnalysis,
+  getAnalysis,
+  triggerAnalysis,
+  updateNotes,
+} from '@lib/api/analysis';
 import { NotesForm } from '@lib/form/notes.form';
 import { Analysis, AnalysisRequest } from '@lib/types/analysis';
 import {
@@ -30,5 +35,14 @@ export const useUpdateNotes = (
   useMutation({
     mutationKey: ['update-analysis-notes'],
     mutationFn: (values) => updateNotes(values.analysisId, values.notes),
+    ...options,
+  });
+
+export const useDownloadAnalysis = (
+  options?: Partial<UseMutationOptions<unknown, Error, number>>,
+) =>
+  useMutation({
+    mutationKey: ['download-anlysis'],
+    mutationFn: (analysisId) => downloadAnalysis(analysisId),
     ...options,
   });
