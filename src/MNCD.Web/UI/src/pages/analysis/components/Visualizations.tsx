@@ -92,7 +92,7 @@ const Visualizations: FC<Props> = ({ visualizations }) => {
                   sx={{
                     color: 'secondary.contrastText',
                     textAlign: 'center',
-                    backgroundColor: 'secondary.light',
+                    backgroundColor: 'secondary.main',
                   }}
                 />
               </ImageListItem>

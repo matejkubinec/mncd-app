@@ -4,9 +4,9 @@ import { useRouteSession } from '@hooks/route';
 import { ANALYSIS_ALGORITHM_NAME, APPROACH_NAME } from '@lib/constants';
 import { FC, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AnalysisActions } from './analysis-actions';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import AnalysisActions from './components/AnalysisActions';
 
 export const SessionPage: FC = () => {
   const { data: session, isLoading } = useRouteSession();

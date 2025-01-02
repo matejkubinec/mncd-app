@@ -26,6 +26,9 @@ const Request: FC<AnalysisRequest> = (props) => {
               </Link>
             }
           />
+          {props.approach === AnalysisApproach.SingleLayerOnly && (
+            <ValueRow label='Layer' value={props.selectedLayerName} />
+          )}
           {props.approach === AnalysisApproach.SingleLayerFlattening && (
             <Algorithm
               label='Flattening'

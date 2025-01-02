@@ -1,6 +1,7 @@
 import {
   downloadAnalysis,
   getAnalysis,
+  removeAnalysis,
   triggerAnalysis,
   updateNotes,
 } from '@lib/api/analysis';
@@ -44,5 +45,14 @@ export const useDownloadAnalysis = (
   useMutation({
     mutationKey: ['download-anlysis'],
     mutationFn: (analysisId) => downloadAnalysis(analysisId),
+    ...options,
+  });
+
+export const useRemoveAnalysis = (
+  options?: Partial<UseMutationOptions<unknown, Error, number>>,
+) =>
+  useMutation({
+    mutationKey: ['remove-anlysis'],
+    mutationFn: (analysisId) => removeAnalysis(analysisId),
     ...options,
   });

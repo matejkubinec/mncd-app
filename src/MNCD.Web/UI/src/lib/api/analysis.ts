@@ -35,5 +35,10 @@ export const updateNotes = async (analysisId: number, notes: string) => {
   return res.data;
 };
 
+export const removeAnalysis = async (analysisId: number) => {
+  const res = await api.delete(`/api/analysis/${analysisId}`);
+  return res.data;
+};
+
 export const downloadAnalysis = async (analysisId: number) =>
   Promise.resolve(window.open(`/api/analysis/download/${analysisId}`));
