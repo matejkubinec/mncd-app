@@ -92,7 +92,6 @@ export const DatasetDetail: FC = () => {
             </ol>
           )}
         </Stack>
-
         <Typography variant='subtitle1'>Visualizations</Typography>
         <Stack
           direction='row'

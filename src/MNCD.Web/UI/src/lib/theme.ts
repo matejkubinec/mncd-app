@@ -14,8 +14,7 @@ const theme = createTheme({
     },
   },
   colorSchemes: {
-    // light: true,
-    // dark: true,
+    light: true,
   },
   typography: {
     button: {
