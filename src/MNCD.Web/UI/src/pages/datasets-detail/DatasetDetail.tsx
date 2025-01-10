@@ -13,7 +13,16 @@ export const DatasetDetail: FC = () => {
   const { download } = useDownloadDataset(dataset?.id);
 
   return (
-    <Page title={dataset?.name} backTo='/datasets' loading={isLoading}>
+    <Page
+      title={dataset?.name}
+      backTo='/datasets'
+      loading={isLoading}
+      right={
+        <Button onClick={download} variant='contained'>
+          Download
+        </Button>
+      }
+    >
       <Stack direction='column' gap={1}>
         <Stack>
           <Typography variant='subtitle1'>Information</Typography>
@@ -84,15 +93,6 @@ export const DatasetDetail: FC = () => {
           )}
         </Stack>
 
-        <Button
-          onClick={download}
-          variant='contained'
-          sx={{
-            alignSelf: 'flex-end',
-          }}
-        >
-          Download
-        </Button>
         <Typography variant='subtitle1'>Visualizations</Typography>
         <Stack
           direction='row'
@@ -148,5 +148,4 @@ const styles = {
     margin: 0,
     columns: 2,
   }),
-  list: css({}),
 };
