@@ -6,7 +6,7 @@ import {
   updateNotes,
 } from '@lib/api/analysis';
 import { NotesForm } from '@lib/form/notes.form';
-import { Analysis, AnalysisRequest } from '@lib/types/analysis';
+import { Analysis, AnalyzePayload } from '@lib/types/analysis';
 import {
   useMutation,
   UseMutationOptions,
@@ -27,7 +27,7 @@ export const useAnalysis = (
 export const useTriggerAnalysis = () =>
   useMutation({
     mutationKey: ['trigger-analysis'],
-    mutationFn: (values: AnalysisRequest) => triggerAnalysis(values),
+    mutationFn: (values: AnalyzePayload) => triggerAnalysis(values),
   });
 
 export const useUpdateNotes = (

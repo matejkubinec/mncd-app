@@ -1,7 +1,7 @@
 import { InputControl } from '@components/input';
 import { Page } from '@components/page';
 import { useUpdateSession } from '@hooks/api/session';
-import { useRouteSession } from '@hooks/route/session';
+import { useRouteSession } from '@hooks/route';
 import {
   defaultValues,
   EditSessionFormValues,

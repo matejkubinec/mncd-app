@@ -26,7 +26,7 @@ export const SessionAnalysis: FC = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const onAnalyze = (values: AnalyzeFormValues) => {
-    mutateAsync(values, {
+    mutateAsync(values as Required<AnalyzeFormValues>, {
       onSuccess: () =>
         enqueueSnackbar('Analysis successful', { variant: 'success' }),
       onError: (error) => enqueueSnackbar(error.message, { variant: 'error' }),

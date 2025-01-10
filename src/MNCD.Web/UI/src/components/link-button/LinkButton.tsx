@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { cx } from '@emotion/css';
 import Button, { ButtonProps } from '@mui/material/Button';
-import { Link, LinkProps, useLocation, useMatch } from 'react-router-dom';
+import { Link, LinkProps, useLocation } from 'react-router-dom';
 
 interface Props extends ButtonProps {
   to: string;

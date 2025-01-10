@@ -56,7 +56,8 @@ export const SessionPage: FC = () => {
               {
                 id: 'layer',
                 name: 'Layer',
-                cell: ({ request: { selectedLayerName } }) => selectedLayerName,
+                cell: ({ request: { selectedLayerName } }) =>
+                  selectedLayerName ?? '',
               },
               {
                 id: 'algorithm',

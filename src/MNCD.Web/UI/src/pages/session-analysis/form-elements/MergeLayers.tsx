@@ -26,7 +26,7 @@ const MergeLayers: FC<Props> = ({ layers }) => {
 
   useEffect(() => {
     const fieldName = 'flatteningAlgorithmParameters.layerIndices';
-    const res = Object.keys(indices).filter((key) => indices[key]);
+    const res = Object.keys(indices).filter((key) => indices[Number(key)]);
     setValue(fieldName, res);
   }, [indices, setValue]);
 

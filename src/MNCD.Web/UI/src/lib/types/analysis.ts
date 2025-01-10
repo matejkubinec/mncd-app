@@ -29,8 +29,8 @@ export interface AnalysisRequest {
   datasetId: number;
   dataSetName: string;
 
-  selectedLayer: number;
-  selectedLayerName: string;
+  selectedLayer?: number;
+  selectedLayerName?: string;
 
   analysisAlgorithm: AnalysisAlgorithm;
   analysisAlgorithmParameters: Record<string, string>;
@@ -49,6 +49,7 @@ export interface AnalyzePayload {
   analysisAlgorithmParameters?: Record<string, number | string>;
 
   flatteningAlgorithm?: FlattenningAlgorithm;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   flatteningAlgorithmParameters?: Record<string, any>;
 }
 
