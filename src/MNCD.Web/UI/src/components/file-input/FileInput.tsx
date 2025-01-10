@@ -7,16 +7,13 @@ import {
 } from 'react';
 import { FileInputControlProps } from './FileInput.types';
 import { FieldValues, useController } from 'react-hook-form';
-import {
-  Box,
-  Button,
-  buttonClasses,
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  Typography,
-} from '@mui/material';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Typography from '@mui/material/Typography';
+import Button, { buttonClasses } from '@mui/material/Button';
+import FormHelperText from '@mui/material/FormHelperText';
+import Box from '@mui/material/Box';
 
 const FileInputControl = <T extends FieldValues, K>(
   props: FileInputControlProps<T, K>,

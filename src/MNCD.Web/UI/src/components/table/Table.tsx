@@ -7,7 +7,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-export const Table = <T,>({
+const Table = <T,>({
   rowId,
   rows,
   columns,
@@ -70,3 +70,5 @@ export const Table = <T,>({
     </MuiTable>
   </TableContainer>
 );
+
+export default Table;

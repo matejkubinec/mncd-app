@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import BrokenImageIcon from '@mui/icons-material/BrokenImage';
 
-export const Image: FC<ImageProps> = (props) => {
+const Image: FC<ImageProps> = (props) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
@@ -18,6 +18,7 @@ export const Image: FC<ImageProps> = (props) => {
     setHasError(true);
   }, []);
 
+  // todo: add option to view the image fullscreen
   return (
     <Stack
       className={props.className}
@@ -69,3 +70,5 @@ export const Image: FC<ImageProps> = (props) => {
     </Stack>
   );
 };
+
+export default Image;

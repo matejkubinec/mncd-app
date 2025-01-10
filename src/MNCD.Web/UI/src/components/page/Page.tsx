@@ -5,15 +5,9 @@ import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ArrowBack from '@mui/icons-material/ArrowBack';
-import { LinearProgress } from '@mui/material';
+import LinearProgress from '@mui/material/LinearProgress';
 
-export const Page: FC<PageProps> = ({
-  title,
-  backTo,
-  loading,
-  right,
-  children,
-}) => {
+const Page: FC<PageProps> = ({ title, backTo, loading, right, children }) => {
   const navigate = useNavigate();
 
   return (
@@ -67,3 +61,5 @@ export const Page: FC<PageProps> = ({
     </Stack>
   );
 };
+
+export default Page;

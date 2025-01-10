@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { AppBar } from '@components/app-bar';
 import Stack from '@mui/material/Stack';
 
-export const Root: FC = () => (
+const Root: FC = () => (
   <Stack
     component='main'
     sx={{
@@ -28,3 +28,5 @@ export const Root: FC = () => (
     </Stack>
   </Stack>
 );
+
+export default Root;

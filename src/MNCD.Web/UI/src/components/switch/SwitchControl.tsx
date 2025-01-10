@@ -2,12 +2,10 @@ import Switch from '@mui/material/Switch';
 import { ReactNode } from 'react';
 import { Controller, FieldValues } from 'react-hook-form';
 import { SwitchControlProps } from './SwitchControl.types';
-import {
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormHelperText,
-} from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
 
 const SwitchControl = <T extends FieldValues, K>(
   props: SwitchControlProps<T, K>,

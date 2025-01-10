@@ -4,7 +4,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { LinkButton } from '@components/link-button';
 
-export const AppBar: FC = () => (
+const AppBar: FC = () => (
   <MuiAppBar>
     <Toolbar>
       <Typography variant='h6' mr={2}>
@@ -16,3 +16,5 @@ export const AppBar: FC = () => (
     </Toolbar>
   </MuiAppBar>
 );
+
+export default AppBar;

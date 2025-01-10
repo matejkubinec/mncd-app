@@ -1,8 +1,8 @@
 import { WithClassName } from '@lib/types/common';
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 import { FC, PropsWithChildren } from 'react';
 
-export const Code: FC<PropsWithChildren & WithClassName> = ({
+const Code: FC<PropsWithChildren & WithClassName> = ({
   className,
   children,
 }) => (
@@ -21,3 +21,5 @@ export const Code: FC<PropsWithChildren & WithClassName> = ({
     <pre>{children}</pre>
   </Box>
 );
+
+export default Code;
