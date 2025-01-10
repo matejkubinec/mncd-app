@@ -420,7 +420,7 @@ namespace MNCD.Services.Impl
             {
                 var diagonal = dataSet.Visualizations
                     .FirstOrDefault(v => v.Type == VisualizationType.MultiLayer_Diagonal);
-                
+
                 if (diagonal is null)
                 {
                     var request = new MultilayerRequest
@@ -451,7 +451,7 @@ namespace MNCD.Services.Impl
                     dataSet.Visualizations.Add(slices);
                     await _ctx.SaveChangesAsync();
                 }
-                
+
                 return slices;
             }
 

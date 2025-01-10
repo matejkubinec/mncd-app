@@ -10,7 +10,7 @@ using MNCD.Data;
 using MNCD.Domain.Services;
 using MNCD.Services.Impl;
 using MNCD.Web.Filters;
-using MNCD.Web.Mappings;
+using System;
 using System.Reflection;
 
 namespace MNCD.Web
@@ -112,11 +112,6 @@ namespace MNCD.Web
             services.AddDbContext<MNCDContext>(opt => opt.UseSqlite(connectionString));
         }
 
-        private string GetConnectionString()
-        {
-            return Configuration.GetConnectionString("DefaultConnection");
-        }
-
         private void RegisterServices(IServiceCollection services)
         {
             services.AddSingleton<IReaderService, ReaderService>();
@@ -125,9 +120,14 @@ namespace MNCD.Web
             services.AddTransient<IAnalysisSessionService, AnalysisSessionService>();
             services.AddTransient<IAnalysisService, AnalysisService>();
 
-            var vizUrl = Configuration.GetValue<string>("VisualizationApiUrl");
             services.AddTransient<IVisualizationService, VisualizationService>(x =>
-                new VisualizationService(x.GetService<MNCDContext>(), vizUrl));
+                new VisualizationService(x.GetService<MNCDContext>(), GetVisualizationUrl()));
         }
+
+        private string GetConnectionString() =>
+            Environment.GetEnvironmentVariable("MNCD_CONNECTION_STRING") ?? Configuration.GetConnectionString("DefaultConnection");
+
+        private string GetVisualizationUrl() =>
+            Environment.GetEnvironmentVariable("MNCD_VISUALIZATION_URL") ?? Configuration.GetValue<string>("VisualizationApiUrl");
     }
 }
