@@ -17,7 +17,7 @@ from the [mncd](https://www.github.com/matejkubinec/mncd) library.
 
 ```sh
 # Move to client app folder
-cd src/MNCD.Web/ClientApp
+cd src/MNCD.Web/UI
 
 # Install packages
 npm install
