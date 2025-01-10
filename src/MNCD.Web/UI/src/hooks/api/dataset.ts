@@ -5,7 +5,12 @@ import {
   getDatasets,
 } from '@lib/api/dataset';
 import { Dataset, DatasetListItem } from '@lib/types/dataset';
-import { useMutation, useQuery, UseQueryOptions } from '@tanstack/react-query';
+import {
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+  UseQueryOptions,
+} from '@tanstack/react-query';
 
 export const useDatasets = (
   options?: Partial<UseQueryOptions<DatasetListItem[]>>,
@@ -26,14 +31,20 @@ export const useDataset = (
     ...options,
   });
 
-export const useAddDataset = () =>
+export const useAddDataset = (
+  options?: Partial<UseMutationOptions<Dataset, Error, FormData>>,
+) =>
   useMutation({
     mutationFn: addDataset,
+    ...options,
   });
 
-export const useDeleteDataset = () =>
+export const useDeleteDataset = (
+  options?: Partial<UseMutationOptions<object, Error, number>>,
+) =>
   useMutation({
     mutationFn: deleteDataset,
+    ...options,
   });
 
 export const useDownloadDataset = (id?: number) => {
