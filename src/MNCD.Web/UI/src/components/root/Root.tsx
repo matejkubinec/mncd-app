@@ -10,6 +10,16 @@ const Root: FC = () => (
       p: 0,
       width: '100%',
       height: '100%',
+
+      // global styles
+      a: {
+        color: 'primary.main',
+        textDecoration: 'none',
+
+        '&:hover': {
+          color: 'primary.dark',
+        },
+      },
     }}
   >
     <AppBar />

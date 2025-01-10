@@ -1,20 +1,34 @@
 import { buttonClasses, createTheme } from '@mui/material';
-import { yellow } from '@mui/material/colors';
+import { blue, yellow } from '@mui/material/colors';
 
 const theme = createTheme({
-  palette: {
-    primary: {
-      main: 'rgb(0, 120, 212)',
-    },
-    secondary: {
-      main: yellow['A700'],
-    },
-    background: {
-      paper: '#f5f5f5',
-    },
+  cssVariables: {
+    colorSchemeSelector: 'class',
   },
   colorSchemes: {
-    light: true,
+    light: {
+      palette: {
+        primary: {
+          main: 'rgb(0, 120, 212)',
+        },
+        secondary: {
+          main: yellow['A700'],
+        },
+        background: {
+          paper: '#f5f5f5',
+        },
+      },
+    },
+    dark: {
+      palette: {
+        primary: {
+          main: blue[200],
+        },
+        secondary: {
+          main: yellow['A700'],
+        },
+      },
+    },
   },
   typography: {
     button: {

@@ -4,8 +4,9 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import BrokenImageIcon from '@mui/icons-material/BrokenImage';
+import { common, grey } from '@mui/material/colors';
 
-const Image: FC<ImageProps> = (props) => {
+const Image: FC<ImageProps> = ({ rounded = true, ...props }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
@@ -22,12 +23,20 @@ const Image: FC<ImageProps> = (props) => {
   return (
     <Stack
       className={props.className}
-      sx={{
-        borderColor: '#aaa',
+      sx={(theme) => ({
+        color: common['black'],
         borderWidth: 1,
-        borderRadius: 1,
         borderStyle: 'dashed',
-      }}
+        borderRadius: rounded ? 1 : 0,
+        borderColor: grey['500'],
+        backgroundColor: common['white'],
+
+        ...theme.applyStyles('dark', {
+          color: common['black'],
+          border: 'none',
+          backgroundColor: common['white'],
+        }),
+      })}
     >
       {isLoading && (
         <Stack flex='1' alignItems='center' justifyContent='center' gap={1}>
