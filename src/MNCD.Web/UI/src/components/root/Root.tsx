@@ -20,7 +20,7 @@ export const Root: FC = () => (
           md: 4,
           lg: 6,
         },
-        py: 1,
+        py: 2,
         mt: 8,
       }}
     >

@@ -46,9 +46,9 @@ export const Page: FC<PageProps> = ({
       {loading && (
         <Stack
           sx={{
-            top: -10,
-            left: -15,
-            right: -15,
+            top: -16,
+            left: -50,
+            right: -50,
             position: 'absolute',
           }}
         >

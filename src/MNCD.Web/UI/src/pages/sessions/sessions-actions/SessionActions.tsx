@@ -41,7 +41,9 @@ export const SessionActions: FC<Props> = ({ session }) => {
       onSuccess: () => {
         refetch();
 
-        enqueueSnackbar('Session deleted');
+        enqueueSnackbar('Session deleted', {
+          variant: 'success',
+        });
       },
       onError: () => {
         enqueueSnackbar('There was a problem deleting the session', {

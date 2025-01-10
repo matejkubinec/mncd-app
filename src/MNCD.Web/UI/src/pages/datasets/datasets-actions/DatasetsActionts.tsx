@@ -41,7 +41,9 @@ export const DatasetsActions: FC<Props> = ({ dataset }) => {
       onSuccess: () => {
         refetch();
 
-        enqueueSnackbar('Dataset deleted');
+        enqueueSnackbar('Dataset deleted', {
+          variant: 'success',
+        });
       },
       onError: () => {
         enqueueSnackbar('There was a problem deleting the dataset', {

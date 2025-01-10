@@ -22,7 +22,9 @@ export const DatasetsPage: FC = () => {
       }
     >
       {!datasets.data?.length ? (
-        <Typography variant='body2'>No datasets to show</Typography>
+        <Typography variant='body2'>
+          No datasets to show, please add one first
+        </Typography>
       ) : (
         <Table
           rowId='id'
