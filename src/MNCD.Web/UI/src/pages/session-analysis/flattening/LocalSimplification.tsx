@@ -10,8 +10,8 @@ const LocalSimplification: FC = () => {
   const { control, setValue } = useFormContext<AnalyzeFormValues>();
 
   useEffect(() => {
-    setValue('flatteningAlgorithmParameters.treshold', '1.0');
-    setValue('flatteningAlgorithmParameters.weightEdges', 'false');
+    setValue('flatteningAlgorithmParameters.treshold', 1.0);
+    setValue('flatteningAlgorithmParameters.weightEdges', false);
   }, [setValue]);
 
   return (

@@ -29,7 +29,7 @@ export const useTriggerAnalysis = (
 ) =>
   useMutation({
     mutationKey: ['trigger-analysis'],
-    mutationFn: (values) => triggerAnalysis(values),
+    mutationFn: triggerAnalysis,
     ...options,
   });
 

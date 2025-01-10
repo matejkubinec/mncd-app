@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 
-const FIELD_NAME = 'flatteningAlgorithmParameters.layerRelevances';
+const FIELD_NAME = 'flatteningAlgorithmParameters.relevances';
 
 const LayerRelevances: FC = () => {
   const { register, control, setValue } = useFormContext();
@@ -22,10 +22,7 @@ const LayerRelevances: FC = () => {
 
   const assignRelevances = useCallback(
     (value: number) => {
-      const layers = (dataset?.layerNames || []).map((label) => ({
-        label,
-        value,
-      }));
+      const layers = (dataset?.layerNames || []).map(() => value);
       setValue(FIELD_NAME, layers);
     },
     [dataset?.layerNames, setValue],
@@ -76,7 +73,7 @@ const LayerRelevances: FC = () => {
                     step: 0.1,
                   },
                 }}
-                {...register(`${FIELD_NAME}[${idx}].value`)}
+                {...register(`${FIELD_NAME}[${idx}]`)}
               />
             ))}
           </Stack>

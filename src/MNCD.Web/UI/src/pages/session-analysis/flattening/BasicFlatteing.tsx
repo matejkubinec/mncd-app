@@ -8,7 +8,7 @@ const BasicFlattening: FC = () => {
 
   useEffect(() => {
     setValue('flatteningAlgorithmParameters', {});
-    setValue('flatteningAlgorithmParameters.weightEdges', 'false');
+    setValue('flatteningAlgorithmParameters.weightEdges', false);
   }, [setValue]);
 
   return (
