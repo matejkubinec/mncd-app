@@ -3,8 +3,13 @@ import {
   deleteDataset,
   getDataset,
   getDatasets,
+  patchDataset,
 } from '@lib/api/dataset';
-import { Dataset, DatasetListItem } from '@lib/types/dataset';
+import {
+  Dataset,
+  DatasetListItem,
+  PatchDatasetPayload,
+} from '@lib/types/dataset';
 import {
   useMutation,
   UseMutationOptions,
@@ -36,6 +41,14 @@ export const useAddDataset = (
 ) =>
   useMutation({
     mutationFn: addDataset,
+    ...options,
+  });
+
+export const useUpdateDataset = (
+  options?: Partial<UseMutationOptions<Dataset, Error, PatchDatasetPayload>>,
+) =>
+  useMutation({
+    mutationFn: patchDataset,
     ...options,
   });
 

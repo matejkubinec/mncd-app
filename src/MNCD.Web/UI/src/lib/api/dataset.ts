@@ -1,4 +1,8 @@
-import { Dataset, DatasetListItem } from '@lib/types/dataset';
+import {
+  Dataset,
+  DatasetListItem,
+  PatchDatasetPayload,
+} from '@lib/types/dataset';
 import { api } from './api';
 
 export const getDatasets = async () => {
@@ -13,6 +17,14 @@ export const getDataset = async (id: number) => {
 
 export const addDataset = async (formData: FormData) => {
   const res = await api.post<Dataset>('/api/dataset', undefined, formData);
+  return res.data;
+};
+
+export const patchDataset = async (payload: PatchDatasetPayload) => {
+  const res = await api.patch<Dataset, PatchDatasetPayload>(
+    '/api/dataset',
+    payload,
+  );
   return res.data;
 };
 

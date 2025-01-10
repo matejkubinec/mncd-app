@@ -24,3 +24,8 @@ export enum DatasetFormat {
   MPX = 0,
   EdgeList = 1,
 }
+
+export interface PatchDatasetPayload {
+  id: number;
+  name: string;
+}
