@@ -1,4 +1,6 @@
-﻿namespace MNCD.Domain.Entities
+﻿using System.Data;
+
+namespace MNCD.Domain.Entities
 {
     public class Visualization
     {
@@ -9,5 +11,13 @@
         public string Title { get; set; }
 
         public string SvgImage { get; set; }
+
+        public int? AnalysisId { get; set; }
+
+        public Analysis Analysis { get; set; }
+
+        public int? NetworkDatasetId { get; set; }
+
+        public NetworkDataSet NetworkDataSet { get; set; }
     }
 }

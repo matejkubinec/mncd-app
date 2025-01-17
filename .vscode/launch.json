@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/MNCD.Web/bin/Debug/netcoreapp3.1/MNCD.Web.dll",
+            "program": "${workspaceFolder}/src/MNCD.Web/bin/Debug/net8.0/MNCD.Web.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/MNCD.Web",
             "stopAtEntry": false,
