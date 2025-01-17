@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +13,9 @@ using MNCD.Services.Impl;
 using MNCD.Services.Workers;
 using MNCD.Web.Filters;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using System.Threading;
 
 namespace MNCD.Web
 {
@@ -88,7 +91,10 @@ namespace MNCD.Web
 
                 if (env.IsDevelopment())
                 {
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+                    spa.UseProxyToSpaDevelopmentServer(baseUri: "http://localhost:3000");
+                    spa.UseReactDevelopmentServer(npmScript: "dev");
+                    // Wait for SPA to start
+                    Thread.Sleep(3000);
                 }
             });
         }
