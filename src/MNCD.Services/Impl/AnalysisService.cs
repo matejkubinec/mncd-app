@@ -15,6 +15,7 @@ using MNCD.Services.Algorithms;
 using MNCD.Services.Algorithms.Analysis;
 using MNCD.Services.Algorithms.Flattening;
 using MNCD.Services.Helpers;
+using MNCD.Services.Workers;
 using Newtonsoft.Json;
 
 namespace MNCD.Services.Impl
@@ -24,6 +25,7 @@ namespace MNCD.Services.Impl
         private readonly MNCDContext _ctx;
         private readonly INetworkDataSetService _dataSets;
         private readonly IAnalysisSessionService _sessions;
+        private readonly IVisualizationQueue _queue;
 
         private readonly Dictionary<FlatteningAlgorithm, IFlatteningAlgorithm> Flattening = new Dictionary<FlatteningAlgorithm, IFlatteningAlgorithm>
         {
@@ -46,11 +48,13 @@ namespace MNCD.Services.Impl
         public AnalysisService(
             MNCDContext ctx,
             INetworkDataSetService dataSets,
-            IAnalysisSessionService sessions)
+            IAnalysisSessionService sessions,
+            IVisualizationQueue queue)
         {
             _ctx = ctx;
             _dataSets = dataSets;
             _sessions = sessions;
+            _queue = queue;
         }
 
         public async Task<List<Analysis>> GetAnalysesForSession(int sessionId)
@@ -125,8 +129,9 @@ namespace MNCD.Services.Impl
             };
 
             session.Analyses.Add(analysis);
-
             await _ctx.SaveChangesAsync();
+
+            await _queue.QueueAsync(analysis);
 
             return analysis;
         }

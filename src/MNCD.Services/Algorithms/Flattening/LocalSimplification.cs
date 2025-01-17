@@ -21,7 +21,10 @@ namespace MNCD.Services.Algorithms.Flattening
             }
             var weightEdges = bool.Parse(parameters["weightEdges"]);
             var treshold = double.Parse(parameters["treshold"], NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
-            var relevances = JsonConvert.DeserializeObject<double[]>(parameters["relevances"]);
+            var relevances = JsonConvert.DeserializeObject<double[]>(parameters["relevances"], new JsonSerializerSettings
+            {
+                Culture = CultureInfo.InvariantCulture,
+            });
 
             return Algorithm.BasedOnLayerRelevance(network, relevances, treshold, weightEdges);
         }
