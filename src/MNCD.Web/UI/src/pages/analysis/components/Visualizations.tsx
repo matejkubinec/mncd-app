@@ -1,5 +1,8 @@
 import { Image } from '@components/image';
-import { VISUALIZATION_OPTIONS } from '@lib/constants';
+import {
+  UNAVAILABLE_VISUALIZATIONS,
+  VISUALIZATION_OPTIONS,
+} from '@lib/constants';
 import { AnalysisVisualization } from '@lib/types/analysis';
 import { Visualization } from '@lib/types/images';
 import Card from '@mui/material/Card';
@@ -25,7 +28,13 @@ interface Props {
 
 const Visualizations: FC<Props> = ({ visualizations }) => {
   const [type, setType] = useState<Visualization>(Visualization.MultiLayer);
-  const images = useMemo(() => visualizations[type], [visualizations, type]);
+  const images = useMemo(
+    () =>
+      visualizations[type].filter(
+        (vis) => !UNAVAILABLE_VISUALIZATIONS.includes(vis.title),
+      ),
+    [visualizations, type],
+  );
 
   return (
     <Card>
@@ -81,6 +90,7 @@ const Visualizations: FC<Props> = ({ visualizations }) => {
                 <Image
                   src={image.url}
                   alt={image.title}
+                  rounded={false}
                   css={{
                     border: 'none',
                     height: '100%',

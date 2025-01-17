@@ -78,3 +78,8 @@ export const VISUALIZATION_OPTIONS: SelectOption[] = [
   label: VISUALIZATION_NAME[visualization],
   value: visualization,
 }));
+
+export const UNAVAILABLE_VISUALIZATIONS = [
+  'Diagonal Layout',
+  'Hairball Layout',
+];
