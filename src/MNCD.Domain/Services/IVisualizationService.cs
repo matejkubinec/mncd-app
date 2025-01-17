@@ -6,6 +6,10 @@ namespace MNCD.Domain.Services
 {
     public interface IVisualizationService
     {
+        string GetUrl();
+
+        Task<bool> IsAvailable();
+
         Task<Visualization> GetVisualization(int id);
 
         Task<Visualization> GetDataSetVisualization(int dataSetId, VisualizationType type);

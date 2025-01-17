@@ -29,6 +29,25 @@ namespace MNCD.Services.Impl
             _baseUrl = baseUrl;
         }
 
+        public string GetUrl()
+        {
+            return _baseUrl;
+        }
+
+        public async Task<bool> IsAvailable()
+        {
+            try
+            {
+                using var client = GetClient();
+                var res = await client.GetAsync(_baseUrl);
+                return res.IsSuccessStatusCode;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         public async Task<Visualization> GetVisualization(int id)
         {
             var visualization = await _ctx.Visualizations.FindAsync(id);
