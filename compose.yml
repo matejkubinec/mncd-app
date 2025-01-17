@@ -1,0 +1,18 @@
+services:
+  mncd-app:
+    container_name: mncd-app
+    build: .
+    ports:
+      - 8080:8080
+    volumes:
+      - ./src/MNCD.Web/mncd.db:/data/mncd.db
+    environment:
+      - MNCD_VISUALIZATION_URL=http://mncd-viz:5050
+      - MNCD_CONNECTION_STRING=Data Source=/data/mncd.db
+
+  mncd-viz:
+    container_name: mncd-viz
+    image: ghcr.io/matejkubinec/mncd-viz:edge
+    restart: unless-stopped
+    ports:
+      - 5050:5050

@@ -4,6 +4,7 @@ using MNCD.Domain.Entities;
 using MNCD.Domain.Exceptions;
 using MNCD.Domain.Services;
 using MNCD.Services.Impl;
+using MNCD.Services.Workers;
 using MNCD.Tests.Helpers;
 using System;
 using System.Collections.Generic;
@@ -203,7 +204,8 @@ namespace MNCD.Tests.Services
         {
             var data = new NetworkDataSetService(ctx, new HashService(), new ReaderService());
             var session = new AnalysisSessionService(ctx);
-            return new AnalysisService(ctx, data, session);
+            var queue = new VisualizationQueue();
+            return new AnalysisService(ctx, data, session, queue);
         }
 
         private MNCDContext InitCtx(string dbName)

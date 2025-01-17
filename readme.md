@@ -8,7 +8,7 @@ from the [mncd](https://www.github.com/matejkubinec/mncd) library.
 
 ## Requirements
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- [.NET 9 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 - [Node LTS](https://nodejs.org/en/download)
 
 ## Running
@@ -29,4 +29,26 @@ make fe-dev
 
 ```sh
 make be-dev
+```
+
+### Docker
+
+You can use the `ghcr.io/matejkubinec/mncd-app:edge` to setup the app or use the compose file below:
+
+```yaml
+services:
+  mncd-app:
+    container_name: mncd-app
+    image: ghcr.io/matejkubinec/mncd-app:edge
+    ports:
+      - 8080:8080
+    environment:
+      - MNCD_VISUALIZATION_URL=http://mncd-viz:5050
+
+  mncd-viz:
+    container_name: mncd-viz
+    image: ghcr.io/matejkubinec/mncd-viz:edge
+    restart: unless-stopped
+    ports:
+      - 5050:5050
 ```

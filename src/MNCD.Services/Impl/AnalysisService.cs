@@ -26,7 +26,6 @@ namespace MNCD.Services.Impl
         private readonly INetworkDataSetService _dataSets;
         private readonly IAnalysisSessionService _sessions;
         private readonly IVisualizationQueue _queue;
-        private readonly IVisualizationService _visualizationService;
 
         private readonly Dictionary<FlatteningAlgorithm, IFlatteningAlgorithm> Flattening = new Dictionary<FlatteningAlgorithm, IFlatteningAlgorithm>
         {
@@ -50,14 +49,12 @@ namespace MNCD.Services.Impl
             MNCDContext ctx,
             INetworkDataSetService dataSets,
             IAnalysisSessionService sessions,
-            IVisualizationQueue queue,
-            IVisualizationService visualizationService)
+            IVisualizationQueue queue)
         {
             _ctx = ctx;
             _dataSets = dataSets;
             _sessions = sessions;
             _queue = queue;
-            _visualizationService = visualizationService;
         }
 
         public async Task<List<Analysis>> GetAnalysesForSession(int sessionId)
