@@ -16,19 +16,13 @@ from the [mncd](https://www.github.com/matejkubinec/mncd) library.
 1. Install packages
 
 ```sh
-make fe-dep
+make dep
 ```
 
-2. Run frontend
+2. Run application
 
 ```sh
-make fe-dev
-```
-
-3. Run backend (In another terminal)
-
-```sh
-make be-dev
+make dev
 ```
 
 ### Docker
