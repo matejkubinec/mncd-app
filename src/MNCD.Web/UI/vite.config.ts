@@ -15,6 +15,7 @@ export default defineConfig({
     }),
   ],
   resolve: {
+    conditions: ['mui-modern', 'module', 'browser', 'development|production'],
     alias: {
       '@*': resolve(__dirname, 'src'),
     },
